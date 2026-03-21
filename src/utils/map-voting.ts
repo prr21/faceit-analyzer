@@ -18,6 +18,10 @@ export function isExcludedMap(mapName: string): boolean {
   return EXCLUDED_MAPS.includes(mapName)
 }
 
+export function getDeciderRound(ticket: VotingTicket): number {
+  return ticket.entities.at(-1)!.round
+}
+
 export function classifyVotingEntity(
   entity: VotingEntity,
   deciderRound: number,

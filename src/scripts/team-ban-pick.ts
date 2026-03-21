@@ -8,8 +8,10 @@ import {
   findMapVotingTicket,
   isExcludedMap,
   classifyVotingEntity,
+  getDeciderRound,
   incrementMapCount,
 } from "../utils/map-voting.js"
+import { generateHtmlReport } from "../utils/html-report.js"
 import type { FactionBanPickStats, FaceitMatchDetail, TeamDropPickStats, VotingPayload } from "../types/faceit.js"
 
 const TEAM_NAME = process.argv[2] || "Satanics Aura"
@@ -39,14 +41,15 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
   )
   const allMatches = playersMatches.flat()
 
-  console.log(`\n🔍 Всего собрано ${allMatches.length} матчей от всех игроков`)
-  stats.allCount = allMatches.length
-
   // Группируем матчи — только те, где минимум 3 игрока команды
   const matchPlayerCount: Record<string, number> = {}
   for (const match of allMatches) {
     matchPlayerCount[match.match_id] = (matchPlayerCount[match.match_id] || 0) + 1
   }
+
+  const uniqueMatchCount = Object.keys(matchPlayerCount).length
+  stats.allCount = uniqueMatchCount
+  console.log(`\n🔍 Всего найдено ${uniqueMatchCount} уникальных матчей`)
 
   const teamMatchIds = Object.keys(matchPlayerCount).filter(
     id => matchPlayerCount[id] >= MIN_PLAYERS_IN_MATCH,
@@ -77,7 +80,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     const mapVoting = findMapVotingTicket(history)
     if (!mapVoting) continue
 
-    const deciderRound = mapVoting.entities.at(-1)!.round
+    const deciderRound = getDeciderRound(mapVoting)
 
     for (const entity of mapVoting.entities) {
       if (isExcludedMap(entity.guid)) continue
@@ -142,6 +145,12 @@ async function main() {
   fs.mkdirSync(statsDir, { recursive: true })
   const statPath = path.join(statsDir, TEAM_NAME + ".json")
   fs.writeFileSync(statPath, JSON.stringify(mapStatistic, null, 2), "utf-8")
+
+  const reportsDir = path.resolve("output", "reports")
+  fs.mkdirSync(reportsDir, { recursive: true })
+  const reportPath = path.join(reportsDir, TEAM_NAME + ".html")
+  fs.writeFileSync(reportPath, generateHtmlReport(TEAM_NAME, mapStatistic), "utf-8")
+  console.log(`\n📊 HTML-отчёт: ${reportPath}`)
 }
 
 main().catch(error => {

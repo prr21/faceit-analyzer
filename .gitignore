@@ -25,4 +25,7 @@ coverage
 *.sln
 *.sw?
 
-output/stats/
+.claude/settings.local.json
+.cache
+
+output/

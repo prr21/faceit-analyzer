@@ -20,7 +20,8 @@ Scripts accept target name as CLI argument (`process.argv[2]`), falling back to 
 
 **Browser scripts** (in `browser/`, not part of TS build):
 - `faceit_elo_tournament.js` — paste into DevTools console on faceit.com (uses browser cookies)
-- `faceit_map_visual.html` — open in browser to visualize ban/pick stats (Chart.js)
+
+**Generated reports**: `npm run team` auto-generates `output/reports/{TeamName}.html` — standalone Chart.js page with target + enemy stats.
 
 ## Architecture
 
@@ -34,9 +35,10 @@ src/
   types/faceit.ts        # all FACEIT API response interfaces + domain types
   utils/
     dedup.ts             # uniqueByField, replaceLangPlaceholder
-    map-voting.ts        # classifyVotingEntity, findMapVotingTicket, isExcludedMap
+    map-voting.ts        # classifyVotingEntity, getDeciderRound, findMapVotingTicket, isExcludedMap
+    html-report.ts       # generateHtmlReport — standalone HTML with Chart.js
   scripts/
-    team-ban-pick.ts     # team map strategy analysis → writes to output/stats/
+    team-ban-pick.ts     # team map strategy analysis → writes to output/stats/ + output/reports/
     player-ban-picks.ts  # individual player ban/pick analysis → console output
     find-smurfs.ts       # smurf detection in match history → console output
   data/teams.json        # team rosters (team name → player ID arrays)
@@ -44,7 +46,8 @@ src/
 
 - **API key** stored in `.env` (not committed), loaded via `dotenv` in `config.ts`
 - **API layer** uses axios for FACEIT Open API (`open.faceit.com/data/v4`) and fetch for internal democracy API
-- **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks/second bans, 5-6 = third bans, last = decider. `de_anubis` excluded.
+- **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks (BO3) or second bans (BO1), 5-6 = last bans, last = decider. `de_train` excluded.
+- **BO1**: all rounds are bans (drop), decider is last map standing. **BO3**: rounds 3-4 are picks, rounds 5-6 are bans.
 - **Team match detection**: match counts as "team match" if 3+ roster players appear; target faction identified by leader
 
 ## Key Conventions

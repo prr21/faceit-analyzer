@@ -2,7 +2,13 @@ import { FACEIT_API_KEY } from "../config.js"
 import { createFaceitClient } from "../api/client.js"
 import { getPlayerId, getPlayerMatches } from "../api/faceit-open.js"
 import { getMatchWithVoting } from "../api/faceit-internal.js"
-import { findMapVotingTicket, isExcludedMap, incrementMapCount } from "../utils/map-voting.js"
+import {
+  findMapVotingTicket,
+  isExcludedMap,
+  classifyVotingEntity,
+  getDeciderRound,
+  incrementMapCount,
+} from "../utils/map-voting.js"
 import type { FaceitMatchDetail, PlayerDropPickStats, VotingPayload } from "../types/faceit.js"
 
 const PLAYER_NICKNAME = process.argv[2] || "dErzz"
@@ -38,20 +44,25 @@ function analyzeMapBans(
     const mapVoting = findMapVotingTicket(history)
     if (!mapVoting) continue
 
+    const deciderRound = getDeciderRound(mapVoting)
+
     for (const entity of mapVoting.entities) {
-      const { guid, status, selected_by, round } = entity
+      if (isExcludedMap(entity.guid)) continue
 
-      if (isExcludedMap(guid)) continue
+      const phase = classifyVotingEntity(entity, deciderRound)
+      if (!phase) continue
 
-      if (selected_by === teamFaction && status === "drop") {
-        incrementMapCount(stats.bans, guid)
-        if (round === 1 || round === 2) {
-          incrementMapCount(stats.banFirst, guid)
-        }
+      if (phase === "decider" || phase === "firstPick") {
+        incrementMapCount(stats.play, entity.guid)
+        continue
       }
 
-      if (status === "pick") {
-        incrementMapCount(stats.play, guid)
+      // Фазы банов: firstBan, secondBan, thirdBan
+      if (entity.selected_by === teamFaction) {
+        incrementMapCount(stats.bans, entity.guid)
+        if (phase === "firstBan") {
+          incrementMapCount(stats.banFirst, entity.guid)
+        }
       }
     }
   }
