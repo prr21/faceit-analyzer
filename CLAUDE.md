@@ -4,31 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A collection of Node.js scripts for analyzing FACEIT CS2 match data — map ban/pick strategies, smurf detection, and tournament ELO analysis. All analysis scripts live in `banpicks/`.
+TypeScript project for analyzing FACEIT CS2 match data — map ban/pick strategies, smurf detection, and tournament ELO analysis.
 
 ## Running Scripts
 
 ```bash
-npm install              # install dependencies (only axios)
-node banpicks/team_ban_pick.js          # analyze team map ban/pick strategy
-node banpicks/player_ban_picks.js       # analyze individual player ban/picks
-node banpicks/find_smurfs_by_history.js # detect smurf accounts in match history
+npm install                          # install dependencies
+npm run team -- "Satanics Aura"      # analyze team map ban/pick strategy
+npm run player -- "dErzz"            # analyze individual player ban/picks
+npm run smurfs -- "ed1v9k"           # detect smurf accounts in match history
+npm run typecheck                    # run TypeScript type checking
 ```
 
-`faceit_elo_tournament.js` is a browser script (uses `fetch` + `await` at top level) — run it in browser DevTools console on faceit.com.
+Scripts accept target name as CLI argument (`process.argv[2]`), falling back to defaults.
 
-`faceit_map_visual.html` + `faceit_map_visual.js` — open the HTML file in a browser to visualize ban/pick stats using Chart.js (data is hardcoded in the JS file).
+**Browser scripts** (in `browser/`, not part of TS build):
+- `faceit_elo_tournament.js` — paste into DevTools console on faceit.com (uses browser cookies)
+- `faceit_map_visual.html` — open in browser to visualize ban/pick stats (Chart.js)
 
 ## Architecture
 
-- **API layer**: Scripts use `axios` to call the FACEIT Open Data API (`open.faceit.com/data/v4`) with a Bearer token. Some scripts also use `fetch` for the internal FACEIT democracy API (`faceit.com/api/democracy/v1/match/{id}/history`) to get map voting data.
-- **Configuration**: `banpicks/data.json` holds the API key and team rosters (team name -> array of player IDs). Scripts read team/player config from this file or have constants at the top of the file (`TEAM_NAME`, `PLAYER_NICKNAME`, `MATCH_LIMIT`).
-- **Output**: `team_ban_pick.js` writes JSON results to `banpicks/stats/{team_name}.json`. Other scripts output to console via `console.table`.
-- **Match filtering logic**: `team_ban_pick.js` considers a match a "team match" if at least 3 players from the roster appear. It identifies the target team by checking which faction's leader is a team member.
-- **Map voting rounds**: Ban/pick analysis maps FACEIT voting rounds to phases — rounds 1-2 are first bans, rounds 3-4 are picks/second bans, rounds 5-6 are third bans, last round is decider. `de_anubis` is excluded from analysis.
+```
+src/
+  config.ts              # loads .env (FACEIT_API_KEY), exports constants, loads team rosters
+  api/
+    client.ts            # createFaceitClient() — axios instance factory
+    faceit-open.ts       # getPlayerId, getPlayerMatches, getMatchInfo, getPlayerInfo
+    faceit-internal.ts   # getMatchVotingHistory (fetch), getMatchWithVoting (combined)
+  types/faceit.ts        # all FACEIT API response interfaces + domain types
+  utils/
+    dedup.ts             # uniqueByField, replaceLangPlaceholder
+    map-voting.ts        # classifyVotingEntity, findMapVotingTicket, isExcludedMap
+  scripts/
+    team-ban-pick.ts     # team map strategy analysis → writes to output/stats/
+    player-ban-picks.ts  # individual player ban/pick analysis → console output
+    find-smurfs.ts       # smurf detection in match history → console output
+  data/teams.json        # team rosters (team name → player ID arrays)
+```
+
+- **API key** stored in `.env` (not committed), loaded via `dotenv` in `config.ts`
+- **API layer** uses axios for FACEIT Open API (`open.faceit.com/data/v4`) and fetch for internal democracy API
+- **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks/second bans, 5-6 = third bans, last = decider. `de_anubis` excluded.
+- **Team match detection**: match counts as "team match" if 3+ roster players appear; target faction identified by leader
 
 ## Key Conventions
 
-- Comments, console output, and variable naming context are in Russian.
-- No build step, linter, or test framework configured — scripts are run directly with `node`.
-- To analyze a different team/player, change the constants at the top of the relevant script (`TEAM_NAME`, `PLAYER_NICKNAME`, etc.).
+- Comments and console output are in Russian
+- Scripts run via `tsx` (no separate compile step needed)
+- `npm run typecheck` to verify types without emitting
