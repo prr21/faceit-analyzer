@@ -1,0 +1,433 @@
+{
+  "API_KEY": "c7d51517-ae0a-4ad4-b345-3da41e97713b",
+  "teams": {
+    "MUCCHYJl_UHCTY": [
+      "e4db0361-1287-48de-8344-7573bdeb7142",
+      "18c65ad9-bff6-4fdb-ac34-ab7410c18859",
+      "4c6ab753-2695-46ff-88dc-5545537dbc40",
+      "6c73ed03-57f6-4586-85ca-4c9de757402b",
+      "c65f2ddc-95d8-4006-91a7-5f6ac8fb6164",
+      "0a2cca71-3aee-4d4c-b1df-6596b48aa849"
+    ],
+    "_No Idea-": [
+      "735b3f7c-d642-4159-8d6f-0b5e3a06d278",
+      "39865cdd-c3ec-4bf0-b175-fe285d7ffe5d",
+      "2686ba2b-0ec0-42c6-b515-c7c99518ac07",
+      "8b36c15f-85fb-4d1d-a995-2f1dc1778f0d",
+      "bdf3232b-138f-4866-a6c3-9a9522ec9ea3",
+      "73f2618b-09f7-4423-8374-4e4dabfd8641"
+    ],
+    "CyberExpo": [
+      "b186ceae-7c8a-4335-a9c5-b800ee58922d",
+      "2b47124b-e462-417c-a016-36a2a0a8f7e2",
+      "3a72c54d-8a10-47a0-951b-d5d6a414ea57",
+      "9902391a-bcf9-4251-8911-743a4b7e25ae",
+      "0e763a6b-7761-49e0-87a6-bd1d8ab45bee",
+      "0511b7d4-7365-4c34-b24e-c7b58162aca1",
+      "42ec385c-ef21-450a-88fe-b13d403f20e4"
+    ],
+    "RUSAL TEAM": [
+      "514eab76-a21c-47cd-928a-fba47a476a10",
+      "a0bb5570-83c7-41eb-b716-d07d1dff3aa6",
+      "2c9520dc-c96e-4dcd-b493-f226a25a1024",
+      "3f9dd3d9-2756-42b1-a380-a0d7bf79b4f8",
+      "c1ddd4f0-1638-4efd-815b-f5a0eb39ad22",
+      "058c08d9-f7a7-4851-b1d8-097139bc639e",
+      "78c5e2a6-cfa9-4ac5-b83b-fe930df29e7a"
+    ],
+    "DWM": [
+      "cc8a35a7-40dd-4ef6-8c24-4b95acb84759",
+      "6ab4172c-cc51-4338-8d64-b8495968a39e",
+      "6d67480a-b2b3-42cb-8783-8f1d9fe3892a",
+      "8c777f3a-46b3-4a6b-bc81-2de5a0d0c2e2",
+      "37921112-a5c1-4464-be6f-1a364d82784c",
+      "a4ac7e98-b955-4635-b546-633c56018ead"
+    ],
+    "Roistat": [
+      "99a9a2d9-61c6-456a-90ab-d0969293504c",
+      "8106f7b0-a32b-4989-bcba-098ddba83e3e",
+      "1599d2fa-5fa1-461e-9fa1-73637e95cc0f",
+      "ef3374c5-9dde-4bc6-be89-13b3eb5a1c59",
+      "354c0287-e6d6-4748-9f65-c69abb6971e5",
+      "9474cdd2-2c91-4cd5-8782-53ca320a2772"
+    ],
+    "ARBALET-GAMING": [
+      "5c2b2871-cd67-4e89-83d6-68d02b8fdb4b",
+      "e0f128b3-3fd6-479d-a8d6-de9657c67c9f",
+      "f25df361-0cc1-4c67-8652-0e025a89e0b6",
+      "20c43519-8948-40ef-aa7e-7b12d799b013",
+      "e1114deb-fa2c-4837-bf91-6c084f0d24ed",
+      "8d8e7071-b1f7-4cf4-bea8-68c30218401d"
+    ],
+    "Press F": [
+      "01159926-fb8a-4edf-b481-9f2ccc87b439",
+      "44b59032-c0e6-4f92-ab68-74c32f2c32fe",
+      "8cb70325-8bed-41d3-9b35-4b8b0f428b6c",
+      "035a901a-edd2-4eab-ad8e-d4c4481c321a",
+      "9e0555e1-294e-45b8-85ae-2fd668619e4b",
+      "064a8981-28b5-4930-b0d6-34ae6827dff2",
+      "08f7de02-76d4-4141-a120-f8d496c95803"
+    ],
+    "AMAZING BEAT": [
+      "38d5cbcf-7473-4811-b705-be2dced6b338",
+      "09877115-0dcf-4395-825c-2b062bd9cd29",
+      "ccf63a18-29ad-4930-8d9e-0e99e1cccc1a",
+      "2e556ef1-e494-4df8-98d9-3e53b7097b1e",
+      "1c62d10b-2d4b-43e6-9190-5508ece59d8c",
+      "17595204-1b97-468a-96b8-6409e0369e0d",
+      "c5d8ad34-4868-4708-b7dd-444ace666b65"
+    ],
+    "Satanics Aura": [
+      "4bd5fb81-54d1-48cd-90f3-073043bdf323",
+      "18847940-b89c-43ef-861d-35b0b19a2f5f",
+      "fc4e7696-6b04-4c2b-993a-87b7f923ec15",
+      "ab8dcb6c-99e7-4f43-bb52-5a8fc33099c2",
+      "7aa24a85-a9f4-4521-bd44-d6ab5f0f1c5a"
+    ],
+    "BeelineNewest": [
+      "742a53b1-3212-4b10-bd2b-9dcfc5eb485a",
+      "ab85140d-cbd0-46a7-b3f7-4fb1bf74c802",
+      "668fcb47-9847-4ddf-8116-7c6eaa4b1bba",
+      "9679a698-3ac3-430d-8dff-408eabe27096",
+      "98139c93-7948-4dea-9900-0d2dfaf9c0be",
+      "5faaa1c9-f333-4db8-b5a7-52c809dbc65c",
+      "f8dd7b41-0b8a-49f4-9cbe-ad7ad1c5801e",
+      "f53b9969-4c81-4fe8-beb2-e8f412ca900a"
+    ],
+    "LukOilers": [
+      "5df1cc6d-20bd-4e59-97cd-1c9ecfbf7bdb",
+      "2bc6b303-43c2-4c6c-8643-8e834e5d7703",
+      "52720cc9-3db5-4bb4-8f75-272e3f08d0d8",
+      "c93e3491-013e-4529-83a9-08abb678ae56",
+      "68472f6c-f5aa-4fa8-ae10-aaff7ab449ef",
+      "84a48523-25d3-4ae3-ab8d-1765a9db9a35"
+    ],
+    "CoffeeMox": [
+      "f124923c-999e-4171-aa37-1bf88bb7cc89",
+      "d1e61ff1-f108-431a-a83d-09abafab7df0",
+      "a124d5c5-fcdf-49bd-84ea-c442306051cb",
+      "2ba9536e-9b02-494a-b395-4d31a893d89b",
+      "eccf2593-dcd8-49ac-aa87-b56516a3aa56"
+    ],
+    "WinDiesel": [
+      "f02e5556-0bf1-4cfa-9c7c-aeff7242fddb",
+      "1e66ad30-feb3-47b9-9490-a11073bc8b99",
+      "cefb6d3b-652b-42d1-8aff-d2a087c22d3e",
+      "fc692c07-bea5-419e-bc7a-736a5b6beceb",
+      "957a1ebb-a556-4533-893b-ada742d62375",
+      "27b811a8-13d2-4e39-be9a-eaa1b683a5b9"
+    ],
+    "Fychin Crew": [
+      "2e60b079-50d9-4036-a17d-732e5b6a57c6",
+      "eb59c01f-ac12-42ad-bd0e-33c3ce5e05d8",
+      "7b8db8ae-9b1a-42a3-9796-abcae4d0ced6",
+      "77e9d7ff-e4b8-4160-b1c4-54006a6ac21d",
+      "970a6ad3-991b-43bf-a719-9a2fc2b4ed1d"
+    ],
+    "ekapustaCSposse": [
+      "ce35fa65-3115-4ea8-adfd-177a5e09d9b6",
+      "056adf27-3d57-4df6-8b0b-dee990465681",
+      "83479001-a7c8-4295-a0cc-54c7ee39d1d2",
+      "c3bb00bb-6f65-4c90-9d1f-415ccf39e6c7",
+      "a9fc2029-58cf-4399-a07d-c31c846d1028",
+      "7136d10d-78e9-4e48-a6d1-e0da35491587",
+      "b6d3667f-1451-4732-9fb7-ba03d2438b5b"
+    ],
+    "Rubyteam": [
+      "7bc3b407-f1df-43ec-b982-256b4cc28543",
+      "26673520-cf45-4a61-95bf-340f158dca00",
+      "07b70a25-5a24-43d6-8755-e2c9b84c7819",
+      "da371052-456e-48e6-936c-7820665f2dbe",
+      "6f69d72c-911b-4617-bab5-3a0441e055d1",
+      "e2bfd006-bbb2-4f1b-99a8-4edb75ad0609"
+    ],
+    "B1OME": [
+      "b8ff7673-99a8-4a01-9dce-a5f4a5835b5d",
+      "5922816e-d168-459d-ba4c-7d56c36d7df4",
+      "da476718-67d8-43f0-a94c-cffae125fd91",
+      "12ecbc01-b2ee-4498-8490-177a7fa5c103",
+      "834133e1-64cb-4165-8e45-2e4f5bb939d3",
+      "6c901794-ffe6-460a-94d2-930611dec153",
+      "61da7f83-ae78-446a-aa64-47e13262c569"
+    ],
+    "HYDRA": [
+      "c39d200a-7a7e-4dca-9bbb-4e763891d11d",
+      "873e38be-a70a-4ad0-8af0-45540c05b697",
+      "25751fe5-130a-4f76-8797-5b452e4ab879",
+      "8ea2c717-8cc6-49d1-8204-51158d367735",
+      "6be6a298-5e1b-4ed7-9364-a4bea69b1e8c",
+      "b28e65f8-f145-4794-9a73-8cccc3fcd423",
+      "f916b385-63ba-43de-8ad8-1ca3a0ad1b9c"
+    ],
+    "CROC 4sv": [
+      "e906567d-a14f-4b24-b486-4e855055956a",
+      "a79b7f31-81a8-41da-aacb-e92b2c029c60",
+      "7d59089e-664d-4c2d-a51a-4bc44ef85ccd",
+      "9e54ff3a-1465-4e90-abb0-a32c6c464e2a",
+      "c6837f16-d373-4820-9420-8c405ecd3f73",
+      "694c012f-673a-4c41-9676-052e96c6cded",
+      "210a9536-07a1-4e47-af16-f1f43d209ed9"
+    ],
+    "VK Esports Team": [
+      "5263cd9c-5b3b-40c8-ad3d-59960cbf9922",
+      "1cda6222-628c-4160-8acf-e4497b83936a",
+      "ac49e238-5f5f-4544-8573-c8fa792ceba4",
+      "40fd28b8-df75-4823-a81b-4b47feb91626",
+      "1d98a9b1-23d6-4915-be58-c6697907f375",
+      "28aa5006-0ddd-4a21-afb0-7e20c82b75d8",
+      "b9ab77e6-3bcd-41b1-a30b-25aee1db4a0a"
+    ],
+    "MOEX_Team": [
+      "48ee3e76-5b41-4858-9e18-cf17847b6d0b",
+      "2b561df1-a01d-4c7d-937f-88167fcfb27d",
+      "59acb4f6-a9c3-4493-af5c-57800c3369cd",
+      "eed83c96-d9c3-4f40-ae43-802692ffce85",
+      "9cc4fe94-1586-460a-9dac-44b145b9db6e",
+      "4f3c3782-2a47-496e-a151-4b188d273ef0",
+      "7fd23bf2-41bf-47f2-9a31-557b372ce89d",
+      "0f6ec106-71d4-404d-bb67-d9e41dadf289"
+    ],
+    "GAZ": [
+      "8abb9d37-4b1a-4e50-ad73-519a5c53d83e",
+      "1f0ffdae-88ea-4dc7-b395-4976531d1543",
+      "9c059c84-4e80-4134-b953-eac3acc10dbf",
+      "39e20c89-cad0-4579-80b5-144c8df1c3e6",
+      "6fea6dca-b5f9-4360-a25d-5ea56b2afa93"
+    ],
+    "RushLongPlease": [
+      "b15200cd-d724-4364-8740-acc261edc8df",
+      "22b2d093-a03c-483d-9591-87ebe87344f3",
+      "683428a9-4c5c-456f-92e9-ed0c36b3e8e2",
+      "7612767b-fca0-4604-8804-213c05453ac9",
+      "8a35fdd3-726c-417d-a269-2ff8bb585eb0",
+      "1c4e89e0-a703-40c7-b42e-c73dcbf789af",
+      "76bbf2f6-83d9-4ed1-a51f-05ef4f51c060",
+      "d09bec24-5cdd-4a2f-aef7-1e18a1180222"
+    ],
+    "Baltika": [
+      "1b7261c8-53a6-4806-9e98-87e0aaa7db6a",
+      "2ece7691-999c-4b8a-867c-e0ab182d8bb4",
+      "e7d4f9fe-cb0b-4925-9661-4551160dcea6",
+      "d05374aa-35d2-4cdc-b8da-f242d1857fb1",
+      "01de2437-e147-4347-9a90-d47d2539bd14",
+      "7bfa3e31-239d-48af-af06-76cbf50a35f0",
+      "c9cdeebb-1adf-47e1-969d-e7050f43f82c",
+      "b7194d13-d6e1-4f6e-99f0-0c792db0d522"
+    ],
+    "TeamSpirt": [
+      "49277977-4101-443c-b5a2-a9ff29b1ee90",
+      "2d2380a8-ba36-42ac-b601-ad0d0037ef31",
+      "3ea94010-456d-41c1-9a40-6c237268cab0",
+      "b954e0e0-233d-4f8e-a1fd-6ef3fbe3590f",
+      "2cdb79e2-bbe0-428c-8a8c-d245633cf927",
+      "3636133f-d7aa-45d4-90cd-59c9be9f8e33",
+      "3f1d938c-e984-4ffc-8c54-2946ad3cd40a"
+    ],
+    "MeowPeow": [
+      "77d6b43e-8f3b-4a9e-9c0d-23eef24b8c3e",
+      "07b4ff90-034c-4cdd-96d2-d61504a95354",
+      "a6f31bdd-233e-4c86-8fd6-b097bca04d81",
+      "ad5671f5-95a9-4ff4-a7da-b759ee7d346d",
+      "470cb5a7-7ccd-4a18-9727-fb7b4ed09e83",
+      "2729b2fe-e2e1-4b0c-9469-01cd54d78b88",
+      "45267530-0e71-4117-a919-5729960fac97",
+      "f5b55304-88e8-457e-8613-cbc77c87d6aa"
+    ],
+    "pro100razval": [
+      "f4f89396-c4db-48c7-a733-6700a2aac26a",
+      "4ba18404-2ca1-4dba-8542-c39e221d498d",
+      "569eff1d-c285-4a0e-9b73-e216aba32385",
+      "d6e2d1e5-9317-45b1-8df3-e6f5d27e63c5",
+      "8105e98f-cdf6-4a56-b976-fe0715c40c80",
+      "d9aeccff-a960-4368-a1e9-0b5862919766",
+      "6dc7494d-966c-4c2e-b09e-8ac82c663e2b",
+      "ec8430eb-4f86-4626-98b9-4107b08b3563"
+    ],
+    "Selectel": [
+      "af14944d-1022-48a1-99da-94f23affb443",
+      "689f6529-0ab9-491d-abf7-a13416b17d23",
+      "5f641c95-cb6d-4b87-a147-ad8eabf2960d",
+      "13f171c3-8e11-4664-9fca-c5a51e904015",
+      "7204fc14-f645-42ea-9f00-7bab17e6ddd9",
+      "5bf339ce-f1b9-4aa5-9c2f-468b715173e4",
+      "f24be26c-881b-41a3-8992-d68473feeab0"
+    ],
+    "Highways Heroes": [
+      "17143573-4e1b-4df0-92f7-716925df9b08",
+      "40f6f9d4-6c2a-4600-9adf-958839fb9b3f",
+      "4ee38080-3ab7-4e02-95df-e6db7f507bdb",
+      "b50cac26-18a7-4516-9bcb-a52d891cd3a2",
+      "2a5d90cc-a42c-4d17-b64f-50e90086f563",
+      "8e55c036-8bf4-4a37-8a88-545c262a0525",
+      "1829a0f3-dc4b-4f3d-ba6f-0a7856b3c06f"
+    ],
+    "SpectrumEsports": [
+      "ea9a6acb-1bbd-4119-b860-7e81df2ea9cc",
+      "9b844d75-cf96-469d-a31d-478d8054a296",
+      "b2d7b9d5-8224-494d-9e5f-3a1f0f50547f",
+      "6efd7626-62af-4d7d-9789-875688cc282f",
+      "64044605-0387-4e8a-8c56-d83eb84d8e6d",
+      "d7ce7bec-6747-40c3-a65f-06c5c72e73d1"
+    ],
+    "doubleW": [
+      "f9d93fc5-ec61-4309-bd2c-9d1ffd139ab0",
+      "65efe66c-25a1-4786-9642-ab103e768065",
+      "95e0b600-8a30-4747-a311-6cd172b3fb73",
+      "12bd5ea4-c5ce-43ae-bd09-edec3c9f0af2",
+      "33798055-63a2-4801-a689-7f301db8dfcf",
+      "ae791ce5-c8da-4d11-8147-1aa0c7db7464",
+      "65b8c989-3e98-498e-a7d3-f5767f29f5ab"
+    ],
+    "AlfaBull": [
+      "fc313641-d545-4561-bae8-d36d9ef4cc64",
+      "94c67a62-6b87-41c9-a7d7-e8a298b3727e",
+      "f76f21c9-26fb-4163-875b-7a75e2770216",
+      "791185d5-bdd5-49f3-b350-c03d8c5da3d6",
+      "90de59ad-529e-41e1-ba46-8db235e9b9fb",
+      "964c04db-8564-4e2b-891b-48d8877e8303",
+      "09d224e9-7182-4e14-ab23-f35643138be5"
+    ],
+    "4and1black": [
+      "e1d6a31d-78be-47e3-b6a3-58b807b8e101",
+      "542c7773-1100-47f3-a99d-b971120c1d48",
+      "cd978277-44fe-46ef-85e9-c916be624bee",
+      "fc7f6bc5-bc23-4d89-8a74-9d02463c8eca",
+      "bfebd802-1523-4506-9c3c-9acf019cd27f",
+      "8d174faf-24f6-4956-ba85-7ce4f9f94fe3",
+      "18a057b5-cdde-4e85-8a22-d3a933138a80"
+    ],
+    "TEAM GPB": [
+      "88e64526-0ffe-456e-8918-112ea0e35ded",
+      "0f5ec930-5d3d-4dce-b254-95a5818ab7d3",
+      "6742ba75-f7e0-4450-ab69-70f17d3d996a",
+      "5683cf4e-da07-4527-bd60-c852797a0820",
+      "6b3bb5da-1aa8-4ae4-a801-b2912927cf2f",
+      "28de6061-7551-4cec-a7c6-902a60176787",
+      "6f00c030-e8f7-4526-a255-2e43264c13e7"
+    ],
+    "bezosobnulyaet": [
+      "e3bf2b8d-5174-4630-8ac3-591e7d3d3620",
+      "ef7a7e7d-def8-4fa7-9d28-e7906e1094f3",
+      "cc5555c1-6b2f-424e-88ba-66e038f732e8",
+      "d6139f3d-483b-4ada-9430-757be61cb54e",
+      "9886263b-2fd7-4236-b61a-7ec0ab4533f0",
+      "a670bfa6-95c2-4d41-b173-a4279c655452",
+      "645cf0c0-8326-49c5-841c-417c3ead8881"
+    ],
+    "NT Team": [
+      "9e125dd0-ea4e-466d-a72f-1b149188c886",
+      "10d00056-9e25-453e-b86e-d5ff987c9d76",
+      "a7ef50ee-1710-4385-b663-95f14e268563",
+      "d4a11264-a88f-4f00-9a05-63f405d37e23",
+      "07f2a82a-4791-4a7e-b83e-875b36ada9d1",
+      "bbc72be7-ae68-46f9-a0f1-acffe51f1e29"
+    ],
+    "Kontur": [
+      "1f030f4a-f7e3-4221-a8b6-adddfc52e767",
+      "3de8eaa6-8092-421b-978c-c2ba3b5824a8",
+      "7a088fc5-f906-46b2-b192-e4acc515c607",
+      "ed5b767b-dce5-4fcf-bf00-ab5e371a687a",
+      "204a2ff0-6a3b-4bdb-b3fb-5a57c3043315",
+      "43e4da17-2ba0-48af-a53c-29f4de972453",
+      "b56c4813-bba3-49e3-830d-8a84451a26fe"
+    ],
+    "METALLURG": [
+      "aeeb5387-48a5-4b14-a8f4-b87210dc0dea",
+      "2dc98f84-2852-4bc6-ba33-8d9841ff37e0",
+      "65ca665d-ee56-4ad5-82d6-96f448d9b94a",
+      "89d8c126-90c5-45d3-8787-6dfe0c75b45b",
+      "a8391910-3d6e-4dcc-8c34-677441f6af72",
+      "3cc4f529-e4be-4116-b66e-e160aa1a1e99"
+    ],
+    "IngoGames": [
+      "8a726d26-3331-45c6-86b0-318356c1fd8b",
+      "cce7de36-853d-4eb5-9f56-9c6a6d738a02",
+      "dd835e2b-63d5-4125-9739-8c3c4729f3b5",
+      "98b84d10-57a5-4440-bd0a-a502521f93d9",
+      "96be0964-cea9-4a2c-a6b0-a9703f552af0",
+      "ec852587-0e49-4170-a4e4-79cb97cf8742",
+      "98f06005-4b80-41f9-9302-16fbb30feb4d",
+      "ab51ede7-2253-469f-a410-d090de945e4f"
+    ],
+    "WINLINE Team": [
+      "4757ee1f-c8a6-4b3a-96d0-a57893f3434b",
+      "9975915a-f982-4b8e-815b-7000b24564d1",
+      "9bf757b9-f91b-4791-9f37-1bcf6cd9f729",
+      "3f63a8da-91d0-483d-9643-7a748ec8f448",
+      "994db00b-2f4b-4ee4-91a7-f1991b33fe94",
+      "486d0e41-9961-4793-b71c-01d317111dde"
+    ],
+    "InterLeasing": [
+      "ccd3defd-ecb8-47e1-a2f1-d36277dec915",
+      "f50a5aa7-de72-4f1d-a95a-e2e51447c9e8",
+      "0c427672-e05d-4bb7-8349-e7560dd5b02c",
+      "6fd8080e-e046-4924-8b74-50d35a553547",
+      "7866c324-0158-43dc-bf69-f70b91a3c01b",
+      "f1882218-b44d-4c00-9599-45523eaa16a1",
+      "6f3c71ad-3043-4d4e-85b8-8c46a99a2628"
+    ],
+    "Team CPPK": [
+      "c5caddd6-fbd2-460b-96c1-042d30ad6cf1",
+      "55ac24ab-482f-48a1-9faf-3e40cdca4066",
+      "ccf24abf-5c53-48ff-92ef-b9071a57f9c2",
+      "541794f5-9483-48e8-a663-9c13f71a79b7",
+      "6f7fdceb-cb70-4e50-897b-1bcd99eb06ac",
+      "b284a9fc-2b4b-4e74-9a4c-828240eb95cf"
+    ],
+    "BIZONE": [
+      "2b4f855e-bd91-4aeb-9f66-f173346b3ba9",
+      "e0045e33-9256-4792-806b-f4d5636524f2",
+      "166d1e70-437b-4597-9ea8-cc1697857b2f",
+      "200e2ff4-658f-4746-b98d-94bfdf5ad64e",
+      "6979918c-9cf6-43a2-937a-3da280dfb4cc",
+      "aea22263-6e34-471b-8c0e-199ed9a531fb",
+      "007c9bba-afc2-4a12-b3aa-765ddbda7006",
+      "332b59c7-fc74-4958-882e-b7f745264883"
+    ],
+    "SEXCORP": [
+      "2d89f875-82e2-4497-9ee4-86e735204647",
+      "b5d41858-293a-4237-90dc-1757537be76d",
+      "5d99dfed-a92d-4c84-9089-789cb56a98fd",
+      "ceb5408d-e6ef-4b06-aaf7-5e4cbc242a70",
+      "2cc694c2-4bba-40b8-943d-d8c0626e4767",
+      "b2e1ea83-b038-42c2-b614-3d44b1f2df04",
+      "a8705fca-16d5-4642-baaa-6a310941cdf3"
+    ],
+    "Rage Five": [
+      "28a09c3e-f7d6-4b3d-9909-e9ee2089f381",
+      "e164a019-18e1-450c-bd99-8ee345c4acbc",
+      "79692483-1ffe-4716-8b17-883aaee68cf3",
+      "3512fe22-cecc-42ed-b04a-28d472f634cc",
+      "f95f2996-2514-431d-90be-7efe705af70b",
+      "dc356eeb-8fbb-430b-b6d4-5db405acf90a",
+      "b9600a27-410e-462c-b302-c4f1dff90424",
+      "6de91c9d-6313-425b-99ba-f73fd73cba29"
+    ],
+    "Team NBA": [
+      "59135bb7-bb35-489e-91e2-e293439337cd",
+      "f0582f83-c63c-4c3c-9029-8d805b059176",
+      "310903be-02da-4ff2-ac91-2e073151d4c8",
+      "2aa02f47-5fd4-4797-95ae-f255f4d1c357",
+      "031d82ee-e57e-4285-ad93-3bfb2d06ff0a",
+      "de394363-4fe7-49ad-9f5f-176a178e2f78",
+      "7e764e85-ab49-40f7-b4b9-8b7b89cf838f"
+    ],
+    "Leazy Peazy": [
+      "4c876b43-0bf8-4d69-b315-974ab0938f70",
+      "578e2bd6-5953-4f1a-9341-42b1fede2989",
+      "037ee596-9e82-405c-ad72-24da00901cc2",
+      "86c3bd9b-c289-4915-a8e0-37038a42e4fe",
+      "47bfb469-45ea-4c42-a704-bba5c76dc16c",
+      "0f414ab5-170a-4771-9e1c-9260cb4611b1",
+      "2b8a5b60-8536-4ed7-be67-06c47e11646c"
+    ],
+    "deeplay": [
+      "04b440de-55ff-44ab-b9a1-d41da5ad547f",
+      "3dd4c9aa-775b-4644-afdd-178f5506fe19",
+      "7f8549ed-4202-438b-9910-13db42e8ceee",
+      "05fc0384-afdc-4db3-a096-3d321102b53f",
+      "070b648d-e8c4-4e01-8bfe-e730bfaf4eee",
+      "889ede17-f91a-4ad3-9945-4923882c908b"
+    ]
+  }
+}
