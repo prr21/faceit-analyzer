@@ -20,6 +20,7 @@ export interface FaceitTeamFaction {
 
 export interface FaceitMatch {
   match_id: string
+  started_at: number
   faceit_url: string
   teams: {
     faction1: { players: FaceitFactionPlayer[] }
@@ -28,14 +29,24 @@ export interface FaceitMatch {
   results?: { winner: string }
 }
 
+export interface FaceitMatchDetailResult {
+  winner: string
+  factions: Record<string, { score: number }>
+}
+
 export interface FaceitMatchDetail {
   match_id: string
   started_at: number
+  best_of: number
   teams: {
     faction1: FaceitTeamFaction
     faction2: FaceitTeamFaction
   }
-  results?: { winner: string }
+  results?: {
+    winner: string
+    score: Record<string, number>
+  }
+  detailed_results?: FaceitMatchDetailResult[]
   voting?: { map: { pick: string[] } }
 }
 
@@ -68,10 +79,27 @@ export interface FactionBanPickStats {
   thirdBan: MapCountRecord
 }
 
+export interface MapWinRate {
+  wins: number
+  losses: number
+  total: number
+  rate: number
+}
+
+export interface TrendPeriod {
+  label: string
+  stats: FactionBanPickStats
+  decider: MapCountRecord
+  mapWinRate: Record<string, MapWinRate>
+  matchCount: number
+}
+
 export interface TeamDropPickStats {
   target: FactionBanPickStats
   enemy: FactionBanPickStats
   decider: MapCountRecord
+  mapWinRate: Record<string, MapWinRate>
+  trends: TrendPeriod[]
   earliestGame: string
   latestGame: string
   mapInfo: string

@@ -26,6 +26,6 @@ coverage
 *.sw?
 
 .claude/settings.local.json
-.cache
 
 output/
+.cache/

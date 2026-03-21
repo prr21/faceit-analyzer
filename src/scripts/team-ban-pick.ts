@@ -12,7 +12,7 @@ import {
   incrementMapCount,
 } from "../utils/map-voting.js"
 import { generateHtmlReport } from "../utils/html-report.js"
-import type { FactionBanPickStats, FaceitMatchDetail, TeamDropPickStats, VotingPayload } from "../types/faceit.js"
+import type { FactionBanPickStats, FaceitMatchDetail, MapWinRate, TeamDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
 
 const TEAM_NAME = process.argv[2] || "Satanics Aura"
 const MIN_PLAYERS_IN_MATCH = 3
@@ -23,17 +23,49 @@ function createEmptyFactionStats(): FactionBanPickStats {
   return { firstBan: {}, firstPick: {}, secondBan: {}, thirdBan: {} }
 }
 
+function trackWinRate(record: Record<string, MapWinRate>, mapName: string, won: boolean): void {
+  if (!record[mapName]) record[mapName] = { wins: 0, losses: 0, total: 0, rate: 0 }
+  const entry = record[mapName]
+  if (won) entry.wins++
+  else entry.losses++
+  entry.total++
+  entry.rate = Math.round((entry.wins / entry.total) * 100)
+}
+
+function getMonthKey(timestamp: number): string {
+  const date = new Date(timestamp * 1000)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+}
+
+function getOrCreateTrend(trendsMap: Map<string, TrendPeriod>, key: string): TrendPeriod {
+  let trend = trendsMap.get(key)
+  if (!trend) {
+    trend = {
+      label: key,
+      stats: createEmptyFactionStats(),
+      decider: {},
+      mapWinRate: {},
+      matchCount: 0,
+    }
+    trendsMap.set(key, trend)
+  }
+  return trend
+}
+
 async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDropPickStats> {
   const stats: TeamDropPickStats = {
     target: createEmptyFactionStats(),
     enemy: createEmptyFactionStats(),
     decider: {},
+    mapWinRate: {},
+    trends: [],
     earliestGame: "",
     latestGame: "",
     mapInfo: "",
     count: 0,
     allCount: 0,
   }
+  const trendsMap = new Map<string, TrendPeriod>()
 
   // Собираем все матчи игроков команды
   const playersMatches = await Promise.all(
@@ -80,6 +112,9 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     const mapVoting = findMapVotingTicket(history)
     if (!mapVoting) continue
 
+    const monthKey = getMonthKey(match.started_at)
+    const trend = getOrCreateTrend(trendsMap, monthKey)
+
     const deciderRound = getDeciderRound(mapVoting)
 
     for (const entity of mapVoting.entities) {
@@ -90,13 +125,41 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
 
       if (phase === "decider") {
         incrementMapCount(stats.decider, entity.guid)
+        incrementMapCount(trend.decider, entity.guid)
         continue
       }
 
       const side = entity.selected_by === targetFaction ? "target" : "enemy"
       incrementMapCount(stats[side][phase], entity.guid)
+      if (side === "target") {
+        incrementMapCount(trend.stats[phase], entity.guid)
+      }
     }
 
+    // Винрейт по картам
+    const playedMaps = match.voting?.map?.pick || []
+    if (match.results?.winner && playedMaps.length > 0) {
+      const overallWon = match.results.winner === targetFaction
+
+      if (match.detailed_results && match.detailed_results.length === playedMaps.length) {
+        // BO3: пораундовые результаты
+        for (let i = 0; i < playedMaps.length; i++) {
+          if (isExcludedMap(playedMaps[i])) continue
+          const mapWon = match.detailed_results[i].winner === targetFaction
+          trackWinRate(stats.mapWinRate, playedMaps[i], mapWon)
+          trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
+        }
+      } else {
+        // BO1: результат матча = результат карты
+        for (const mapName of playedMaps) {
+          if (isExcludedMap(mapName)) continue
+          trackWinRate(stats.mapWinRate, mapName, overallWon)
+          trackWinRate(trend.mapWinRate, mapName, overallWon)
+        }
+      }
+    }
+
+    trend.matchCount++
     analyzedMatches++
   }
 
@@ -104,6 +167,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
   stats.count = analyzedMatches
   stats.latestGame = new Date(latestGame * 1000).toLocaleString("ru-RU")
   stats.earliestGame = new Date(earliestGame * 1000).toLocaleString("ru-RU")
+  stats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
 
   console.log("\n✅ Анализ завершен!", stats.mapInfo)
   return stats

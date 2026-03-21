@@ -1,5 +1,6 @@
 import type { AxiosInstance } from "axios"
 import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../config.js"
+import { withCache } from "../utils/cache.js"
 import type { FaceitMatch, FaceitMatchDetail, FaceitPlayer } from "../types/faceit.js"
 
 export async function getPlayerId(
@@ -25,8 +26,10 @@ export async function getMatchInfo(
   client: AxiosInstance,
   matchId: string,
 ): Promise<FaceitMatchDetail> {
-  const response = await client.get(`/matches/${matchId}`)
-  return response.data
+  return withCache(`match:${matchId}`, async () => {
+    const response = await client.get(`/matches/${matchId}`)
+    return response.data
+  })
 }
 
 export async function getPlayerInfo(
