@@ -2,7 +2,7 @@ import type { AxiosInstance } from "axios"
 import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../config.js"
 import { withCache } from "../utils/cache.js"
 import { withRetry } from "../utils/retry.js"
-import type { FaceitMatch, FaceitMatchDetail, FaceitPlayer } from "../types/faceit.js"
+import type { FaceitMatch, FaceitMatchDetail, FaceitMatchStats, FaceitPlayer } from "../types/faceit.js"
 
 export async function getPlayerId(
   client: AxiosInstance,
@@ -61,6 +61,22 @@ export async function getMatchInfo(
       return response.data
     }),
   )
+}
+
+export async function getMatchStats(
+  client: AxiosInstance,
+  matchId: string,
+): Promise<FaceitMatchStats | null> {
+  return withCache(`matchstats:${matchId}`, async () => {
+    try {
+      return await withRetry(async () => {
+        const response = await client.get(`/matches/${matchId}/stats`)
+        return response.data
+      })
+    } catch {
+      return null
+    }
+  })
 }
 
 export async function getPlayerInfo(

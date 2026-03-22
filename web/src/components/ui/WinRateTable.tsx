@@ -51,7 +51,15 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
                   <td className={TD}>{wr.losses}</td>
                   <td className={TD}>{wr.total}</td>
                   <td className={TD}>
-                    <strong>{wr.rate}%</strong>
+                    <div className="flex items-center gap-2 justify-center">
+                      <strong>{wr.rate}%</strong>
+                      <div className="w-16 sm:w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${wr.rate >= 50 ? "bg-green-500" : "bg-red-400"}`}
+                          style={{ width: `${wr.rate}%` }}
+                        />
+                      </div>
+                    </div>
                   </td>
                 </tr>
                 {records && isExpanded && (

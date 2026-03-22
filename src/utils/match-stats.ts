@@ -5,7 +5,10 @@ import type {
   FavoriteUnderdogStats,
   CompetitionTypeStats,
   FaceitMatchDetail,
+  FaceitMatchStats,
   MatchRecord,
+  StreakInfo,
+  EloSnapshot,
 } from "../types/faceit.js"
 import { replaceLangPlaceholder } from "./dedup.js"
 
@@ -55,12 +58,42 @@ export function trackCompetitionType(
   entry.rate = Math.round((entry.wins / entry.total) * 100)
 }
 
+/** Извлекает статистику конкретного игрока из match stats для конкретной карты (roundIndex) */
+function extractPlayerStats(
+  stats: FaceitMatchStats | null | undefined,
+  playerId: string,
+  roundIndex: number,
+): Partial<Pick<MatchRecord, "kills" | "deaths" | "assists" | "headshots" | "headshotPercent" | "adr" | "kr" | "kdRatio">> {
+  if (!stats?.rounds?.[roundIndex]) return {}
+  const round = stats.rounds[roundIndex]
+  for (const team of round.teams) {
+    for (const player of team.players) {
+      if (player.player_id === playerId) {
+        const s = player.player_stats
+        return {
+          kills: parseInt(s["Kills"]) || undefined,
+          deaths: parseInt(s["Deaths"]) || undefined,
+          assists: parseInt(s["Assists"]) || undefined,
+          headshots: parseInt(s["Headshots"]) || undefined,
+          headshotPercent: parseFloat(s["Headshots %"]) || undefined,
+          adr: parseFloat(s["ADR"]) || undefined,
+          kr: parseFloat(s["K/R Ratio"]) || undefined,
+          kdRatio: parseFloat(s["K/D Ratio"]) || undefined,
+        }
+      }
+    }
+  }
+  return {}
+}
+
 export function buildMatchRecord(
   match: FaceitMatchDetail,
   targetFaction: "faction1" | "faction2",
   mapName: string,
   mapIndex: number,
   won: boolean,
+  matchStats?: FaceitMatchStats | null,
+  playerId?: string,
 ): MatchRecord {
   const opponentFaction = targetFaction === "faction1" ? "faction2" : "faction1"
   const opponentTeam = match.teams[opponentFaction]
@@ -89,6 +122,20 @@ export function buildMatchRecord(
     ? replaceLangPlaceholder(match.faceit_url)
     : `https://www.faceit.com/en/cs2/room/${match.match_id}`
 
+  const playerStatsData = playerId ? extractPlayerStats(matchStats, playerId, mapIndex) : {}
+
+  // Ссылка на команду противника (только для турнирных/premade команд)
+  let opponentTeamUrl: string | undefined
+  if (opponentTeam.faction_id && opponentTeam.type === "premade") {
+    opponentTeamUrl = `https://www.faceit.com/en/teams/${opponentTeam.faction_id}`
+  }
+
+  // Ссылка на турнир (только для не-matchmaking)
+  let competitionUrl: string | undefined
+  if (match.competition_id && match.competition_type && match.competition_type !== "matchmaking") {
+    competitionUrl = `https://www.faceit.com/en/championship/${match.competition_id}`
+  }
+
   return {
     matchId: match.match_id,
     date: match.started_at,
@@ -98,9 +145,12 @@ export function buildMatchRecord(
     matchScore,
     bestOf: match.best_of,
     opponentName: opponentTeam.name || "Неизвестный",
+    opponentTeamUrl,
     targetRating: targetTeam.stats?.rating,
     opponentRating: opponentTeam.stats?.rating,
     competitionName: match.competition_name,
+    competitionUrl,
+    ...playerStatsData,
   }
 }
 
@@ -116,6 +166,57 @@ export function addMatchRecord(
 export function getMonthKey(timestamp: number): string {
   const date = new Date(timestamp * 1000)
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+}
+
+/** Вычисляет longest win streak и текущую серию из хронологически отсортированного eloHistory */
+export function calcStreaks(eloHistory: EloSnapshot[]): { longest: number; current: StreakInfo } {
+  let longestWin = 0
+  let currentCount = 0
+  let currentType: "win" | "loss" = "win"
+
+  for (const entry of eloHistory) {
+    if (entry.result === currentType) {
+      currentCount++
+    } else {
+      currentType = entry.result
+      currentCount = 1
+    }
+    if (currentType === "win" && currentCount > longestWin) {
+      longestWin = currentCount
+    }
+  }
+
+  return {
+    longest: longestWin,
+    current: { type: currentType, count: currentCount },
+  }
+}
+
+/** Заполняет eloChange в matchRecords на основе хронологически отсортированного eloHistory */
+export function fillEloChanges(
+  matchRecords: Record<string, MatchRecord[]>,
+  eloHistory: EloSnapshot[],
+): void {
+  // Создаём карту matchId → eloChange
+  const eloChangeByMatchId = new Map<string, number>()
+  for (let i = 0; i < eloHistory.length; i++) {
+    const id = eloHistory[i].matchId
+    if (!id) continue
+    if (i === 0) {
+      eloChangeByMatchId.set(id, 0)
+    } else {
+      eloChangeByMatchId.set(id, eloHistory[i].elo - eloHistory[i - 1].elo)
+    }
+  }
+
+  for (const records of Object.values(matchRecords)) {
+    for (const record of records) {
+      const change = eloChangeByMatchId.get(record.matchId)
+      if (change !== undefined) {
+        record.eloChange = change
+      }
+    }
+  }
 }
 
 export function getOrCreateTrend(trendsMap: Map<string, TrendPeriod>, key: string): TrendPeriod {

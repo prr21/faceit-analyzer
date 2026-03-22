@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import { FACEIT_API_KEY, DEFAULT_CONCURRENCY } from "../config.js"
 import { createFaceitClient } from "../api/client.js"
-import { getPlayerId, getPlayerMatches } from "../api/faceit-open.js"
+import { getPlayerId, getPlayerMatches, getPlayerInfo } from "../api/faceit-open.js"
 import { getMatchWithVoting } from "../api/faceit-internal.js"
 import { batchWithLimit } from "../utils/concurrency.js"
 import {
@@ -22,9 +22,11 @@ import {
   addMatchRecord,
   getMonthKey,
   getOrCreateTrend,
+  calcStreaks,
+  fillEloChanges,
 } from "../utils/match-stats.js"
 import { writePlayerReport } from "../utils/report-writer.js"
-import type { FaceitMatchDetail, PlayerDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
+import type { FaceitMatchDetail, FaceitMatchStats, PlayerDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
 
 const PLAYER_NICKNAME = process.argv[2] || "dErzz"
 
@@ -51,7 +53,7 @@ function isLeader(match: FaceitMatchDetail, playerId: string): boolean {
 }
 
 function analyzePlayerMapStrategy(
-  matchesData: Array<{ match: FaceitMatchDetail; history: VotingPayload | null }>,
+  matchesData: Array<{ match: FaceitMatchDetail; history: VotingPayload | null; stats: FaceitMatchStats | null }>,
   playerId: string,
 ): PlayerDropPickStats {
   const playerStats: PlayerDropPickStats = {
@@ -80,7 +82,7 @@ function analyzePlayerMapStrategy(
   let eloSum = 0
   let eloCount = 0
 
-  for (const { match, history } of matchesData) {
+  for (const { match, history, stats: matchStats } of matchesData) {
     if (match.started_at > latestGame) latestGame = match.started_at
     if (match.started_at < earliestGame) earliestGame = match.started_at
 
@@ -99,6 +101,7 @@ function analyzePlayerMapStrategy(
         date: match.started_at,
         elo: factionStats.rating,
         result: won ? "win" : "loss",
+        matchId: match.match_id,
       })
       eloSum += factionStats.rating
       eloCount++
@@ -158,7 +161,7 @@ function analyzePlayerMapStrategy(
           const mapWon = match.detailed_results[i].winner === playerFaction
           trackWinRate(playerStats.mapWinRate, playedMaps[i], mapWon)
           trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
-          const record = buildMatchRecord(match, playerFaction, playedMaps[i], i, mapWon)
+          const record = buildMatchRecord(match, playerFaction, playedMaps[i], i, mapWon, matchStats, playerId)
           addMatchRecord(playerStats.matchRecords, playedMaps[i], record)
           if (isPlayerLeader) {
             trackWinRate(playerStats.leaderMapWinRate, playedMaps[i], mapWon)
@@ -173,7 +176,7 @@ function analyzePlayerMapStrategy(
           if (!isPoolMap(mapName)) continue
           trackWinRate(playerStats.mapWinRate, mapName, won)
           trackWinRate(trend.mapWinRate, mapName, won)
-          const record = buildMatchRecord(match, playerFaction, mapName, i, won)
+          const record = buildMatchRecord(match, playerFaction, mapName, i, won, matchStats, playerId)
           addMatchRecord(playerStats.matchRecords, mapName, record)
           if (isPlayerLeader) {
             trackWinRate(playerStats.leaderMapWinRate, mapName, won)
@@ -204,6 +207,18 @@ function analyzePlayerMapStrategy(
   playerStats.earliestGame = earliestGame < Infinity ? new Date(earliestGame * 1000).toLocaleString("ru-RU") : ""
   playerStats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
   playerStats.eloHistory.sort((a, b) => a.date - b.date)
+
+  // Вычисляем streak из отсортированного eloHistory
+  if (playerStats.eloHistory.length > 0) {
+    const streaks = calcStreaks(playerStats.eloHistory)
+    playerStats.longestWinStreak = streaks.longest
+    playerStats.currentStreak = streaks.current
+  }
+
+  // Заполняем eloChange в matchRecords
+  fillEloChanges(playerStats.matchRecords, playerStats.eloHistory)
+  fillEloChanges(playerStats.leaderMatchRecords, playerStats.eloHistory)
+
   for (const records of Object.values(playerStats.matchRecords)) {
     records.sort((a, b) => b.date - a.date)
   }
@@ -217,7 +232,11 @@ function analyzePlayerMapStrategy(
 async function main() {
   const playerId = await getPlayerId(client, PLAYER_NICKNAME)
 
-  const matches = await getPlayerMatches(client, playerId)
+  // Загружаем профиль игрока параллельно с историей матчей
+  const [playerInfo, matches] = await Promise.all([
+    getPlayerInfo(client, playerId),
+    getPlayerMatches(client, playerId),
+  ])
   const matchIds = matches.map(m => m.match_id)
 
   console.log(`\n🔍 Всего найдено ${matchIds.length} матчей`)
@@ -232,6 +251,18 @@ async function main() {
   console.log()
 
   const playerStats = analyzePlayerMapStrategy(matchesData, playerId)
+
+  // Заполняем профиль игрока
+  if (playerInfo) {
+    const cs2 = playerInfo.games?.cs2
+    playerStats.playerProfile = {
+      nickname: playerInfo.nickname,
+      avatar: playerInfo.avatar,
+      skillLevel: cs2?.skill_level ?? 0,
+      currentElo: cs2?.faceit_elo ?? 0,
+      country: playerInfo.country,
+    }
+  }
 
   console.log(`\n✅ Анализ завершен! ${playerStats.mapInfo}`)
 

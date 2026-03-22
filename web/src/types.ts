@@ -20,6 +20,7 @@ export interface EloSnapshot {
   date: number
   elo: number
   result: "win" | "loss"
+  matchId?: string
 }
 
 export interface FavoriteUnderdogStats {
@@ -40,9 +41,35 @@ export interface MatchRecord {
   matchScore?: string
   bestOf: number
   opponentName: string
+  opponentTeamUrl?: string
   targetRating?: number
   opponentRating?: number
   competitionName?: string
+  competitionUrl?: string
+  // Match stats (K/D/ADR)
+  kills?: number
+  deaths?: number
+  assists?: number
+  headshots?: number
+  headshotPercent?: number
+  adr?: number
+  kr?: number
+  kdRatio?: number
+  // ELO change relative to previous match
+  eloChange?: number
+}
+
+export interface PlayerProfile {
+  nickname: string
+  avatar?: string
+  skillLevel: number
+  currentElo: number
+  country?: string
+}
+
+export interface StreakInfo {
+  type: "win" | "loss"
+  count: number
 }
 
 export interface TrendPeriod {
@@ -93,6 +120,10 @@ export interface PlayerDropPickStats {
   mapInfo: string
   count: number
   allCount: number
+  // Новые поля
+  playerProfile?: PlayerProfile
+  longestWinStreak?: number
+  currentStreak?: StreakInfo
 }
 
 export interface ReportData {

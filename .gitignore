@@ -28,5 +28,6 @@ coverage
 .claude/settings.local.json
 
 output/
+faceit.com/
 .cache/
 web/node_modules/

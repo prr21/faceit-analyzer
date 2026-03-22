@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios"
-import type { FaceitMatchDetail, VotingPayload } from "../types/faceit.js"
-import { getMatchInfo } from "./faceit-open.js"
+import type { FaceitMatchDetail, FaceitMatchStats, VotingPayload } from "../types/faceit.js"
+import { getMatchInfo, getMatchStats } from "./faceit-open.js"
 import { withCache } from "../utils/cache.js"
 import { withRetry } from "../utils/retry.js"
 
@@ -32,10 +32,11 @@ export async function getMatchVotingHistory(
 export async function getMatchWithVoting(
   client: AxiosInstance,
   matchId: string,
-): Promise<{ match: FaceitMatchDetail; history: VotingPayload | null }> {
-  const [match, history] = await Promise.all([
+): Promise<{ match: FaceitMatchDetail; history: VotingPayload | null; stats: FaceitMatchStats | null }> {
+  const [match, history, stats] = await Promise.all([
     getMatchInfo(client, matchId),
     getMatchVotingHistory(matchId),
+    getMatchStats(client, matchId),
   ])
-  return { match, history }
+  return { match, history, stats }
 }

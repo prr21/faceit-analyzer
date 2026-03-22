@@ -14,9 +14,21 @@ export function EloChart({ eloHistory, isDark }: EloChartProps) {
   const eloData = eloHistory.map(e => e.elo)
   const pointColors = eloHistory.map(e => (e.result === "win" ? "#4bc04b" : "#ff4b4b"))
 
+  const maxElo = Math.max(...eloData)
+  const minElo = Math.min(...eloData)
+  const maxIdx = eloData.indexOf(maxElo)
+  const minIdx = eloData.indexOf(minElo)
+  const wins = eloHistory.filter(e => e.result === "win").length
+  const losses = eloHistory.filter(e => e.result === "loss").length
+  const eloChange = eloData[eloData.length - 1] - eloData[0]
+
   const option = {
     backgroundColor: "transparent",
-    title: { text: "Динамика ELO", left: "center" },
+    title: {
+      text: "Динамика ELO",
+      subtext: `W ${wins} / L ${losses}  |  ELO: ${eloChange >= 0 ? "+" : ""}${eloChange}  |  Max: ${maxElo}  Min: ${minElo}`,
+      left: "center",
+    },
     tooltip: {
       trigger: "axis" as const,
       formatter(params: Array<{ dataIndex: number; value: number; axisValue: string }>) {
@@ -25,7 +37,7 @@ export function EloChart({ eloHistory, isDark }: EloChartProps) {
         return `${p.axisValue}<br/>ELO: <b>${p.value}</b><br/>Результат: ${snap.result === "win" ? "Победа" : "Поражение"}`
       },
     },
-    grid: { top: 50, bottom: 60 },
+    grid: { top: 60, bottom: 60 },
     xAxis: {
       type: "category" as const,
       data: labels,
@@ -44,6 +56,25 @@ export function EloChart({ eloHistory, isDark }: EloChartProps) {
           },
         },
         symbolSize: 6,
+        markPoint: {
+          data: [
+            {
+              coord: [maxIdx, maxElo],
+              value: maxElo,
+              itemStyle: { color: "#4bc04b" },
+              label: { formatter: "{c}", color: "#fff" },
+            },
+            {
+              coord: [minIdx, minElo],
+              value: minElo,
+              symbol: "pin",
+              symbolRotate: 180,
+              itemStyle: { color: "#ff4b4b" },
+              label: { formatter: "{c}", color: "#fff", offset: [0, 8] },
+            },
+          ],
+          symbolSize: 40,
+        },
       },
     ],
     dataZoom: [
