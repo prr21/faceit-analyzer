@@ -1,9 +1,10 @@
 import fs from "fs"
 import path from "path"
-import { FACEIT_API_KEY, teams } from "../config.js"
+import { FACEIT_API_KEY, DEFAULT_CONCURRENCY, teams } from "../config.js"
 import { createFaceitClient } from "../api/client.js"
 import { getPlayerMatches } from "../api/faceit-open.js"
 import { getMatchWithVoting } from "../api/faceit-internal.js"
+import { batchWithLimit } from "../utils/concurrency.js"
 import {
   findMapVotingTicket,
   isExcludedMap,
@@ -36,8 +37,9 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
   const trendsMap = new Map<string, TrendPeriod>()
 
   // Собираем все матчи игроков команды
-  const playersMatches = await Promise.all(
-    teamPlayerIds.map(id => getPlayerMatches(client, id)),
+  const playersMatches = await batchWithLimit(
+    teamPlayerIds.map(id => () => getPlayerMatches(client, id)),
+    DEFAULT_CONCURRENCY,
   )
   const allMatches = playersMatches.flat()
 
@@ -59,9 +61,14 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     `✅ Найдено ${teamMatchIds.length} матчей, где участвовали хотя бы ${MIN_PLAYERS_IN_MATCH} игрока команды ${TEAM_NAME}`,
   )
 
-  const matchesWithDetail = await Promise.all(
-    teamMatchIds.map(id => getMatchWithVoting(client, id)),
+  const matchesWithDetail = await batchWithLimit(
+    teamMatchIds.map(id => () => getMatchWithVoting(client, id)),
+    DEFAULT_CONCURRENCY,
+    (done, total) => {
+      process.stdout.write(`\r⏳ Загрузка матчей: ${done}/${total}`)
+    },
   )
+  console.log()
 
   let analyzedMatches = 0
   let latestGame = 0

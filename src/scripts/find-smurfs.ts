@@ -1,6 +1,7 @@
-import { FACEIT_API_KEY, DEFAULT_GAME } from "../config.js"
+import { FACEIT_API_KEY, DEFAULT_GAME, DEFAULT_CONCURRENCY } from "../config.js"
 import { createFaceitClient } from "../api/client.js"
 import { getPlayerId, getPlayerMatches, getPlayerInfo } from "../api/faceit-open.js"
+import { batchWithLimit } from "../utils/concurrency.js"
 import { uniqueByField, replaceLangPlaceholder } from "../utils/dedup.js"
 import type { FaceitFactionPlayer, FaceitMatch, FaceitPlayer } from "../types/faceit.js"
 
@@ -41,9 +42,14 @@ async function findSmurfs() {
 
   const uniqueEnemies = uniqueByField(enemyPlayers, "player_id")
 
-  const enemyInfos = await Promise.all(
-    uniqueEnemies.map(enemy => getPlayerInfo(client, enemy.player_id)),
+  const enemyInfos = await batchWithLimit(
+    uniqueEnemies.map(enemy => () => getPlayerInfo(client, enemy.player_id)),
+    DEFAULT_CONCURRENCY,
+    (done, total) => {
+      process.stdout.write(`\r⏳ Проверка игроков: ${done}/${total}`)
+    },
   )
+  console.log()
 
   const smurfs = (enemyInfos.filter(Boolean) as FaceitPlayer[]).filter(
     player => player.games[DEFAULT_GAME]?.faceit_elo < SMURF_ELO_THRESHOLD,

@@ -1,9 +1,10 @@
 import fs from "fs"
 import path from "path"
-import { FACEIT_API_KEY } from "../config.js"
+import { FACEIT_API_KEY, DEFAULT_CONCURRENCY } from "../config.js"
 import { createFaceitClient } from "../api/client.js"
 import { getPlayerId, getPlayerMatches } from "../api/faceit-open.js"
 import { getMatchWithVoting } from "../api/faceit-internal.js"
+import { batchWithLimit } from "../utils/concurrency.js"
 import {
   findMapVotingTicket,
   isExcludedMap,
@@ -138,9 +139,14 @@ async function main() {
 
   console.log(`\n🔍 Всего найдено ${matchIds.length} матчей`)
 
-  const matchesData = await Promise.all(
-    matchIds.map(matchId => getMatchWithVoting(client, matchId)),
+  const matchesData = await batchWithLimit(
+    matchIds.map(matchId => () => getMatchWithVoting(client, matchId)),
+    DEFAULT_CONCURRENCY,
+    (done, total) => {
+      process.stdout.write(`\r⏳ Загрузка матчей: ${done}/${total}`)
+    },
   )
+  console.log()
 
   const playerStats = analyzePlayerMapStrategy(matchesData, playerId)
 
