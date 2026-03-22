@@ -21,7 +21,7 @@ export function SummaryCards({ totalMatches, analyzedMatches, avgElo, overallWin
   const overallRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0
 
   return (
-    <div className="flex gap-4 flex-wrap my-4">
+    <div className="flex gap-2 sm:gap-4 flex-wrap my-4">
       <Card title="Всего матчей" value={totalMatches} subtitle={`Проанализировано: ${analyzedMatches}`} />
       <Card
         title="Общий винрейт"

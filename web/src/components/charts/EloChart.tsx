@@ -4,9 +4,10 @@ import type { EloSnapshot } from "../../types"
 
 interface EloChartProps {
   eloHistory: EloSnapshot[]
+  isDark: boolean
 }
 
-export function EloChart({ eloHistory }: EloChartProps) {
+export function EloChart({ eloHistory, isDark }: EloChartProps) {
   if (eloHistory.length < 2) return null
 
   const labels = eloHistory.map(e => new Date(e.date * 1000).toLocaleDateString("ru-RU"))
@@ -14,6 +15,7 @@ export function EloChart({ eloHistory }: EloChartProps) {
   const pointColors = eloHistory.map(e => (e.result === "win" ? "#4bc04b" : "#ff4b4b"))
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Динамика ELO", left: "center" },
     tooltip: {
       trigger: "axis" as const,
@@ -57,5 +59,9 @@ export function EloChart({ eloHistory }: EloChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 400 }} />
+  return (
+    <div className="h-[280px] sm:h-[400px]">
+      <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+    </div>
+  )
 }

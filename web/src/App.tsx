@@ -1,5 +1,6 @@
 import { useState } from "react"
 import type { ReportData } from "./types"
+import { useTheme } from "./hooks/useTheme"
 import { Layout } from "./components/Layout"
 import { TabNavigation } from "./components/TabNavigation"
 import { ModeToggle } from "./components/ModeToggle"
@@ -15,6 +16,7 @@ const ALL_TABS = ["Винрейт", "Тренды", "Обзор"]
 export function App({ data }: { data: ReportData }) {
   const [activeTab, setActiveTab] = useState(0)
   const [mode, setMode] = useState<"leader" | "all">("leader")
+  const { isDark, toggleTheme } = useTheme()
   const { type, name, stats } = data
 
   const isPlayer = type === "player"
@@ -30,16 +32,16 @@ export function App({ data }: { data: ReportData }) {
   const tabOffset = showBanPick ? 0 : -1
 
   return (
-    <Layout title={`Статистика — ${name}`} stats={stats}>
+    <Layout title={`Статистика — ${name}`} stats={stats} isDark={isDark} onToggleTheme={toggleTheme}>
       {isPlayer && <ModeToggle mode={mode} onModeChange={handleModeChange} />}
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {showBanPick && activeTab === 0 && (
-        <BanPickTab type={type} name={name} stats={stats} />
+        <BanPickTab type={type} name={name} stats={stats} isDark={isDark} />
       )}
-      {activeTab === 1 + tabOffset && <WinrateTab stats={stats} mode={isPlayer ? mode : undefined} />}
-      {activeTab === 2 + tabOffset && <TrendsTab stats={stats} mode={isPlayer ? mode : undefined} />}
-      {activeTab === 3 + tabOffset && <OverviewTab stats={stats} mode={isPlayer ? mode : undefined} />}
+      {activeTab === 1 + tabOffset && <WinrateTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
+      {activeTab === 2 + tabOffset && <TrendsTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
+      {activeTab === 3 + tabOffset && <OverviewTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
     </Layout>
   )
 }

@@ -4,13 +4,15 @@ import type { MapWinRate } from "../../types"
 
 interface DeciderWinRateChartProps {
   deciderWinRate: Record<string, MapWinRate>
+  isDark: boolean
 }
 
-export function DeciderWinRateChart({ deciderWinRate }: DeciderWinRateChartProps) {
+export function DeciderWinRateChart({ deciderWinRate, isDark }: DeciderWinRateChartProps) {
   const maps = Object.keys(deciderWinRate)
   if (maps.length === 0) return null
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Винрейт на десайдере", left: "center" },
     tooltip: {
       trigger: "axis" as const,
@@ -50,5 +52,11 @@ export function DeciderWinRateChart({ deciderWinRate }: DeciderWinRateChartProps
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 300 }} />
+  return (
+    <div className="overflow-x-auto">
+      <div className="w-[600px] sm:w-auto h-[220px] sm:h-[300px]">
+        <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+      </div>
+    </div>
+  )
 }

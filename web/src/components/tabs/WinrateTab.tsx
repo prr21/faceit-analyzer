@@ -7,13 +7,14 @@ import { FavoriteUnderdogCards } from "../ui/FavoriteUnderdogCards"
 interface WinrateTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
   mode?: "leader" | "all"
+  isDark: boolean
 }
 
 function isPlayerStats(stats: TeamDropPickStats | PlayerDropPickStats): stats is PlayerDropPickStats {
   return "leaderMapWinRate" in stats
 }
 
-export function WinrateTab({ stats, mode }: WinrateTabProps) {
+export function WinrateTab({ stats, mode, isDark }: WinrateTabProps) {
   // В leader mode для player — показываем leader-only данные
   const useLeaderData = mode === "leader" && isPlayerStats(stats)
   const winRate = useLeaderData ? stats.leaderMapWinRate : stats.mapWinRate
@@ -31,23 +32,23 @@ export function WinrateTab({ stats, mode }: WinrateTabProps) {
       {hasWinRate ? (
         <>
           <WinRateTable winRate={winRate} matchRecords={matchRecords} />
-          <WinRateChart winRate={winRate} />
+          <WinRateChart winRate={winRate} isDark={isDark} />
         </>
       ) : (
-        <p className="text-gray-500">Нет данных о винрейте</p>
+        <p className="text-gray-500 dark:text-gray-400">Нет данных о винрейте</p>
       )}
 
       {showExtras && hasFU && (
         <>
-          <h2 className="mt-8 border-t border-gray-200 pt-4">Фаворит vs Андердог</h2>
+          <h2 className="mt-5 sm:mt-8 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">Фаворит vs Андердог</h2>
           <FavoriteUnderdogCards stats={stats.favoriteUnderdog} />
         </>
       )}
 
       {showExtras && hasComp && (
         <>
-          <h2 className="mt-8 border-t border-gray-200 pt-4">По типу соревнования</h2>
-          <CompetitionChart compStats={stats.competitionStats} />
+          <h2 className="mt-5 sm:mt-8 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">По типу соревнования</h2>
+          <CompetitionChart compStats={stats.competitionStats} isDark={isDark} />
         </>
       )}
     </div>

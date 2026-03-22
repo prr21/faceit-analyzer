@@ -4,13 +4,15 @@ import type { MapWinRate } from "../../types"
 
 interface WinRateChartProps {
   winRate: Record<string, MapWinRate>
+  isDark: boolean
 }
 
-export function WinRateChart({ winRate }: WinRateChartProps) {
+export function WinRateChart({ winRate, isDark }: WinRateChartProps) {
   const maps = Object.keys(winRate)
   if (maps.length === 0) return null
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Винрейт по картам", left: "center" },
     tooltip: {
       trigger: "axis" as const,
@@ -50,5 +52,11 @@ export function WinRateChart({ winRate }: WinRateChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 400 }} />
+  return (
+    <div className="overflow-x-auto">
+      <div className="w-[600px] sm:w-auto h-[280px] sm:h-[400px]">
+        <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+      </div>
+    </div>
+  )
 }

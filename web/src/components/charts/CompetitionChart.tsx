@@ -4,13 +4,15 @@ import type { CompetitionTypeStats } from "../../types"
 
 interface CompetitionChartProps {
   compStats: CompetitionTypeStats
+  isDark: boolean
 }
 
-export function CompetitionChart({ compStats }: CompetitionChartProps) {
+export function CompetitionChart({ compStats, isDark }: CompetitionChartProps) {
   const types = Object.keys(compStats)
   if (types.length === 0) return null
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Винрейт по типу соревнования", left: "center" },
     tooltip: {
       trigger: "axis" as const,
@@ -50,5 +52,11 @@ export function CompetitionChart({ compStats }: CompetitionChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 250 }} />
+  return (
+    <div className="overflow-x-auto">
+      <div className="w-[600px] sm:w-auto h-[200px] sm:h-[250px]">
+        <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+      </div>
+    </div>
+  )
 }

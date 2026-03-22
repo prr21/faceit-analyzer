@@ -11,9 +11,10 @@ interface TrendChartProps {
   title: string
   trends: TrendPeriod[]
   dataKey: "firstBan" | "firstPick" | "secondBan" | "thirdBan"
+  isDark: boolean
 }
 
-export function TrendChart({ title, trends, dataKey }: TrendChartProps) {
+export function TrendChart({ title, trends, dataKey, isDark }: TrendChartProps) {
   if (trends.length < 2) return null
 
   const labels = trends.map(t => t.label)
@@ -29,6 +30,7 @@ export function TrendChart({ title, trends, dataKey }: TrendChartProps) {
   }))
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: title, left: "center" },
     tooltip: { trigger: "axis" as const },
     legend: { top: 30 },
@@ -41,5 +43,9 @@ export function TrendChart({ title, trends, dataKey }: TrendChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 350 }} />
+  return (
+    <div className="h-[250px] sm:h-[350px]">
+      <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+    </div>
+  )
 }

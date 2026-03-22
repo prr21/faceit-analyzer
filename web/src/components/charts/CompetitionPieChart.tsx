@@ -11,13 +11,15 @@ const PIE_COLORS = [
 
 interface CompetitionPieChartProps {
   compStats: CompetitionTypeStats
+  isDark: boolean
 }
 
-export function CompetitionPieChart({ compStats }: CompetitionPieChartProps) {
+export function CompetitionPieChart({ compStats, isDark }: CompetitionPieChartProps) {
   const types = Object.keys(compStats)
   if (types.length === 0) return null
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Распределение по типу соревнования", left: "center" },
     tooltip: {
       trigger: "item" as const,
@@ -42,5 +44,9 @@ export function CompetitionPieChart({ compStats }: CompetitionPieChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 400, maxWidth: 500, margin: "0 auto" }} />
+  return (
+    <div className="h-[300px] sm:h-[400px] max-w-[500px] mx-auto">
+      <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+    </div>
+  )
 }

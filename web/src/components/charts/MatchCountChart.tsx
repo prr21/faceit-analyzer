@@ -4,12 +4,14 @@ import type { TrendPeriod } from "../../types"
 
 interface MatchCountChartProps {
   trends: TrendPeriod[]
+  isDark: boolean
 }
 
-export function MatchCountChart({ trends }: MatchCountChartProps) {
+export function MatchCountChart({ trends, isDark }: MatchCountChartProps) {
   if (trends.length < 2) return null
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Количество матчей по месяцам", left: "center" },
     tooltip: { trigger: "axis" as const },
     grid: { top: 50, bottom: 30 },
@@ -27,5 +29,9 @@ export function MatchCountChart({ trends }: MatchCountChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 250 }} />
+  return (
+    <div className="h-[200px] sm:h-[250px]">
+      <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+    </div>
+  )
 }

@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
     {data ? (
       <App data={data} />
     ) : (
-      <div className="max-w-[960px] mx-auto p-5 text-gray-500">
+      <div className="max-w-[960px] mx-auto p-5 text-gray-500 dark:text-gray-400">
         <p>Нет данных для отображения. Запустите анализ через CLI.</p>
       </div>
     )}

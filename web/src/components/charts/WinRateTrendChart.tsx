@@ -9,9 +9,10 @@ const MAP_COLORS = [
 
 interface WinRateTrendChartProps {
   trends: TrendPeriod[]
+  isDark: boolean
 }
 
-export function WinRateTrendChart({ trends }: WinRateTrendChartProps) {
+export function WinRateTrendChart({ trends, isDark }: WinRateTrendChartProps) {
   if (trends.length < 2) return null
 
   const labels = trends.map(t => t.label)
@@ -28,6 +29,7 @@ export function WinRateTrendChart({ trends }: WinRateTrendChartProps) {
   }))
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: "Тренды винрейта по месяцам (%)", left: "center" },
     tooltip: { trigger: "axis" as const },
     legend: { top: 30 },
@@ -40,5 +42,9 @@ export function WinRateTrendChart({ trends }: WinRateTrendChartProps) {
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 350 }} />
+  return (
+    <div className="h-[250px] sm:h-[350px]">
+      <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+    </div>
+  )
 }

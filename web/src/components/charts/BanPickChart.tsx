@@ -6,6 +6,7 @@ interface BanPickChartProps {
   title: string
   factionStats: FactionBanPickStats
   decider: MapCountRecord
+  isDark: boolean
 }
 
 function collectAllMaps(stats: FactionBanPickStats, decider: MapCountRecord): string[] {
@@ -20,10 +21,11 @@ function collectAllMaps(stats: FactionBanPickStats, decider: MapCountRecord): st
   ]
 }
 
-export function BanPickChart({ title, factionStats, decider }: BanPickChartProps) {
+export function BanPickChart({ title, factionStats, decider, isDark }: BanPickChartProps) {
   const maps = collectAllMaps(factionStats, decider)
 
   const option = {
+    backgroundColor: "transparent",
     title: { text: title, left: "center" },
     tooltip: { trigger: "axis" as const },
     legend: { top: 30 },
@@ -67,5 +69,11 @@ export function BanPickChart({ title, factionStats, decider }: BanPickChartProps
     },
   }
 
-  return <ReactEChartsCore echarts={echarts} option={option} style={{ height: 400 }} />
+  return (
+    <div className="overflow-x-auto">
+      <div className="w-[700px] sm:w-auto h-[280px] sm:h-[400px]">
+        <ReactEChartsCore echarts={echarts} option={option} theme={isDark ? "dark" : undefined} style={{ height: "100%" }} />
+      </div>
+    </div>
+  )
 }

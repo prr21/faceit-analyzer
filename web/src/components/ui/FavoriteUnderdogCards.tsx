@@ -7,7 +7,7 @@ interface FavoriteUnderdogCardsProps {
 
 export function FavoriteUnderdogCards({ stats }: FavoriteUnderdogCardsProps) {
   return (
-    <div className="flex gap-4 flex-wrap my-4">
+    <div className="flex gap-2 sm:gap-4 flex-wrap my-4">
       <Card
         title="Как фаворит"
         value={`${stats.asFavorite.rate}%`}
