@@ -4,7 +4,10 @@ import type {
   TrendPeriod,
   FavoriteUnderdogStats,
   CompetitionTypeStats,
+  FaceitMatchDetail,
+  MatchRecord,
 } from "../types/faceit.js"
+import { replaceLangPlaceholder } from "./dedup.js"
 
 export function createEmptyFactionStats(): FactionBanPickStats {
   return { firstBan: {}, firstPick: {}, secondBan: {}, thirdBan: {} }
@@ -50,6 +53,64 @@ export function trackCompetitionType(
   else entry.losses++
   entry.total++
   entry.rate = Math.round((entry.wins / entry.total) * 100)
+}
+
+export function buildMatchRecord(
+  match: FaceitMatchDetail,
+  targetFaction: "faction1" | "faction2",
+  mapName: string,
+  mapIndex: number,
+  won: boolean,
+): MatchRecord {
+  const opponentFaction = targetFaction === "faction1" ? "faction2" : "faction1"
+  const opponentTeam = match.teams[opponentFaction]
+  const targetTeam = match.teams[targetFaction]
+
+  let mapScore = "—"
+  if (match.detailed_results?.[mapIndex]) {
+    const dr = match.detailed_results[mapIndex]
+    const ts = dr.factions[targetFaction]?.score ?? 0
+    const os = dr.factions[opponentFaction]?.score ?? 0
+    mapScore = `${ts}:${os}`
+  } else if (match.results?.score) {
+    const ts = match.results.score[targetFaction] ?? 0
+    const os = match.results.score[opponentFaction] ?? 0
+    mapScore = `${ts}:${os}`
+  }
+
+  let matchScore: string | undefined
+  if (match.best_of > 1 && match.results?.score) {
+    const ts = match.results.score[targetFaction] ?? 0
+    const os = match.results.score[opponentFaction] ?? 0
+    matchScore = `${ts}:${os}`
+  }
+
+  const faceitUrl = match.faceit_url
+    ? replaceLangPlaceholder(match.faceit_url)
+    : `https://www.faceit.com/en/cs2/room/${match.match_id}`
+
+  return {
+    matchId: match.match_id,
+    date: match.started_at,
+    faceitUrl,
+    won,
+    mapScore,
+    matchScore,
+    bestOf: match.best_of,
+    opponentName: opponentTeam.name || "Неизвестный",
+    targetRating: targetTeam.stats?.rating,
+    opponentRating: opponentTeam.stats?.rating,
+    competitionName: match.competition_name,
+  }
+}
+
+export function addMatchRecord(
+  records: Record<string, MatchRecord[]>,
+  mapName: string,
+  record: MatchRecord,
+): void {
+  if (!records[mapName]) records[mapName] = []
+  records[mapName].push(record)
 }
 
 export function getMonthKey(timestamp: number): string {

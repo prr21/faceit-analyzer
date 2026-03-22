@@ -46,6 +46,20 @@ const REPORT_STYLES = `
   .trend-select select { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
   .trend-canvas { display: none; }
   .trend-canvas.active { display: block; }
+
+  .wr-map-row { cursor: pointer; transition: background 0.15s; }
+  .wr-map-row:hover { background: #f0f0f0; }
+  .expand-icon { font-size: 12px; color: #999; margin-right: 6px; }
+  .match-list { max-height: 300px; overflow-y: auto; padding: 4px 0; }
+  .match-item { display: flex; gap: 12px; align-items: center; padding: 6px 12px; border-radius: 4px; text-decoration: none; color: #333; margin: 2px 0; }
+  .match-item:hover { background: #f5f5f5; }
+  .match-item.win { border-left: 3px solid #2d9e2d; }
+  .match-item.loss { border-left: 3px solid #d93636; }
+  .match-date { min-width: 80px; color: #777; font-size: 13px; }
+  .match-score { font-weight: 600; min-width: 50px; text-align: center; }
+  .match-opponent { flex: 1; }
+  .match-meta { font-size: 12px; color: #999; }
+  .wr-matches-row td { padding: 0 !important; border-top: none !important; }
 `
 
 const TAB_SCRIPT = `
@@ -66,6 +80,20 @@ const TAB_SCRIPT = `
       if (target) target.classList.add('active');
     };
   }
+
+  // Раскрытие/скрытие списка матчей по карте
+  window.toggleMatches = function(mapId) {
+    const row = document.getElementById('matches-' + mapId);
+    if (!row) return;
+    const icon = row.previousElementSibling.querySelector('.expand-icon');
+    if (row.style.display === 'none') {
+      row.style.display = 'table-row';
+      if (icon) icon.textContent = '▼';
+    } else {
+      row.style.display = 'none';
+      if (icon) icon.textContent = '▶';
+    }
+  };
 `
 
 function buildHeader(title: string, meta: string, earliest: string, latest: string, allCount: number): string {
@@ -134,7 +162,7 @@ export function generatePlayerHtmlReport(nickname: string, stats: PlayerDropPick
   </div>
 
   <div class="tab-content" id="tab-винрейт">
-    ${hasWinRate ? `${buildWinRateTable(stats.mapWinRate)}<canvas id="winRateChart" width="800" height="400"></canvas>` : "<p>Нет данных о винрейте</p>"}
+    ${hasWinRate ? `${buildWinRateTable(stats.mapWinRate, stats.matchRecords)}<canvas id="winRateChart" width="800" height="400"></canvas>` : "<p>Нет данных о винрейте</p>"}
     ${hasFU ? `<h2 class="section-title">Фаворит vs Андердог</h2>${buildFavoriteUnderdogCards(stats.favoriteUnderdog)}` : ""}
     ${hasComp ? `<h2 class="section-title">По типу соревнования</h2><canvas id="compChart" width="800" height="250"></canvas>` : ""}
   </div>
@@ -232,7 +260,7 @@ export function generateHtmlReport(teamName: string, stats: TeamDropPickStats): 
   </div>
 
   <div class="tab-content" id="tab-винрейт">
-    ${hasWinRate ? `${buildWinRateTable(stats.mapWinRate)}<canvas id="winRateChart" width="800" height="400"></canvas>` : "<p>Нет данных о винрейте</p>"}
+    ${hasWinRate ? `${buildWinRateTable(stats.mapWinRate, stats.matchRecords)}<canvas id="winRateChart" width="800" height="400"></canvas>` : "<p>Нет данных о винрейте</p>"}
     ${hasFU ? `<h2 class="section-title">Фаворит vs Андердог</h2>${buildFavoriteUnderdogCards(stats.favoriteUnderdog)}` : ""}
     ${hasComp ? `<h2 class="section-title">По типу соревнования</h2><canvas id="compChart" width="800" height="250"></canvas>` : ""}
   </div>

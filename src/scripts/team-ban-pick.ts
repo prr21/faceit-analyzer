@@ -19,6 +19,8 @@ import {
   trackWinRate,
   trackFavoriteUnderdog,
   trackCompetitionType,
+  buildMatchRecord,
+  addMatchRecord,
   getMonthKey,
   getOrCreateTrend,
 } from "../utils/match-stats.js"
@@ -39,6 +41,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     eloHistory: [],
     favoriteUnderdog: createEmptyFavoriteUnderdog(),
     competitionStats: {},
+    matchRecords: {},
     avgElo: 0,
     trends: [],
     earliestGame: "",
@@ -160,20 +163,24 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     // Винрейт по картам
     const playedMaps = match.voting?.map?.pick || []
     if (match.results?.winner && playedMaps.length > 0) {
-      if (match.detailed_results && match.detailed_results.length === playedMaps.length) {
-        // BO3: пораундовые результаты
-        for (let i = 0; i < playedMaps.length; i++) {
+      if (match.detailed_results && match.detailed_results.length > 0) {
+        // BO3/BO1 с detailed_results — только реально сыгранные карты
+        const playedCount = Math.min(playedMaps.length, match.detailed_results.length)
+        for (let i = 0; i < playedCount; i++) {
           if (!isPoolMap(playedMaps[i])) continue
           const mapWon = match.detailed_results[i].winner === targetFaction
           trackWinRate(stats.mapWinRate, playedMaps[i], mapWon)
           trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
+          addMatchRecord(stats.matchRecords, playedMaps[i], buildMatchRecord(match, targetFaction, playedMaps[i], i, mapWon))
         }
       } else {
-        // BO1: результат матча = результат карты
-        for (const mapName of playedMaps) {
+        // BO1 без detailed_results: результат матча = результат карты
+        for (let i = 0; i < playedMaps.length; i++) {
+          const mapName = playedMaps[i]
           if (!isPoolMap(mapName)) continue
           trackWinRate(stats.mapWinRate, mapName, won)
           trackWinRate(trend.mapWinRate, mapName, won)
+          addMatchRecord(stats.matchRecords, mapName, buildMatchRecord(match, targetFaction, mapName, i, won))
         }
       }
     }
@@ -194,6 +201,9 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
   stats.earliestGame = earliestGame < Infinity ? new Date(earliestGame * 1000).toLocaleString("ru-RU") : ""
   stats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
   stats.eloHistory.sort((a, b) => a.date - b.date)
+  for (const records of Object.values(stats.matchRecords)) {
+    records.sort((a, b) => b.date - a.date)
+  }
 
   console.log("\n✅ Анализ завершен!", stats.mapInfo)
   return stats

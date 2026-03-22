@@ -24,6 +24,7 @@ export interface FaceitTeamFaction {
   leader: string
   players: FaceitFactionPlayer[]
   stats?: FaceitFactionStats
+  name?: string
 }
 
 export interface FaceitMatch {
@@ -48,6 +49,7 @@ export interface FaceitMatchDetail {
   best_of: number
   competition_type?: string
   competition_name?: string
+  faceit_url?: string
   teams: {
     faction1: FaceitTeamFaction
     faction2: FaceitTeamFaction
@@ -111,6 +113,20 @@ export interface CompetitionTypeStats {
   [type: string]: MapWinRate
 }
 
+export interface MatchRecord {
+  matchId: string
+  date: number
+  faceitUrl: string
+  won: boolean
+  mapScore: string
+  matchScore?: string
+  bestOf: number
+  opponentName: string
+  targetRating?: number
+  opponentRating?: number
+  competitionName?: string
+}
+
 export interface TrendPeriod {
   label: string
   stats: FactionBanPickStats
@@ -129,6 +145,7 @@ export interface TeamDropPickStats {
   eloHistory: EloSnapshot[]
   favoriteUnderdog: FavoriteUnderdogStats
   competitionStats: CompetitionTypeStats
+  matchRecords: Record<string, MatchRecord[]>
   avgElo: number
   trends: TrendPeriod[]
   earliestGame: string
@@ -146,6 +163,7 @@ export interface PlayerDropPickStats {
   eloHistory: EloSnapshot[]
   favoriteUnderdog: FavoriteUnderdogStats
   competitionStats: CompetitionTypeStats
+  matchRecords: Record<string, MatchRecord[]>
   avgElo: number
   trends: TrendPeriod[]
   earliestGame: string

@@ -1,4 +1,4 @@
-import type { FactionBanPickStats, MapWinRate, TrendPeriod, EloSnapshot, CompetitionTypeStats, FavoriteUnderdogStats } from "../types/faceit.js"
+import type { FactionBanPickStats, MapWinRate, TrendPeriod, EloSnapshot, CompetitionTypeStats, FavoriteUnderdogStats, MatchRecord } from "../types/faceit.js"
 
 const MAP_COLORS = [
   "rgba(255, 99, 132, 1)",
@@ -297,13 +297,56 @@ export function buildCompetitionPieChart(canvasId: string, compStats: Competitio
   }`
 }
 
-export function buildWinRateTable(winRate: Record<string, MapWinRate>): string {
+function formatMatchDate(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleDateString("ru-RU")
+}
+
+function buildMatchListHtml(records: MatchRecord[]): string {
+  if (!records || records.length === 0) return ""
+
+  const items = records.map(r => {
+    const cls = r.won ? "win" : "loss"
+    const date = formatMatchDate(r.date)
+    const meta: string[] = []
+    if (r.matchScore) {
+      meta.push(`BO${r.bestOf} (${r.matchScore})`)
+    }
+    if (r.competitionName) {
+      meta.push(r.competitionName)
+    }
+    // ELO в скобках у команды — только для matchmaking (у турниров обычно нет rating)
+    const opponentElo = !r.competitionName && r.opponentRating ? ` (${r.opponentRating})` : ""
+    return `<a href="${r.faceitUrl}" target="_blank" class="match-item ${cls}">
+        <span class="match-date">${date}</span>
+        <span class="match-score">${r.mapScore}</span>
+        <span class="match-opponent">vs ${r.opponentName}${opponentElo}</span>
+        ${meta.length > 0 ? `<span class="match-meta">${meta.join(" · ")}</span>` : ""}
+      </a>`
+  }).join("\n      ")
+
+  return `<div class="match-list">${items}</div>`
+}
+
+export function buildWinRateTable(winRate: Record<string, MapWinRate>, matchRecords?: Record<string, MatchRecord[]>): string {
   const entries = Object.entries(winRate).sort((a, b) => b[1].rate - a[1].rate)
   if (entries.length === 0) return ""
 
-  const rows = entries.map(([map, wr]) =>
-    `<tr><td>${map}</td><td>${wr.wins}</td><td>${wr.losses}</td><td>${wr.total}</td><td><strong>${wr.rate}%</strong></td></tr>`
-  ).join("\n      ")
+  const hasRecords = matchRecords && Object.keys(matchRecords).length > 0
+
+  const rows = entries.map(([map, wr]) => {
+    const mapId = map.replace(/[^a-zA-Z0-9_-]/g, "")
+    const records = hasRecords ? matchRecords[map] : undefined
+    const clickAttr = records ? ` class="wr-map-row" onclick="toggleMatches('${mapId}')"` : ""
+    const icon = records ? `<span class="expand-icon">▶</span>` : ""
+
+    let row = `<tr${clickAttr}><td>${icon}${map}</td><td>${wr.wins}</td><td>${wr.losses}</td><td>${wr.total}</td><td><strong>${wr.rate}%</strong></td></tr>`
+
+    if (records) {
+      row += `\n      <tr class="wr-matches-row" id="matches-${mapId}" style="display:none"><td colspan="5">${buildMatchListHtml(records)}</td></tr>`
+    }
+
+    return row
+  }).join("\n      ")
 
   return `
     <table class="wr-table">
