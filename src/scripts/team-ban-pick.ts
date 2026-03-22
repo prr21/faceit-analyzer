@@ -12,7 +12,7 @@ import {
   getDeciderRound,
   incrementMapCount,
 } from "../utils/map-voting.js"
-import { generateHtmlReport } from "../utils/html-report.js"
+import { writeTeamReport } from "../utils/report-writer.js"
 import {
   createEmptyFactionStats,
   createEmptyFavoriteUnderdog,
@@ -246,10 +246,8 @@ async function main() {
   const statPath = path.join(statsDir, TEAM_NAME + ".json")
   fs.writeFileSync(statPath, JSON.stringify(mapStatistic, null, 2), "utf-8")
 
-  const reportsDir = path.resolve("output", "reports")
-  fs.mkdirSync(reportsDir, { recursive: true })
-  const reportPath = path.join(reportsDir, TEAM_NAME + ".html")
-  fs.writeFileSync(reportPath, generateHtmlReport(TEAM_NAME, mapStatistic), "utf-8")
+  const reportPath = path.join("output", "reports", TEAM_NAME + ".html")
+  writeTeamReport(reportPath, TEAM_NAME, mapStatistic)
   console.log(`\n📊 HTML-отчёт: ${reportPath}`)
 }
 

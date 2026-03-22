@@ -23,7 +23,7 @@ import {
   getMonthKey,
   getOrCreateTrend,
 } from "../utils/match-stats.js"
-import { generatePlayerHtmlReport } from "../utils/html-report.js"
+import { writePlayerReport } from "../utils/report-writer.js"
 import type { FaceitMatchDetail, PlayerDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
 
 const PLAYER_NICKNAME = process.argv[2] || "dErzz"
@@ -224,10 +224,8 @@ async function main() {
   const statPath = path.join(statsDir, PLAYER_NICKNAME + ".json")
   fs.writeFileSync(statPath, JSON.stringify(playerStats, null, 2), "utf-8")
 
-  const reportsDir = path.resolve("output", "reports")
-  fs.mkdirSync(reportsDir, { recursive: true })
-  const reportPath = path.join(reportsDir, PLAYER_NICKNAME + ".html")
-  fs.writeFileSync(reportPath, generatePlayerHtmlReport(PLAYER_NICKNAME, playerStats), "utf-8")
+  const reportPath = path.join("output", "reports", PLAYER_NICKNAME + ".html")
+  writePlayerReport(reportPath, PLAYER_NICKNAME, playerStats)
   console.log(`\n📊 HTML-отчёт: ${reportPath}`)
 }
 

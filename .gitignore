@@ -29,3 +29,4 @@ coverage
 
 output/
 .cache/
+web/node_modules/

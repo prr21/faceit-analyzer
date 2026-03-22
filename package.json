@@ -6,7 +6,9 @@
     "team": "tsx src/scripts/team-ban-pick.ts",
     "player": "tsx src/scripts/player-ban-picks.ts",
     "smurfs": "tsx src/scripts/find-smurfs.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build:web": "cd web && npm run build",
+    "dev:web": "cd web && npm run dev"
   },
   "keywords": [],
   "author": "",
