@@ -108,7 +108,13 @@ export interface TeamDropPickStats {
 }
 
 export interface PlayerDropPickStats {
-  bans: MapCountRecord
-  play: MapCountRecord
-  banFirst: MapCountRecord
+  stats: FactionBanPickStats
+  decider: MapCountRecord
+  mapWinRate: Record<string, MapWinRate>
+  trends: TrendPeriod[]
+  earliestGame: string
+  latestGame: string
+  mapInfo: string
+  count: number
+  allCount: number
 }

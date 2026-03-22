@@ -21,7 +21,7 @@ Scripts accept target name as CLI argument (`process.argv[2]`), falling back to 
 **Browser scripts** (in `browser/`, not part of TS build):
 - `faceit_elo_tournament.js` — paste into DevTools console on faceit.com (uses browser cookies)
 
-**Generated reports**: `npm run team` auto-generates `output/reports/{TeamName}.html` — standalone Chart.js page with target + enemy stats.
+**Generated reports**: Both `npm run team` and `npm run player` auto-generate `output/reports/{Name}.html` — standalone Chart.js pages with charts, win rate, and trends.
 
 ## Architecture
 
@@ -35,12 +35,13 @@ src/
   types/faceit.ts        # all FACEIT API response interfaces + domain types
   utils/
     cache.ts             # withCache — file-based caching for immutable API responses (.cache/)
+    match-stats.ts       # shared helpers: createEmptyFactionStats, trackWinRate, getMonthKey, getOrCreateTrend
     dedup.ts             # uniqueByField, replaceLangPlaceholder
     map-voting.ts        # classifyVotingEntity, getDeciderRound, findMapVotingTicket, isExcludedMap
-    html-report.ts       # generateHtmlReport — standalone HTML with Chart.js (bans, winrate, trends)
+    html-report.ts       # generateHtmlReport, generatePlayerHtmlReport — standalone HTML with Chart.js
   scripts/
     team-ban-pick.ts     # team map strategy analysis → writes to output/stats/ + output/reports/
-    player-ban-picks.ts  # individual player ban/pick analysis → console output
+    player-ban-picks.ts  # individual player analysis → writes to output/stats/ + output/reports/
     find-smurfs.ts       # smurf detection in match history → console output
   data/teams.json        # team rosters (team name → player ID arrays)
 ```
@@ -53,6 +54,8 @@ src/
 - **Win rate**: tracked per map using `match.results.winner` + `match.voting.map.pick`. BO3 uses `detailed_results` for per-map results.
 - **Trends**: matches grouped by calendar month (`started_at`) — shows how ban/pick preferences change over time.
 - **Team match detection**: match counts as "team match" if 3+ roster players appear; target faction identified by leader
+- **Player analysis**: bans/picks tracked only when player is faction leader; win rate tracked for ALL matches (faction detected via leader first, then fallback to `players[]` array)
+- **Shared helpers** (`match-stats.ts`): `createEmptyFactionStats`, `trackWinRate`, `getMonthKey`, `getOrCreateTrend` — used by both team and player scripts
 
 ## Key Conventions
 

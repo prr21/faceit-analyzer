@@ -1,4 +1,4 @@
-import type { TeamDropPickStats, FactionBanPickStats, MapWinRate, TrendPeriod } from "../types/faceit.js"
+import type { TeamDropPickStats, PlayerDropPickStats, FactionBanPickStats, MapWinRate, TrendPeriod } from "../types/faceit.js"
 
 function collectAllMaps(factionStats: FactionBanPickStats, decider: Record<string, number>): string[] {
   return [
@@ -199,6 +199,73 @@ function buildWinRateTable(winRate: Record<string, MapWinRate>): string {
       <thead><tr><th>Карта</th><th>W</th><th>L</th><th>Всего</th><th>Винрейт</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`
+}
+
+export function generatePlayerHtmlReport(nickname: string, stats: PlayerDropPickStats): string {
+  const banPickChart = buildBanPickChart("playerChart", `Статистика банов и пиков — ${nickname}`, stats.stats, stats.decider)
+  const winRateChart = buildWinRateChart(stats.mapWinRate)
+  const trendChart = buildTrendChart(stats.trends)
+  const winRateTable = buildWinRateTable(stats.mapWinRate)
+
+  const hasWinRate = Object.keys(stats.mapWinRate).length > 0
+  const hasTrends = stats.trends.length >= 2
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Статистика банов — ${nickname}</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
+    h1 { margin-bottom: 4px; }
+    .meta { color: #555; margin: 4px 0; }
+    .dates { display: flex; gap: 30px; margin: 8px 0 20px; }
+    .date-item { display: flex; gap: 8px; }
+    .date-label { color: #777; }
+    canvas { margin-bottom: 40px; }
+    .section-title { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+    .wr-table { border-collapse: collapse; margin: 12px 0 30px; }
+    .wr-table th, .wr-table td { border: 1px solid #ddd; padding: 6px 14px; text-align: center; }
+    .wr-table th { background: #f5f5f5; }
+  </style>
+</head>
+<body>
+  <h1>Статистика банов и пиков — ${nickname}</h1>
+  <p class="meta">${stats.mapInfo}</p>
+  <div class="dates">
+    <div class="date-item">
+      <span class="date-label">Самая ранняя игра:</span>
+      <span>${stats.earliestGame}</span>
+    </div>
+    <div class="date-item">
+      <span class="date-label">Самая последняя игра:</span>
+      <span>${stats.latestGame}</span>
+    </div>
+  </div>
+  <p class="meta">Всего проанализировано ${stats.allCount} матчей</p>
+
+  <canvas id="playerChart" width="800" height="400"></canvas>
+
+${hasWinRate ? `
+  <h2 class="section-title">Винрейт по картам</h2>
+  ${winRateTable}
+  <canvas id="winRateChart" width="800" height="400"></canvas>
+` : ""}
+
+${hasTrends ? `
+  <h2 class="section-title">Тренды по месяцам</h2>
+  <canvas id="trendChart" width="800" height="400"></canvas>
+` : ""}
+
+  <script>
+${banPickChart}
+${winRateChart}
+${trendChart}
+  </script>
+</body>
+</html>`
 }
 
 export function generateHtmlReport(teamName: string, stats: TeamDropPickStats): string {

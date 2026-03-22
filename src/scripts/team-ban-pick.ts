@@ -12,45 +12,13 @@ import {
   incrementMapCount,
 } from "../utils/map-voting.js"
 import { generateHtmlReport } from "../utils/html-report.js"
-import type { FactionBanPickStats, FaceitMatchDetail, MapWinRate, TeamDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
+import { createEmptyFactionStats, trackWinRate, getMonthKey, getOrCreateTrend } from "../utils/match-stats.js"
+import type { FaceitMatchDetail, TeamDropPickStats, TrendPeriod, VotingPayload } from "../types/faceit.js"
 
 const TEAM_NAME = process.argv[2] || "Satanics Aura"
 const MIN_PLAYERS_IN_MATCH = 3
 
 const client = createFaceitClient(FACEIT_API_KEY)
-
-function createEmptyFactionStats(): FactionBanPickStats {
-  return { firstBan: {}, firstPick: {}, secondBan: {}, thirdBan: {} }
-}
-
-function trackWinRate(record: Record<string, MapWinRate>, mapName: string, won: boolean): void {
-  if (!record[mapName]) record[mapName] = { wins: 0, losses: 0, total: 0, rate: 0 }
-  const entry = record[mapName]
-  if (won) entry.wins++
-  else entry.losses++
-  entry.total++
-  entry.rate = Math.round((entry.wins / entry.total) * 100)
-}
-
-function getMonthKey(timestamp: number): string {
-  const date = new Date(timestamp * 1000)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
-}
-
-function getOrCreateTrend(trendsMap: Map<string, TrendPeriod>, key: string): TrendPeriod {
-  let trend = trendsMap.get(key)
-  if (!trend) {
-    trend = {
-      label: key,
-      stats: createEmptyFactionStats(),
-      decider: {},
-      mapWinRate: {},
-      matchCount: 0,
-    }
-    trendsMap.set(key, trend)
-  }
-  return trend
-}
 
 async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDropPickStats> {
   const stats: TeamDropPickStats = {
@@ -97,7 +65,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
 
   let analyzedMatches = 0
   let latestGame = 0
-  let earliestGame = Date.now()
+  let earliestGame = Infinity
 
   for (const { match, history } of matchesWithDetail) {
     if (!match || !history) continue
@@ -165,8 +133,8 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
 
   stats.mapInfo = `Анализ на основе ${analyzedMatches} матчей, в котором играли минимум ${MIN_PLAYERS_IN_MATCH} человека из команды "${TEAM_NAME}"`
   stats.count = analyzedMatches
-  stats.latestGame = new Date(latestGame * 1000).toLocaleString("ru-RU")
-  stats.earliestGame = new Date(earliestGame * 1000).toLocaleString("ru-RU")
+  stats.latestGame = latestGame > 0 ? new Date(latestGame * 1000).toLocaleString("ru-RU") : ""
+  stats.earliestGame = earliestGame < Infinity ? new Date(earliestGame * 1000).toLocaleString("ru-RU") : ""
   stats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
 
   console.log("\n✅ Анализ завершен!", stats.mapInfo)
