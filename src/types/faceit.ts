@@ -11,11 +11,19 @@ export interface FaceitFactionPlayer {
   player_id: string
   nickname: string
   faceit_url: string
+  game_skill_level?: number
+}
+
+export interface FaceitFactionStats {
+  winProbability?: number
+  skillLevel?: { average: number; range: { min: number; max: number } }
+  rating?: number
 }
 
 export interface FaceitTeamFaction {
   leader: string
   players: FaceitFactionPlayer[]
+  stats?: FaceitFactionStats
 }
 
 export interface FaceitMatch {
@@ -38,6 +46,8 @@ export interface FaceitMatchDetail {
   match_id: string
   started_at: number
   best_of: number
+  competition_type?: string
+  competition_name?: string
   teams: {
     faction1: FaceitTeamFaction
     faction2: FaceitTeamFaction
@@ -86,12 +96,28 @@ export interface MapWinRate {
   rate: number
 }
 
+export interface EloSnapshot {
+  date: number
+  elo: number
+  result: "win" | "loss"
+}
+
+export interface FavoriteUnderdogStats {
+  asFavorite: MapWinRate
+  asUnderdog: MapWinRate
+}
+
+export interface CompetitionTypeStats {
+  [type: string]: MapWinRate
+}
+
 export interface TrendPeriod {
   label: string
   stats: FactionBanPickStats
   decider: MapCountRecord
   mapWinRate: Record<string, MapWinRate>
   matchCount: number
+  avgElo: number
 }
 
 export interface TeamDropPickStats {
@@ -99,6 +125,11 @@ export interface TeamDropPickStats {
   enemy: FactionBanPickStats
   decider: MapCountRecord
   mapWinRate: Record<string, MapWinRate>
+  deciderWinRate: Record<string, MapWinRate>
+  eloHistory: EloSnapshot[]
+  favoriteUnderdog: FavoriteUnderdogStats
+  competitionStats: CompetitionTypeStats
+  avgElo: number
   trends: TrendPeriod[]
   earliestGame: string
   latestGame: string
@@ -111,6 +142,11 @@ export interface PlayerDropPickStats {
   stats: FactionBanPickStats
   decider: MapCountRecord
   mapWinRate: Record<string, MapWinRate>
+  deciderWinRate: Record<string, MapWinRate>
+  eloHistory: EloSnapshot[]
+  favoriteUnderdog: FavoriteUnderdogStats
+  competitionStats: CompetitionTypeStats
+  avgElo: number
   trends: TrendPeriod[]
   earliestGame: string
   latestGame: string

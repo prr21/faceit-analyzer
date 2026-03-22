@@ -39,8 +39,9 @@ src/
     retry.ts             # withRetry — exponential backoff for 429/5xx errors
     match-stats.ts       # shared helpers: createEmptyFactionStats, trackWinRate, getMonthKey, getOrCreateTrend
     dedup.ts             # uniqueByField, replaceLangPlaceholder
-    map-voting.ts        # classifyVotingEntity, getDeciderRound, findMapVotingTicket, isExcludedMap
-    html-report.ts       # generateHtmlReport, generatePlayerHtmlReport — standalone HTML with Chart.js
+    map-voting.ts        # classifyVotingEntity, getDeciderRound, findMapVotingTicket, isPoolMap
+    charts.ts            # Chart.js builders: ban/pick, winrate, trends, ELO, competition, summary cards
+    html-report.ts       # generateHtmlReport, generatePlayerHtmlReport — tabbed HTML with Chart.js
   scripts/
     team-ban-pick.ts     # team map strategy analysis → writes to output/stats/ + output/reports/
     player-ban-picks.ts  # individual player analysis → writes to output/stats/ + output/reports/
@@ -60,7 +61,8 @@ src/
 - **Trends**: matches grouped by calendar month (`started_at`) — shows how ban/pick preferences change over time.
 - **Team match detection**: match counts as "team match" if 3+ roster players appear; target faction identified by leader
 - **Player analysis**: bans/picks tracked only when player is faction leader; win rate tracked for ALL matches (faction detected via leader first, then fallback to `players[]` array)
-- **Shared helpers** (`match-stats.ts`): `createEmptyFactionStats`, `trackWinRate`, `getMonthKey`, `getOrCreateTrend` — used by both team and player scripts
+- **Shared helpers** (`match-stats.ts`): `createEmptyFactionStats`, `trackWinRate`, `trackFavoriteUnderdog`, `trackCompetitionType`, `getMonthKey`, `getOrCreateTrend` — used by both team and player scripts
+- **HTML reports**: 4-tab navigation (Баны/Пики, Винрейт, Тренды, Обзор). Charts include: ban/pick bars, decider winrate, map winrate (table + chart), favorite/underdog cards, competition type breakdown, ban/pick trends by phase, winrate trends, match count, ELO dynamics, summary cards, competition pie chart. Pure CSS+JS tabs, no dependencies beyond Chart.js.
 
 ## FACEIT API Reference
 

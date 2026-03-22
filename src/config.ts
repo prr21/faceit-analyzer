@@ -17,6 +17,8 @@ export const ACTIVE_MAP_POOL = [
   "de_ancient",
   "de_inferno",
   "de_anubis",
+  "de_train",
+  // "de_vertigo",
 ]
 export const DEFAULT_CONCURRENCY = 10
 export const teams: Record<string, string[]> = teamsData
