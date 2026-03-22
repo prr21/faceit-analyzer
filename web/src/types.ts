@@ -52,6 +52,8 @@ export interface TrendPeriod {
   mapWinRate: Record<string, MapWinRate>
   matchCount: number
   avgElo: number
+  leaderMapWinRate: Record<string, MapWinRate>
+  leaderMatchCount: number
 }
 
 export interface TeamDropPickStats {
@@ -82,6 +84,8 @@ export interface PlayerDropPickStats {
   favoriteUnderdog: FavoriteUnderdogStats
   competitionStats: CompetitionTypeStats
   matchRecords: Record<string, MatchRecord[]>
+  leaderMapWinRate: Record<string, MapWinRate>
+  leaderMatchRecords: Record<string, MatchRecord[]>
   avgElo: number
   trends: TrendPeriod[]
   earliestGame: string

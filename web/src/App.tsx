@@ -1,32 +1,45 @@
 import { useState } from "react"
-import type { ReportData, TeamDropPickStats, PlayerDropPickStats } from "./types"
+import type { ReportData } from "./types"
 import { Layout } from "./components/Layout"
 import { TabNavigation } from "./components/TabNavigation"
+import { ModeToggle } from "./components/ModeToggle"
 import { BanPickTab } from "./components/tabs/BanPickTab"
 import { WinrateTab } from "./components/tabs/WinrateTab"
 import { TrendsTab } from "./components/tabs/TrendsTab"
 import { OverviewTab } from "./components/tabs/OverviewTab"
 
-const TABS = ["Баны/Пики", "Винрейт", "Тренды", "Обзор"]
+const TEAM_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Обзор"]
+const LEADER_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Обзор"]
+const ALL_TABS = ["Винрейт", "Тренды", "Обзор"]
 
 export function App({ data }: { data: ReportData }) {
   const [activeTab, setActiveTab] = useState(0)
+  const [mode, setMode] = useState<"leader" | "all">("leader")
   const { type, name, stats } = data
+
+  const isPlayer = type === "player"
+  const tabs = isPlayer ? (mode === "leader" ? LEADER_TABS : ALL_TABS) : TEAM_TABS
+
+  function handleModeChange(newMode: "leader" | "all") {
+    setMode(newMode)
+    setActiveTab(0)
+  }
+
+  // Для player в режиме "all" нет таба "Баны/Пики", поэтому индексы сдвигаются
+  const showBanPick = !isPlayer || mode === "leader"
+  const tabOffset = showBanPick ? 0 : -1
 
   return (
     <Layout title={`Статистика — ${name}`} stats={stats}>
-      <TabNavigation tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+      {isPlayer && <ModeToggle mode={mode} onModeChange={handleModeChange} />}
+      <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 0 && (
-        <BanPickTab
-          type={type}
-          name={name}
-          stats={stats}
-        />
+      {showBanPick && activeTab === 0 && (
+        <BanPickTab type={type} name={name} stats={stats} />
       )}
-      {activeTab === 1 && <WinrateTab stats={stats} />}
-      {activeTab === 2 && <TrendsTab stats={stats} />}
-      {activeTab === 3 && <OverviewTab stats={stats} />}
+      {activeTab === 1 + tabOffset && <WinrateTab stats={stats} mode={isPlayer ? mode : undefined} />}
+      {activeTab === 2 + tabOffset && <TrendsTab stats={stats} mode={isPlayer ? mode : undefined} />}
+      {activeTab === 3 + tabOffset && <OverviewTab stats={stats} mode={isPlayer ? mode : undefined} />}
     </Layout>
   )
 }

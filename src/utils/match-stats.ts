@@ -128,6 +128,8 @@ export function getOrCreateTrend(trendsMap: Map<string, TrendPeriod>, key: strin
       mapWinRate: {},
       matchCount: 0,
       avgElo: 0,
+      leaderMapWinRate: {},
+      leaderMatchCount: 0,
     }
     trendsMap.set(key, trend)
   }

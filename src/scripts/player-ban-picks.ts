@@ -38,8 +38,11 @@ function findPlayerFaction(
   if (match.teams.faction1.leader === playerId) return "faction1"
   if (match.teams.faction2.leader === playerId) return "faction2"
   // Fallback: ищем в составе (для винрейта, когда игрок не лидер)
-  if (match.teams.faction1.players?.some(p => p.player_id === playerId)) return "faction1"
-  if (match.teams.faction2.players?.some(p => p.player_id === playerId)) return "faction2"
+  // API возвращает roster, в некоторых форматах — players
+  const f1players = match.teams.faction1.roster || match.teams.faction1.players
+  const f2players = match.teams.faction2.roster || match.teams.faction2.players
+  if (f1players?.some(p => p.player_id === playerId)) return "faction1"
+  if (f2players?.some(p => p.player_id === playerId)) return "faction2"
   return null
 }
 
@@ -60,6 +63,8 @@ function analyzePlayerMapStrategy(
     favoriteUnderdog: createEmptyFavoriteUnderdog(),
     competitionStats: {},
     matchRecords: {},
+    leaderMapWinRate: {},
+    leaderMatchRecords: {},
     avgElo: 0,
     trends: [],
     earliestGame: "",
@@ -140,6 +145,8 @@ function analyzePlayerMapStrategy(
       }
     }
 
+    const isPlayerLeader = isLeader(match, playerId)
+
     // Винрейт — для ВСЕХ матчей (не только leader)
     const playedMaps = match.voting?.map?.pick || []
     if (match.results?.winner && playedMaps.length > 0) {
@@ -151,7 +158,13 @@ function analyzePlayerMapStrategy(
           const mapWon = match.detailed_results[i].winner === playerFaction
           trackWinRate(playerStats.mapWinRate, playedMaps[i], mapWon)
           trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
-          addMatchRecord(playerStats.matchRecords, playedMaps[i], buildMatchRecord(match, playerFaction, playedMaps[i], i, mapWon))
+          const record = buildMatchRecord(match, playerFaction, playedMaps[i], i, mapWon)
+          addMatchRecord(playerStats.matchRecords, playedMaps[i], record)
+          if (isPlayerLeader) {
+            trackWinRate(playerStats.leaderMapWinRate, playedMaps[i], mapWon)
+            trackWinRate(trend.leaderMapWinRate, playedMaps[i], mapWon)
+            addMatchRecord(playerStats.leaderMatchRecords, playedMaps[i], record)
+          }
         }
       } else {
         // BO1 без detailed_results: результат матча = результат карты
@@ -160,9 +173,19 @@ function analyzePlayerMapStrategy(
           if (!isPoolMap(mapName)) continue
           trackWinRate(playerStats.mapWinRate, mapName, won)
           trackWinRate(trend.mapWinRate, mapName, won)
-          addMatchRecord(playerStats.matchRecords, mapName, buildMatchRecord(match, playerFaction, mapName, i, won))
+          const record = buildMatchRecord(match, playerFaction, mapName, i, won)
+          addMatchRecord(playerStats.matchRecords, mapName, record)
+          if (isPlayerLeader) {
+            trackWinRate(playerStats.leaderMapWinRate, mapName, won)
+            trackWinRate(trend.leaderMapWinRate, mapName, won)
+            addMatchRecord(playerStats.leaderMatchRecords, mapName, record)
+          }
         }
       }
+    }
+
+    if (isPlayerLeader) {
+      trend.leaderMatchCount++
     }
 
     // ELO тренда
@@ -182,6 +205,9 @@ function analyzePlayerMapStrategy(
   playerStats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
   playerStats.eloHistory.sort((a, b) => a.date - b.date)
   for (const records of Object.values(playerStats.matchRecords)) {
+    records.sort((a, b) => b.date - a.date)
+  }
+  for (const records of Object.values(playerStats.leaderMatchRecords)) {
     records.sort((a, b) => b.date - a.date)
   }
 

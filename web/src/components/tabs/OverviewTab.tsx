@@ -4,22 +4,28 @@ import { CompetitionPieChart } from "../charts/CompetitionPieChart"
 
 interface OverviewTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
+  mode?: "leader" | "all"
 }
 
-export function OverviewTab({ stats }: OverviewTabProps) {
+function isPlayerStats(stats: TeamDropPickStats | PlayerDropPickStats): stats is PlayerDropPickStats {
+  return "leaderMapWinRate" in stats
+}
+
+export function OverviewTab({ stats, mode }: OverviewTabProps) {
+  const isLeaderMode = mode === "leader" && isPlayerStats(stats)
   const hasComp = Object.keys(stats.competitionStats).length > 0
 
   return (
     <div className="py-5">
       <SummaryCards
-        totalMatches={stats.allCount}
+        totalMatches={isLeaderMode ? stats.count : stats.allCount}
         analyzedMatches={stats.count}
         avgElo={stats.avgElo}
-        overallWinRate={stats.mapWinRate}
+        overallWinRate={isLeaderMode ? stats.leaderMapWinRate : stats.mapWinRate}
         earliestGame={stats.earliestGame}
         latestGame={stats.latestGame}
       />
-      {hasComp && (
+      {!isLeaderMode && hasComp && (
         <>
           <h2 className="mt-6">Распределение по типу</h2>
           <CompetitionPieChart compStats={stats.competitionStats} />
