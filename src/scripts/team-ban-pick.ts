@@ -7,7 +7,7 @@ import { getMatchWithVoting } from "../api/faceit-internal.js"
 import { batchWithLimit } from "../utils/concurrency.js"
 import {
   findMapVotingTicket,
-  isExcludedMap,
+  isPoolMap,
   classifyVotingEntity,
   getDeciderRound,
   incrementMapCount,
@@ -93,7 +93,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
     const deciderRound = getDeciderRound(mapVoting)
 
     for (const entity of mapVoting.entities) {
-      if (isExcludedMap(entity.guid)) continue
+      if (!isPoolMap(entity.guid)) continue
 
       const phase = classifyVotingEntity(entity, deciderRound)
       if (!phase) continue
@@ -119,7 +119,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
       if (match.detailed_results && match.detailed_results.length === playedMaps.length) {
         // BO3: пораундовые результаты
         for (let i = 0; i < playedMaps.length; i++) {
-          if (isExcludedMap(playedMaps[i])) continue
+          if (!isPoolMap(playedMaps[i])) continue
           const mapWon = match.detailed_results[i].winner === targetFaction
           trackWinRate(stats.mapWinRate, playedMaps[i], mapWon)
           trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
@@ -127,7 +127,7 @@ async function analyzeTeamMapStrategy(teamPlayerIds: string[]): Promise<TeamDrop
       } else {
         // BO1: результат матча = результат карты
         for (const mapName of playedMaps) {
-          if (isExcludedMap(mapName)) continue
+          if (!isPoolMap(mapName)) continue
           trackWinRate(stats.mapWinRate, mapName, overallWon)
           trackWinRate(trend.mapWinRate, mapName, overallWon)
         }

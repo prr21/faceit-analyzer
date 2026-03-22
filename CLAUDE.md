@@ -53,7 +53,8 @@ src/
 - **Caching**: `withCache()` caches immutable data (match details, voting history) in `.cache/` as JSON files. Player info is NOT cached (ELO changes after every match).
 - **Concurrency**: `batchWithLimit()` limits parallel API requests (default 10) to avoid rate limits. All scripts use it instead of raw `Promise.all()`.
 - **Retry**: `withRetry()` wraps all API calls with exponential backoff (3 retries, 1s/2s/4s delays) for 429 and 5xx errors.
-- **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks (BO3) or second bans (BO1), 5-6 = last bans, last = decider. `de_train` excluded.
+- **Map pool**: `ACTIVE_MAP_POOL` in `config.ts` — allowlist of current CS2 maps. Only maps in the pool are analyzed; everything else (1v1 maps, removed maps) is skipped via `isPoolMap()`.
+- **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks (BO3) or second bans (BO1), 5-6 = last bans, last = decider.
 - **BO1**: all rounds are bans (drop), decider is last map standing. **BO3**: rounds 3-4 are picks, rounds 5-6 are bans.
 - **Win rate**: tracked per map using `match.results.winner` + `match.voting.map.pick`. BO3 uses `detailed_results` for per-map results.
 - **Trends**: matches grouped by calendar month (`started_at`) — shows how ban/pick preferences change over time.

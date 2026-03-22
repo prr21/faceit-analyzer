@@ -1,4 +1,4 @@
-import { EXCLUDED_MAPS } from "../config.js"
+import { ACTIVE_MAP_POOL } from "../config.js"
 import type { MapCountRecord, VotingEntity, VotingPayload, VotingTicket } from "../types/faceit.js"
 
 export type VotingPhase =
@@ -14,8 +14,8 @@ export function findMapVotingTicket(
   return history.tickets?.find(ticket => ticket.entity_type === "map")
 }
 
-export function isExcludedMap(mapName: string): boolean {
-  return EXCLUDED_MAPS.includes(mapName)
+export function isPoolMap(mapName: string): boolean {
+  return ACTIVE_MAP_POOL.includes(mapName)
 }
 
 export function getDeciderRound(ticket: VotingTicket): number {
