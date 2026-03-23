@@ -7,6 +7,23 @@ interface WinRateTableProps {
   matchRecords?: Record<string, MatchRecord[]>
 }
 
+interface MapPerformance {
+  avgKd: number | null
+  avgAdr: number | null
+  avgHs: number | null
+}
+
+function computeMapPerformance(records: MatchRecord[]): MapPerformance {
+  const withKd = records.filter(r => r.kdRatio !== undefined)
+  const withAdr = records.filter(r => r.adr !== undefined)
+  const withHs = records.filter(r => r.headshotPercent !== undefined)
+  return {
+    avgKd: withKd.length > 0 ? +(withKd.reduce((s, r) => s + r.kdRatio!, 0) / withKd.length).toFixed(2) : null,
+    avgAdr: withAdr.length > 0 ? +(withAdr.reduce((s, r) => s + r.adr!, 0) / withAdr.length).toFixed(1) : null,
+    avgHs: withHs.length > 0 ? Math.round(withHs.reduce((s, r) => s + r.headshotPercent!, 0) / withHs.length) : null,
+  }
+}
+
 const TH = "border border-gray-200 dark:border-gray-700 px-2 sm:px-3.5 py-1 sm:py-1.5 text-center text-sm bg-gray-100 dark:bg-gray-800"
 const TD = "border border-gray-200 dark:border-gray-700 px-2 sm:px-3.5 py-1 sm:py-1.5 text-center text-sm"
 
@@ -17,6 +34,9 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
   if (entries.length === 0) return null
 
   const hasRecords = matchRecords && Object.keys(matchRecords).length > 0
+  const hasAnyStats = hasRecords && Object.values(matchRecords).some(
+    recs => recs.some(r => r.kdRatio !== undefined)
+  )
 
   return (
     <div className="overflow-x-auto my-3 mb-8">
@@ -28,12 +48,20 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
             <th className={TH}>L</th>
             <th className={TH}>Всего</th>
             <th className={TH}>Винрейт</th>
+            {hasAnyStats && (
+              <>
+                <th className={TH}>K/D</th>
+                <th className={TH}>ADR</th>
+                <th className={TH}>HS%</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
           {entries.map(([map, wr]) => {
             const records = hasRecords ? matchRecords[map] : undefined
             const isExpanded = expandedMap === map
+            const perf = hasAnyStats && records ? computeMapPerformance(records) : null
 
             return (
               <tr key={map} className="contents">
@@ -61,10 +89,23 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
                       </div>
                     </div>
                   </td>
+                  {hasAnyStats && (
+                    <>
+                      <td className={TD}>
+                        {perf?.avgKd !== null ? (
+                          <span className={`font-medium ${perf!.avgKd! >= 1 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
+                            {perf!.avgKd}
+                          </span>
+                        ) : "—"}
+                      </td>
+                      <td className={TD}>{perf?.avgAdr !== null ? perf!.avgAdr : "—"}</td>
+                      <td className={TD}>{perf?.avgHs !== null ? `${perf!.avgHs}%` : "—"}</td>
+                    </>
+                  )}
                 </tr>
                 {records && isExpanded && (
                   <tr>
-                    <td colSpan={5} className="p-0 border-t-0">
+                    <td colSpan={hasAnyStats ? 8 : 5} className="p-0 border-t-0">
                       <MatchList records={records} />
                     </td>
                   </tr>

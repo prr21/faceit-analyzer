@@ -3,6 +3,7 @@ import { SummaryCards } from "../ui/SummaryCards"
 import { CompetitionPieChart } from "../charts/CompetitionPieChart"
 import { SkillLevelBar } from "../ui/SkillLevelBar"
 import { RecentPerformance } from "../ui/RecentPerformance"
+import { LeadershipImpact } from "../ui/LeadershipImpact"
 
 interface OverviewTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
@@ -38,6 +39,17 @@ export function OverviewTab({ stats, mode, isDark }: OverviewTabProps) {
         longestWinStreak={isPlayerStats(stats) ? stats.longestWinStreak : undefined}
         matchRecords={matchRecords}
       />
+
+      {/* Эффект лидерства — только для player в "Все матчи" */}
+      {!isLeaderMode && isPlayerStats(stats) && Object.keys(stats.leaderMatchRecords).length > 0 && (
+        <>
+          <h2 className="mt-4 sm:mt-6">Эффект лидерства</h2>
+          <LeadershipImpact
+            matchRecords={stats.matchRecords}
+            leaderMatchRecords={stats.leaderMatchRecords}
+          />
+        </>
+      )}
 
       {/* Recent Performance — для all mode или team */}
       {!isLeaderMode && (
