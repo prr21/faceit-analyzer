@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import type { MatchRecord } from "../../types"
+import { getStatColor } from "../../utils/colors"
 
 interface LeadershipImpactProps {
   matchRecords: Record<string, MatchRecord[]>
@@ -77,8 +78,8 @@ export function LeadershipImpact({ matchRecords, leaderMatchRecords }: Leadershi
         <tbody>
           <tr>
             <td className={`${TD} font-medium text-left`}>Win%</td>
-            <td className={TD}>{leaderStats.winRate}%</td>
-            <td className={TD}>{nonLeaderStats.winRate}%</td>
+            <td className={TD}><span className={getStatColor(leaderStats.winRate, "winRate")}>{leaderStats.winRate}%</span></td>
+            <td className={TD}><span className={getStatColor(nonLeaderStats.winRate, "winRate")}>{nonLeaderStats.winRate}%</span></td>
             <DeltaCell leader={leaderStats.winRate} nonLeader={nonLeaderStats.winRate} suffix="%" />
           </tr>
           <tr>
@@ -89,14 +90,14 @@ export function LeadershipImpact({ matchRecords, leaderMatchRecords }: Leadershi
           </tr>
           <tr>
             <td className={`${TD} font-medium text-left`}>K/D</td>
-            <td className={TD}>{leaderStats.avgKd ?? "—"}</td>
-            <td className={TD}>{nonLeaderStats.avgKd ?? "—"}</td>
+            <td className={TD}>{leaderStats.avgKd !== null ? <span className={getStatColor(leaderStats.avgKd, "kd")}>{leaderStats.avgKd}</span> : "—"}</td>
+            <td className={TD}>{nonLeaderStats.avgKd !== null ? <span className={getStatColor(nonLeaderStats.avgKd, "kd")}>{nonLeaderStats.avgKd}</span> : "—"}</td>
             <DeltaCell leader={leaderStats.avgKd} nonLeader={nonLeaderStats.avgKd} decimals={2} />
           </tr>
           <tr>
             <td className={`${TD} font-medium text-left`}>ADR</td>
-            <td className={TD}>{leaderStats.avgAdr ?? "—"}</td>
-            <td className={TD}>{nonLeaderStats.avgAdr ?? "—"}</td>
+            <td className={TD}>{leaderStats.avgAdr !== null ? <span className={getStatColor(leaderStats.avgAdr, "adr")}>{leaderStats.avgAdr}</span> : "—"}</td>
+            <td className={TD}>{nonLeaderStats.avgAdr !== null ? <span className={getStatColor(nonLeaderStats.avgAdr, "adr")}>{nonLeaderStats.avgAdr}</span> : "—"}</td>
             <DeltaCell leader={leaderStats.avgAdr} nonLeader={nonLeaderStats.avgAdr} decimals={1} />
           </tr>
         </tbody>

@@ -1,5 +1,6 @@
 import type { MapWinRate, MatchRecord } from "../../types"
 import { Card } from "./Card"
+import { getStatColor } from "../../utils/colors"
 
 interface SummaryCardsProps {
   totalMatches: number
@@ -42,7 +43,7 @@ export function SummaryCards({ totalMatches, analyzedMatches, avgElo, overallWin
       <Card
         title="Общий винрейт"
         value={`${overallRate}%`}
-        valueColor={overallRate >= 50 ? "green" : "red"}
+        valueColor={getStatColor(overallRate, "winRate")}
         subtitle={`${totalWins}W / ${totalLosses}L`}
       />
       <Card title="Средний ELO" value={avgElo || "\u2014"} />
@@ -50,10 +51,10 @@ export function SummaryCards({ totalMatches, analyzedMatches, avgElo, overallWin
         <Card title="Лучшая серия" value={longestWinStreak} subtitle="побед подряд" />
       )}
       {avgKd !== null && (
-        <Card title="Avg K/D" value={avgKd} valueColor={avgKd >= 1 ? "green" : "red"} />
+        <Card title="Avg K/D" value={avgKd} valueColor={getStatColor(avgKd, "kd")} />
       )}
       {avgAdr !== null && (
-        <Card title="Avg ADR" value={avgAdr} />
+        <Card title="Avg ADR" value={avgAdr} valueColor={getStatColor(avgAdr, "adr")} />
       )}
       <Card title="Период" value={earliestGame || "\u2014"} subtitle={latestGame || "\u2014"} />
     </div>

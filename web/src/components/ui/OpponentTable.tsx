@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react"
 import type { MatchRecord } from "../../types"
+import { getStatColor } from "../../utils/colors"
 
 interface OpponentTableProps {
   matchRecords: Record<string, MatchRecord[]>
@@ -84,7 +85,7 @@ export function OpponentTable({ matchRecords }: OpponentTableProps) {
                 : ""
 
             return (
-              <tr key={opp.name} className={rowBg}>
+              <tr key={opp.name} className={`${rowBg} hover:bg-gray-100/50 dark:hover:bg-gray-700/30 transition-colors`}>
                 <td className={`${TD} text-left`}>
                   {opp.url ? (
                     <a href={opp.url} target="_blank" rel="noopener noreferrer" className="no-underline text-inherit hover:text-blue-500">
@@ -98,13 +99,13 @@ export function OpponentTable({ matchRecords }: OpponentTableProps) {
                 <td className={TD}>{opp.wins}</td>
                 <td className={TD}>{opp.losses}</td>
                 <td className={TD}>
-                  <strong className={opp.winRate >= 50 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}>
+                  <strong className={getStatColor(opp.winRate, "winRate")}>
                     {opp.winRate}%
                   </strong>
                 </td>
                 <td className={TD}>
                   {opp.avgKd !== null ? (
-                    <span className={opp.avgKd >= 1 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}>
+                    <span className={getStatColor(opp.avgKd, "kd")}>
                       {opp.avgKd}
                     </span>
                   ) : "—"}
@@ -117,7 +118,7 @@ export function OpponentTable({ matchRecords }: OpponentTableProps) {
       {hasMore && (
         <button
           onClick={() => setShowAll(!showAll)}
-          className="mt-2 text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+          className="cursor-pointer mt-2 text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
         >
           {showAll ? "Скрыть" : `Показать все (${opponents.length})`}
         </button>

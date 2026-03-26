@@ -1,5 +1,6 @@
 import type { FavoriteUnderdogStats } from "../../types"
 import { Card } from "./Card"
+import { getStatColor } from "../../utils/colors"
 
 interface FavoriteUnderdogCardsProps {
   stats: FavoriteUnderdogStats
@@ -11,13 +12,13 @@ export function FavoriteUnderdogCards({ stats }: FavoriteUnderdogCardsProps) {
       <Card
         title="Как фаворит"
         value={`${stats.asFavorite.rate}%`}
-        valueColor={stats.asFavorite.rate >= 50 ? "green" : "red"}
+        valueColor={getStatColor(stats.asFavorite.rate, "winRate")}
         subtitle={`${stats.asFavorite.wins}W / ${stats.asFavorite.losses}L (${stats.asFavorite.total} игр)`}
       />
       <Card
         title="Как андердог"
         value={`${stats.asUnderdog.rate}%`}
-        valueColor={stats.asUnderdog.rate >= 50 ? "green" : "red"}
+        valueColor={getStatColor(stats.asUnderdog.rate, "winRate")}
         subtitle={`${stats.asUnderdog.wins}W / ${stats.asUnderdog.losses}L (${stats.asUnderdog.total} игр)`}
       />
     </div>

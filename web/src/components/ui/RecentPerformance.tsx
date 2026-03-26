@@ -1,5 +1,6 @@
 import type { MatchRecord, EloSnapshot } from "../../types"
 import { WinLossStreak } from "./WinLossStreak"
+import { getStatColor } from "../../utils/colors"
 
 interface RecentPerformanceProps {
   matchRecords: Record<string, MatchRecord[]>
@@ -56,11 +57,11 @@ export function RecentPerformance({ matchRecords, eloHistory, count = 20 }: Rece
 
       {/* Метрики */}
       <div className="flex flex-wrap gap-4 sm:gap-6 mb-3">
-        <Metric label="Win%" value={`${winRate}%`} color={winRate >= 50 ? "green" : "red"} />
-        {avgKd !== null && <Metric label="K/D" value={avgKd.toString()} color={avgKd >= 1 ? "green" : "red"} />}
-        {avgAdr !== null && <Metric label="ADR" value={avgAdr.toString()} />}
-        {avgHs !== null && <Metric label="HS%" value={`${avgHs}%`} />}
-        <Metric label="ELO" value={`${eloChange >= 0 ? "+" : ""}${eloChange}`} color={eloChange >= 0 ? "green" : "red"} />
+        <Metric label="Win%" value={`${winRate}%`} colorClass={getStatColor(winRate, "winRate")} />
+        {avgKd !== null && <Metric label="K/D" value={avgKd.toString()} colorClass={getStatColor(avgKd, "kd")} />}
+        {avgAdr !== null && <Metric label="ADR" value={avgAdr.toString()} colorClass={getStatColor(avgAdr, "adr")} />}
+        {avgHs !== null && <Metric label="HS%" value={`${avgHs}%`} colorClass={getStatColor(avgHs, "hs")} />}
+        <Metric label="ELO" value={`${eloChange >= 0 ? "+" : ""}${eloChange}`} colorClass={eloChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"} />
       </div>
 
       {/* W/L streak визуализация */}
@@ -69,12 +70,11 @@ export function RecentPerformance({ matchRecords, eloHistory, count = 20 }: Rece
   )
 }
 
-function Metric({ label, value, color }: { label: string; value: string; color?: "green" | "red" }) {
-  const colorClass = color === "green" ? "text-green-600" : color === "red" ? "text-red-500" : "text-gray-800 dark:text-gray-200"
+function Metric({ label, value, colorClass }: { label: string; value: string; colorClass?: string }) {
   return (
     <div>
       <div className="text-[11px] text-gray-400 dark:text-gray-500 uppercase">{label}</div>
-      <div className={`text-lg font-bold ${colorClass}`}>{value}</div>
+      <div className={`text-lg font-bold ${colorClass ?? "text-gray-800 dark:text-gray-200"}`}>{value}</div>
     </div>
   )
 }

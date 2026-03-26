@@ -1,4 +1,5 @@
 import type { MatchRecord } from "../../types"
+import { getStatColor } from "../../utils/colors"
 
 function formatMatchDate(timestamp: number): string {
   return new Date(timestamp * 1000).toLocaleDateString("ru-RU")
@@ -24,9 +25,9 @@ export function MatchList({ records }: MatchListProps) {
             <th className="text-left font-medium px-2 py-1">Турнир</th>
             {hasStats && (
               <>
-                <th className="text-center font-medium px-2 py-1 w-[70px]">K/D/A</th>
-                <th className="text-center font-medium px-2 py-1 w-[45px]">ADR</th>
-                <th className="text-center font-medium px-2 py-1 w-[40px]">HS%</th>
+                <th className="text-right font-medium px-2 py-1 w-[70px]">K/D/A</th>
+                <th className="text-right font-medium px-2 py-1 w-[45px]">ADR</th>
+                <th className="text-right font-medium px-2 py-1 w-[40px]">HS%</th>
               </>
             )}
           </tr>
@@ -74,13 +75,13 @@ export function MatchList({ records }: MatchListProps) {
                 </td>
                 {hasStats && (
                   <>
-                    <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                    <td className={`px-2 py-1.5 text-right tabular-nums whitespace-nowrap ${r.kdRatio !== undefined ? getStatColor(r.kdRatio, "kd") : "text-gray-500"}`}>
                       {r.kills !== undefined ? `${r.kills}/${r.deaths}/${r.assists}` : "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300">
+                    <td className={`px-2 py-1.5 text-right tabular-nums ${r.adr !== undefined ? getStatColor(r.adr, "adr") : "text-gray-500"}`}>
                       {r.adr !== undefined ? r.adr : "—"}
                     </td>
-                    <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300">
+                    <td className={`px-2 py-1.5 text-right tabular-nums ${r.headshotPercent !== undefined ? getStatColor(r.headshotPercent, "hs") : "text-gray-500"}`}>
                       {r.headshotPercent !== undefined ? `${r.headshotPercent}%` : "—"}
                     </td>
                   </>

@@ -48,7 +48,7 @@ export function TrendsTab({ stats, mode, isDark }: TrendsTabProps) {
                 <select
                   value={phase}
                   onChange={e => setPhase(e.target.value as typeof phase)}
-                  className="w-full sm:w-auto px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-gray-200"
+                  className="cursor-pointer w-full sm:w-auto px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded text-sm dark:bg-gray-800 dark:text-gray-200"
                 >
                   {PHASES.map(p => (
                     <option key={p.key} value={p.key}>{p.label}</option>

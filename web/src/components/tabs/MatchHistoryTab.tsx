@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats, MatchRecord } from "../../types"
+import { getStatColor } from "../../utils/colors"
 
 type FlatMatchRecord = MatchRecord & { mapName: string }
 
@@ -30,7 +31,7 @@ function formatMatchDate(timestamp: number): string {
 
 const PAGE_SIZE = 20
 
-const btnBase = "px-3 py-1 text-sm rounded-md border transition-colors"
+const btnBase = "cursor-pointer px-3 py-1 text-sm rounded-md border transition-colors"
 const btnActive = "bg-blue-500 text-white border-blue-500"
 const btnInactive = "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
 
@@ -75,7 +76,7 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
         <select
           value={mapFilter || ""}
           onChange={e => { setMapFilter(e.target.value || null); setPage(0) }}
-          className="px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+          className="cursor-pointer px-2 py-1 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
         >
           <option value="">Все карты</option>
           {maps.map(m => <option key={m} value={m}>{m}</option>)}
@@ -110,9 +111,9 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
               <th className="text-left font-medium px-2 py-1">Турнир</th>
               {hasStats && (
                 <>
-                  <th className="text-center font-medium px-2 py-1 w-[70px]">K/D/A</th>
-                  <th className="text-center font-medium px-2 py-1 w-[45px]">ADR</th>
-                  <th className="text-center font-medium px-2 py-1 w-[40px]">HS%</th>
+                  <th className="text-right font-medium px-2 py-1 w-[70px]">K/D/A</th>
+                  <th className="text-right font-medium px-2 py-1 w-[45px]">ADR</th>
+                  <th className="text-right font-medium px-2 py-1 w-[40px]">HS%</th>
                 </>
               )}
             </tr>
@@ -162,13 +163,13 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                   </td>
                   {hasStats && (
                     <>
-                      <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      <td className={`px-2 py-1.5 text-right tabular-nums whitespace-nowrap ${r.kdRatio !== undefined ? getStatColor(r.kdRatio, "kd") : "text-gray-500"}`}>
                         {r.kills !== undefined ? `${r.kills}/${r.deaths}/${r.assists}` : "—"}
                       </td>
-                      <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300">
+                      <td className={`px-2 py-1.5 text-right tabular-nums ${r.adr !== undefined ? getStatColor(r.adr, "adr") : "text-gray-500"}`}>
                         {r.adr !== undefined ? r.adr : "—"}
                       </td>
-                      <td className="px-2 py-1.5 text-center tabular-nums text-gray-600 dark:text-gray-300">
+                      <td className={`px-2 py-1.5 text-right tabular-nums ${r.headshotPercent !== undefined ? getStatColor(r.headshotPercent, "hs") : "text-gray-500"}`}>
                         {r.headshotPercent !== undefined ? `${r.headshotPercent}%` : "—"}
                       </td>
                     </>

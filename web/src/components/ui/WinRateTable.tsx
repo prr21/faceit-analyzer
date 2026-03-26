@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { MapWinRate, MatchRecord } from "../../types"
 import { MatchList } from "./MatchList"
+import { getStatColor, getStatBgColor } from "../../utils/colors"
 
 interface WinRateTableProps {
   winRate: Record<string, MapWinRate>
@@ -80,10 +81,10 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
                   <td className={TD}>{wr.total}</td>
                   <td className={TD}>
                     <div className="flex items-center gap-2 justify-center">
-                      <strong>{wr.rate}%</strong>
+                      <strong className={getStatColor(wr.rate, "winRate")}>{wr.rate}%</strong>
                       <div className="w-16 sm:w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full ${wr.rate >= 50 ? "bg-green-500" : "bg-red-400"}`}
+                          className={`h-full rounded-full ${getStatBgColor(wr.rate, "winRate")}`}
                           style={{ width: `${wr.rate}%` }}
                         />
                       </div>
@@ -93,13 +94,19 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
                     <>
                       <td className={TD}>
                         {perf?.avgKd !== null ? (
-                          <span className={`font-medium ${perf!.avgKd! >= 1 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
-                            {perf!.avgKd}
-                          </span>
+                          <span className={`font-medium ${getStatColor(perf!.avgKd!, "kd")}`}>{perf!.avgKd}</span>
                         ) : "—"}
                       </td>
-                      <td className={TD}>{perf?.avgAdr !== null ? perf!.avgAdr : "—"}</td>
-                      <td className={TD}>{perf?.avgHs !== null ? `${perf!.avgHs}%` : "—"}</td>
+                      <td className={TD}>
+                        {perf?.avgAdr !== null ? (
+                          <span className={getStatColor(perf!.avgAdr!, "adr")}>{perf!.avgAdr}</span>
+                        ) : "—"}
+                      </td>
+                      <td className={TD}>
+                        {perf?.avgHs !== null ? (
+                          <span className={getStatColor(perf!.avgHs!, "hs")}>{perf!.avgHs}%</span>
+                        ) : "—"}
+                      </td>
                     </>
                   )}
                 </tr>

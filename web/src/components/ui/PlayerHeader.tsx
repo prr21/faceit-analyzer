@@ -1,4 +1,5 @@
 import type { PlayerProfile, MapWinRate } from "../../types"
+import { getStatColor } from "../../utils/colors"
 
 const LEVEL_COLORS: Record<number, string> = {
   1: "bg-gray-400",
@@ -55,7 +56,7 @@ export function PlayerHeader({ profile, totalMatches, overallWinRate }: PlayerHe
         <div className="flex gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
           <span className="font-semibold text-gray-800 dark:text-gray-200">{profile.currentElo} ELO</span>
           <span>{totalMatches} матчей</span>
-          <span className={winRate >= 50 ? "text-green-600" : "text-red-500"}>{winRate}% побед</span>
+          <span className={getStatColor(winRate, "winRate")}>{winRate}% побед</span>
           {profile.country && <span>{profile.country.toUpperCase()}</span>}
         </div>
       </div>

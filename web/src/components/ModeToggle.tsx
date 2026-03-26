@@ -15,7 +15,7 @@ export function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
         {MODES.map(({ key, label }) => (
           <button
             key={key}
-            className={`px-5 py-2 text-sm font-medium transition-colors ${
+            className={`cursor-pointer px-5 py-2 text-sm font-medium transition-colors ${
               mode === key
                 ? "bg-blue-500 text-white"
                 : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
