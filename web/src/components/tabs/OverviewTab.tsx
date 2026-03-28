@@ -4,6 +4,7 @@ import { CompetitionPieChart } from "../charts/CompetitionPieChart"
 import { SkillLevelBar } from "../ui/SkillLevelBar"
 import { RecentPerformance } from "../ui/RecentPerformance"
 import { LeadershipImpact } from "../ui/LeadershipImpact"
+import { BestWorstCards } from "../ui/BestWorstCards"
 
 interface OverviewTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
@@ -37,6 +38,11 @@ export function OverviewTab({ stats, mode, isDark }: OverviewTabProps) {
         earliestGame={stats.earliestGame}
         latestGame={stats.latestGame}
         longestWinStreak={isPlayerStats(stats) ? stats.longestWinStreak : undefined}
+        matchRecords={matchRecords}
+      />
+
+      <BestWorstCards
+        mapWinRate={isLeaderMode && isPlayerStats(stats) ? stats.leaderMapWinRate : stats.mapWinRate}
         matchRecords={matchRecords}
       />
 
