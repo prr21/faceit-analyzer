@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats, MatchRecord } from "../../types"
 import { getStatColor } from "../../utils/colors"
+import { MatchDetailCard } from "../ui/MatchDetailCard"
 
 type FlatMatchRecord = MatchRecord & { mapName: string }
 
@@ -39,6 +40,13 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
   const [page, setPage] = useState(0)
   const [mapFilter, setMapFilter] = useState<string | null>(null)
   const [resultFilter, setResultFilter] = useState<"all" | "win" | "loss">("all")
+
+  // TODO: Задание 13.2 — Состояние раскрытия строки
+  // Раскомментируйте и используйте для управления раскрытой строкой:
+  // const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null)
+  //
+  // Подсказка: аналог — expandedMap в WinRateTable.tsx
+  // При клике на строку: setExpandedMatchId(id === expandedMatchId ? null : id)
 
   const useLeaderData = mode === "leader" && isPlayerStats(stats)
   const matchRecords = useLeaderData && isPlayerStats(stats) ? stats.leaderMatchRecords : stats.matchRecords
@@ -125,8 +133,17 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                 : (r.targetRating ? `(${r.targetRating})` : "—")
 
               return (
+                <React.Fragment key={`${r.matchId}-${r.mapName}-${i}`}>
                 <tr
-                  key={`${r.matchId}-${r.mapName}-${i}`}
+                  // TODO: Задание 13.2 — Сделайте строку кликабельной
+                  // Добавьте onClick и className="cursor-pointer" к этому <tr>:
+                  //
+                  // onClick={() => setExpandedMatchId(
+                  //   r.matchId === expandedMatchId ? null : r.matchId
+                  // )}
+                  // className={`cursor-pointer hover:bg-gray-50 ...existing classes...`}
+                  //
+                  // Подсказка: посмотрите как это сделано в WinRateTable.tsx (onClick на <tr>)
                   className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors ${
                     r.won ? "border-l-[3px] border-l-green-600" : "border-l-[3px] border-l-red-600"
                   }`}
@@ -175,6 +192,18 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                     </>
                   )}
                 </tr>
+                {/* TODO: Задание 13.2 — Раскрываемая карточка
+                 * Раскомментируйте для отображения карточки под раскрытой строкой:
+                 *
+                 * {expandedMatchId === r.matchId && (
+                 *   <tr>
+                 *     <td colSpan={hasStats ? 8 : 5} className="p-0">
+                 *       <MatchDetailCard record={r} mapName={r.mapName} />
+                 *     </td>
+                 *   </tr>
+                 * )}
+                 */}
+                </React.Fragment>
               )
             })}
           </tbody>
