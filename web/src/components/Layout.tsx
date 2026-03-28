@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats } from "../types"
 import { ThemeToggle } from "./ThemeToggle"
 import { PlayerHeader } from "./ui/PlayerHeader"
+// import { PlayerSearch } from "./ui/PlayerSearch"
 
 interface LayoutProps {
   title: string
@@ -38,6 +39,9 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
             </>
           )}
         </div>
+        {/* TODO: Задание 6.2 — Раскомментируйте для добавления поиска в шапку
+         * <PlayerSearch />
+         */}
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
       </div>
       {/* Подзаголовок с mapInfo для player с profileHeader */}
