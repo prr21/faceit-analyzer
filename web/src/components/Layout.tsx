@@ -3,6 +3,7 @@ import type { TeamDropPickStats, PlayerDropPickStats } from "../types"
 import { ThemeToggle } from "./ThemeToggle"
 import { PlayerHeader } from "./ui/PlayerHeader"
 // import { PlayerSearch } from "./ui/PlayerSearch"
+// import { RefreshIndicator } from "./ui/RefreshIndicator"
 
 interface LayoutProps {
   title: string
@@ -48,6 +49,18 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
       {playerProfile && (
         <p className="text-sm text-gray-500 dark:text-gray-400 my-1">{stats.mapInfo}</p>
       )}
+      {/* TODO: Задание 14.2 — Раскомментируйте для добавления индикатора обновления
+       * <RefreshIndicator
+       *   lastUpdated={null}
+       *   interval={60000}
+       *   isRefreshing={false}
+       *   onRefresh={() => {}}
+       * />
+       *
+       * Подключите реальные значения из usePolling хука.
+       * Для этого нужно поднять usePolling на уровень App.tsx
+       * и передать значения через props.
+       */}
       {children}
     </div>
   )
