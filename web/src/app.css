@@ -4,3 +4,104 @@
 body {
   @apply bg-white dark:bg-gray-900 transition-colors;
 }
+
+/* ===== Задание 16.1 — CSS-анимации и переходы ===== */
+
+/* Shimmer-эффект для loading-скелетонов */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Плавное появление */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Появление снизу */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Раскрытие вниз (для раскрываемых строк) */
+@keyframes expandDown {
+  from { opacity: 0; max-height: 0; transform: scaleY(0.95); }
+  to { opacity: 1; max-height: 500px; transform: scaleY(1); }
+}
+
+/* TODO: Задание 16.1 — Создайте анимацию countUp
+ *
+ * Анимация для числового счётчика (используется в AnimatedCounter).
+ * Подсказка: можно анимировать opacity и transform:
+ *
+ * @keyframes countUp {
+ *   from { opacity: 0; transform: translateY(8px); }
+ *   to { opacity: 1; transform: translateY(0); }
+ * }
+ */
+
+/* Утилитарные классы анимаций */
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-expand {
+  animation: expandDown 0.25s ease-out;
+  transform-origin: top;
+}
+
+/* Stagger-задержки для последовательного появления элементов */
+/* TODO: Задание 16.1 — Добавьте stagger-задержки
+ *
+ * Создайте классы .stagger-1, .stagger-2, ..., .stagger-10,
+ * каждый с увеличивающейся animation-delay.
+ *
+ * Пример:
+ * .stagger-1 { animation-delay: 0.05s; }
+ * .stagger-2 { animation-delay: 0.1s; }
+ * .stagger-3 { animation-delay: 0.15s; }
+ * ...и так далее до .stagger-10
+ *
+ * Использование: <div className="animate-slide-up stagger-3">...</div>
+ * Элементы появляются один за другим с задержкой 50ms.
+ */
+
+/* Подсветка изменившихся значений (для auto-refresh) */
+.highlight-changed {
+  transition: background-color 1s ease-out;
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Accessibility: отключение анимаций для пользователей с вестибулярными расстройствами */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-expand {
+    animation: none !important;
+  }
+
+  .highlight-changed {
+    transition: none !important;
+  }
+
+  /* TODO: Задание 16.1 — Отключите stagger-анимации
+   *
+   * Добавьте сюда ваши .stagger-* классы:
+   * .stagger-1, .stagger-2, ..., .stagger-10 {
+   *   animation-delay: 0s !important;
+   * }
+   */
+}
