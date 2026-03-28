@@ -9,10 +9,11 @@ import { WinrateTab } from "./components/tabs/WinrateTab"
 import { TrendsTab } from "./components/tabs/TrendsTab"
 import { MatchHistoryTab } from "./components/tabs/MatchHistoryTab"
 import { OverviewTab } from "./components/tabs/OverviewTab"
+import { RadarTab } from "./components/tabs/RadarTab"
 
-const TEAM_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор"]
-const LEADER_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор"]
-const ALL_TABS = ["Винрейт", "Тренды", "Матчи", "Обзор"]
+const TEAM_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар"]
+const LEADER_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар"]
+const ALL_TABS = ["Винрейт", "Тренды", "Матчи", "Обзор", "Радар"]
 
 export function App({ data }: { data: ReportData }) {
   const [activeTab, setActiveTab] = useState(0)
@@ -44,6 +45,7 @@ export function App({ data }: { data: ReportData }) {
       {activeTab === 2 + tabOffset && <TrendsTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
       {activeTab === 3 + tabOffset && <MatchHistoryTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
       {activeTab === 4 + tabOffset && <OverviewTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
+      {activeTab === 5 + tabOffset && <RadarTab stats={stats} mode={isPlayer ? mode : undefined} isDark={isDark} />}
     </Layout>
   )
 }
