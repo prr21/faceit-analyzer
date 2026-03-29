@@ -1,5 +1,5 @@
 import type { TeamDropPickStats, PlayerDropPickStats } from "../../types"
-import { RadarChart } from "../charts/RadarChart"
+import { RadarChart } from "../../features/theme-1-frontend/charts/RadarChart"
 
 interface RadarTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats

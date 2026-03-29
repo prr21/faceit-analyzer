@@ -1,5 +1,5 @@
 import ReactECharts from "echarts-for-react"
-import type { MapWinRate, MatchRecord } from "../../types"
+import type { MapWinRate, MatchRecord } from "../../../types"
 
 interface RadarChartProps {
   mapWinRate: Record<string, MapWinRate>

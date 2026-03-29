@@ -1,4 +1,4 @@
-import type { MatchRecord } from "../../types"
+import type { MatchRecord } from "../../../types"
 
 interface MatchDetailCardProps {
   record: MatchRecord

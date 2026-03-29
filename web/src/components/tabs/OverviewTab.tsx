@@ -4,7 +4,7 @@ import { CompetitionPieChart } from "../charts/CompetitionPieChart"
 import { SkillLevelBar } from "../core/SkillLevelBar"
 import { RecentPerformance } from "../core/RecentPerformance"
 import { LeadershipImpact } from "../core/LeadershipImpact"
-import { BestWorstCards } from "../ui/BestWorstCards"
+import { BestWorstCards } from "../../features/theme-1-frontend/ui/BestWorstCards"
 
 interface OverviewTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
