@@ -15,7 +15,8 @@ export function RefreshIndicator({
   isRefreshing,
   onRefresh,
 }: RefreshIndicatorProps) {
-  // TODO: Задание 14.2 — Вычислите прогресс до следующего обновления
+  // TODO: Задание 5.2 — Вычислите прогресс до следующего обновления
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
   //
   // Алгоритм:
   // 1. Текущее время: Date.now()
@@ -46,7 +47,8 @@ export function RefreshIndicator({
     <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 my-2">
       {/* Прогресс-бар до следующего обновления */}
       <div className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden max-w-[200px]">
-        {/* TODO: Задание 14.2 — Заполните прогресс-бар
+        {/* TODO: Задание 5.2 — Заполните прогресс-бар
+         * Документация: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
          *
          * <div
          *   className="h-full bg-blue-500 rounded-full transition-all duration-1000"
@@ -56,7 +58,8 @@ export function RefreshIndicator({
       </div>
 
       {/* Текст "обновлено X сек назад" */}
-      {/* TODO: Задание 14.2 — Покажите время с последнего обновления
+      {/* TODO: Задание 5.2 — Покажите время с последнего обновления
+       * Документация: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
        *
        * {lastUpdated ? (
        *   <span>Обновлено {secondsAgo} сек назад</span>

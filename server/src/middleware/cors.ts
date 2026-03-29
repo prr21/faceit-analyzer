@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express"
 
-// TODO: Задание 2.1 — Реализуйте CORS middleware
+// TODO: Задание 3.1 — Реализуйте CORS middleware
+// Документация: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 //
 // CORS (Cross-Origin Resource Sharing) — механизм безопасности браузера.
 // Когда фронтенд (http://localhost:5173) делает запрос к серверу (http://localhost:3000),

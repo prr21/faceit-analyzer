@@ -31,7 +31,8 @@ export function RadarTab({ stats, mode, isDark }: RadarTabProps) {
         isDark={isDark}
       />
 
-      {/* BONUS: Задание 13.1 — Добавьте переключатель метрик
+      {/* BONUS: Задание 1.1 — Добавьте переключатель метрик
+       * Документация: https://echarts.apache.org/en/option.html#series-radar
        *
        * Позвольте пользователю выбирать, какие метрики показывать на радаре:
        * - Чекбоксы для каждой метрики (Win Rate, K/D, ADR, HS%)

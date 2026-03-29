@@ -6,7 +6,8 @@ const router = Router()
 // Базовый URL внешнего API
 const FACEIT_API_BASE = "https://open.faceit.com/data/v4"
 
-// TODO: Задание 2.1 — Реализуйте эндпоинт поиска игроков
+// TODO: Задание 3.1 — Реализуйте эндпоинт поиска игроков
+// Документация: https://expressjs.com/en/guide/routing.html
 //
 // GET /api/search?q=nickname
 //
@@ -53,7 +54,8 @@ router.get("/search", async (_req: Request, res: Response) => {
   res.status(501).json({ error: "Не реализовано — см. TODO в routes/api.ts" })
 })
 
-// TODO: Задание 2.1 — Реализуйте эндпоинт получения статистики игрока
+// TODO: Задание 3.1 — Реализуйте эндпоинт получения статистики игрока
+// Документация: https://expressjs.com/en/guide/routing.html
 //
 // GET /api/player/:nickname
 //
@@ -74,7 +76,8 @@ router.get("/player/:nickname", async (_req: Request, res: Response) => {
   res.status(501).json({ error: "Не реализовано — см. TODO в routes/api.ts" })
 })
 
-// TODO: Задание 2.1 — Реализуйте эндпоинт списка отчётов
+// TODO: Задание 3.1 — Реализуйте эндпоинт списка отчётов
+// Документация: https://expressjs.com/en/guide/routing.html
 //
 // GET /api/reports
 //
@@ -93,7 +96,8 @@ router.get("/reports", async (_req: Request, res: Response) => {
   res.status(501).json({ error: "Не реализовано — см. TODO в routes/api.ts" })
 })
 
-// TODO: Задание 2.1 — Добавьте middleware для обработки ошибок
+// TODO: Задание 3.1 — Добавьте middleware для обработки ошибок
+// Документация: https://expressjs.com/en/guide/routing.html
 //
 // Express error-handling middleware имеет 4 параметра: (err, req, res, next)
 // Он ловит все необработанные ошибки из маршрутов.

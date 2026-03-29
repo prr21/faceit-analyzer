@@ -41,7 +41,8 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
   const [mapFilter, setMapFilter] = useState<string | null>(null)
   const [resultFilter, setResultFilter] = useState<"all" | "win" | "loss">("all")
 
-  // TODO: Задание 13.2 — Состояние раскрытия строки
+  // TODO: Задание 1.2 — Состояние раскрытия строки
+  // Документация: https://react.dev/reference/react/useState
   // Раскомментируйте и используйте для управления раскрытой строкой:
   // const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null)
   //
@@ -135,7 +136,8 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
               return (
                 <React.Fragment key={`${r.matchId}-${r.mapName}-${i}`}>
                 <tr
-                  // TODO: Задание 13.2 — Сделайте строку кликабельной
+                  // TODO: Задание 1.2 — Сделайте строку кликабельной
+                  // Документация: https://react.dev/reference/react/useState
                   // Добавьте onClick и className="cursor-pointer" к этому <tr>:
                   //
                   // onClick={() => setExpandedMatchId(
@@ -192,7 +194,8 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                     </>
                   )}
                 </tr>
-                {/* TODO: Задание 13.2 — Раскрываемая карточка
+                {/* TODO: Задание 1.2 — Раскрываемая карточка
+                 * Документация: https://react.dev/reference/react/useState
                  * Раскомментируйте для отображения карточки под раскрытой строкой:
                  *
                  * {expandedMatchId === r.matchId && (

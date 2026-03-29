@@ -42,7 +42,8 @@ describe("useTheme", () => {
     expect(result.current.isDark).toBe(false)
   })
 
-  // TODO: Задание 10.1 — Добавьте тесты для хука useTheme
+  // TODO: Задание 6.1 — Добавьте тесты для хука useTheme
+  // Документация: https://vitest.dev/api/, https://testing-library.com/docs/react-testing-library/api#renderhook
   //
   // Тесты, которые нужно написать:
   //

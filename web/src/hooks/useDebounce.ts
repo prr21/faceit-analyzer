@@ -12,7 +12,8 @@ import { useState, useEffect } from "react"
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value)
 
-  // TODO: Задание 6.2 — Реализуйте debounce через useEffect
+  // TODO: Задание 4.2 — Реализуйте debounce через useEffect
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
   //
   // Алгоритм:
   // 1. При каждом изменении value запускаем таймер на delay миллисекунд

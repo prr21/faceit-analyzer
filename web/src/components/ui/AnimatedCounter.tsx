@@ -27,7 +27,8 @@ export function AnimatedCounter({
   // Ссылка на время начала анимации
   const startTimeRef = useRef<number | null>(null)
 
-  // TODO: Задание 16.1 — Реализуйте анимацию счётчика через requestAnimationFrame
+  // TODO: Задание 2.1 — Реализуйте анимацию счётчика через requestAnimationFrame
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
   //
   // Алгоритм:
   // 1. В useEffect при изменении value запускаем анимацию

@@ -12,7 +12,8 @@ describe("getStatColor", () => {
     expect(getStatColor(0.5, "kd")).toContain("red")
   })
 
-  // TODO: Задание 10.1 — Добавьте тесты для всех порогов каждого типа статистики
+  // TODO: Задание 6.1 — Добавьте тесты для всех порогов каждого типа статистики
+  // Документация: https://vitest.dev/api/
   //
   // Что нужно протестировать:
   // - winRate: >= 55 (зелёный), >= 50 (серый), >= 40 (оранжевый), < 40 (красный)
@@ -36,7 +37,8 @@ describe("getStatColor", () => {
 })
 
 describe("getStatBgColor", () => {
-  // TODO: Задание 10.1 — Напишите тесты для getStatBgColor
+  // TODO: Задание 6.1 — Напишите тесты для getStatBgColor
+  // Документация: https://vitest.dev/api/
   //
   // getStatBgColor возвращает CSS-класс фона (bg-green-500, bg-yellow-400 и т.д.)
   // Пороги такие же, как у getStatColor.

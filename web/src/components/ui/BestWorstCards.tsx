@@ -10,7 +10,8 @@ interface BestWorstCardsProps {
 const MIN_GAMES = 3 // Минимальное количество игр для включения в рейтинг
 
 export function BestWorstCards({ mapWinRate, matchRecords }: BestWorstCardsProps) {
-  // TODO: Задание 13.3 — Найдите лучшую карту по винрейту
+  // TODO: Задание 1.3 — Найдите лучшую карту по винрейту
+  // Документация: https://react.dev/reference/react/useMemo
   //
   // Используйте useMemo для мемоизации вычислений (пересчёт только при изменении данных):
   //
@@ -24,13 +25,15 @@ export function BestWorstCards({ mapWinRate, matchRecords }: BestWorstCardsProps
   // Аналог: посмотрите useMemo в MatchHistoryTab.tsx (filtered)
   const bestByWinRate: [string, MapWinRate] | null = null
 
-  // TODO: Задание 13.3 — Найдите худшую карту по винрейту
+  // TODO: Задание 1.3 — Найдите худшую карту по винрейту
+  // Документация: https://react.dev/reference/react/useMemo
   //
   // Аналогично bestByWinRate, но сортируйте по возрастанию (a[1].rate - b[1].rate)
   // и берите первый элемент
   const worstByWinRate: [string, MapWinRate] | null = null
 
-  // TODO: Задание 13.3 — Найдите лучшую карту по среднему K/D
+  // TODO: Задание 1.3 — Найдите лучшую карту по среднему K/D
+  // Документация: https://react.dev/reference/react/useMemo
   //
   // Для каждой карты из matchRecords нужно вычислить средний K/D:
   // const bestByKd = useMemo(() => {
@@ -49,7 +52,8 @@ export function BestWorstCards({ mapWinRate, matchRecords }: BestWorstCardsProps
   // Аналог: computeMapPerformance в WinRateTable.tsx
   const bestByKd: { map: string; avgKd: number } | null = null
 
-  // TODO: Задание 13.3 — Найдите лучшую карту по среднему ADR
+  // TODO: Задание 1.3 — Найдите лучшую карту по среднему ADR
+  // Документация: https://react.dev/reference/react/useMemo
   //
   // Аналогично bestByKd, но вычисляйте средний ADR:
   // const withAdr = records.filter(r => r.adr !== undefined)
@@ -67,7 +71,8 @@ export function BestWorstCards({ mapWinRate, matchRecords }: BestWorstCardsProps
         Лучшие и худшие результаты
       </h3>
       <div className="flex gap-2 sm:gap-4 flex-wrap">
-        {/* TODO: Задание 13.3 — Отобразите результаты в карточках
+        {/* TODO: Задание 1.3 — Отобразите результаты в карточках
+         * Документация: https://react.dev/reference/react/useMemo
          *
          * Используйте компонент Card (уже импортирован) для каждого результата.
          * Пример (раскомментируйте и адаптируйте):

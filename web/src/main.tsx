@@ -11,7 +11,8 @@ declare global {
   }
 }
 
-// TODO: Задание 6.1 — Динамическая загрузка данных
+// TODO: Задание 4.1 — Динамическая загрузка данных
+// Документация: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API, https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 //
 // Сейчас данные берутся из window.__REPORT_DATA__ (встроены в HTML при генерации).
 // Задача: добавить альтернативный путь — загрузка через API по никнейму из URL.

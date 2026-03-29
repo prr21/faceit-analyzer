@@ -8,7 +8,8 @@ interface CompareViewProps {
 export function CompareView({ player1, player2 }: CompareViewProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
-      {/* TODO: Задание 14.1 — Отобразите сравнение двух игроков
+      {/* TODO: Задание 5.1 — Отобразите сравнение двух игроков
+       * Документация: https://react.dev/reference/react
        *
        * Для каждого игрока (player1, player2) вычислите и покажите:
        * 1. Никнейм и аватар (из stats.playerProfile, если есть)

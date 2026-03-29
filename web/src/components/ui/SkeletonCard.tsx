@@ -18,7 +18,8 @@ export function SkeletonCard({ variant = "md" }: SkeletonCardProps) {
         rounded-lg ${sizes[variant]}
       `}
     >
-      {/* TODO: Задание 16.1 — Примените shimmer-анимацию
+      {/* TODO: Задание 2.1 — Примените shimmer-анимацию
+       * Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
        *
        * Сейчас скелетон — просто серый блок. Нужно добавить анимацию "мерцания":
        *

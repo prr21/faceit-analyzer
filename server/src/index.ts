@@ -9,10 +9,10 @@ const app = express()
 // Парсинг JSON-тела запросов
 app.use(express.json())
 
-// CORS middleware (Задание 2.1)
+// CORS middleware (Задание 3.1)
 app.use(corsMiddleware)
 
-// Rate limiting (Задание 2.1)
+// Rate limiting (Задание 3.1)
 app.use(rateLimit({ windowMs: 60_000, maxRequests: 100 }))
 
 // API маршруты
@@ -23,7 +23,8 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
 })
 
-// TODO: Задание 2.1 — Запустите сервер на порту из переменной окружения
+// TODO: Задание 3.1 — Запустите сервер на порту из переменной окружения
+// Документация: https://expressjs.com/en/starter/hello-world.html
 //
 // const PORT = parseInt(process.env.PORT || "3000", 10)
 //

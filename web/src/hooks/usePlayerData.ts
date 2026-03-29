@@ -30,7 +30,8 @@ export function usePlayerData(nickname: string): UsePlayerDataResult {
     setFetchCount(c => c + 1)
   }
 
-  // TODO: Задание 6.1 — Реализуйте загрузку данных через useEffect
+  // TODO: Задание 4.1 — Реализуйте загрузку данных через useEffect
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API, https://developer.mozilla.org/en-US/docs/Web/API/AbortController
   //
   // Алгоритм:
   // 1. Если nickname пустой — не загружать (ранний return)

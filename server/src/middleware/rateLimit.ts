@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express"
 
-// TODO: Задание 2.1 — Реализуйте rate-limiting middleware
+// TODO: Задание 3.1 — Реализуйте rate-limiting middleware
+// Документация: https://expressjs.com/en/guide/writing-middleware.html
 //
 // Rate limiting — ограничение частоты запросов от одного клиента.
 // Это защищает сервер от злоупотреблений и DDoS-атак.

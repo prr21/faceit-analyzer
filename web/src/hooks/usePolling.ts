@@ -45,7 +45,8 @@ export function usePolling<T extends Record<string, unknown>>(
   void interval
   void enabled
 
-  // TODO: Задание 14.2 — Реализуйте функцию загрузки данных
+  // TODO: Задание 5.2 — Реализуйте функцию загрузки данных
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/API/setInterval
   //
   // const doFetch = useCallback(async () => {
   //   setIsRefreshing(true)
@@ -78,7 +79,8 @@ export function usePolling<T extends Record<string, unknown>>(
   //   }
   // }, [fetchFn])
 
-  // TODO: Задание 14.2 — Запустите интервал через useEffect
+  // TODO: Задание 5.2 — Запустите интервал через useEffect
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/API/setInterval
   //
   // useEffect(() => {
   //   if (!enabled) return
@@ -125,7 +127,8 @@ export function usePolling<T extends Record<string, unknown>>(
   void setChangedKeys
 
   const refresh = useCallback(() => {
-    // TODO: Задание 14.2 — Вызовите doFetch() для ручного обновления
+    // TODO: Задание 5.2 — Вызовите doFetch() для ручного обновления
+    // Документация: https://developer.mozilla.org/en-US/docs/Web/API/setInterval
     // doFetch()
   }, [])
 

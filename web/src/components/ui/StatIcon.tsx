@@ -20,7 +20,8 @@ export function StatIcon({ type, size = 16, className = "" }: StatIconProps) {
       strokeLinejoin="round"
       className={`inline-block ${className}`}
     >
-      {/* TODO: Задание 16.2 — Нарисуйте SVG-иконки для каждого типа статистики
+      {/* TODO: Задание 2.2 — Нарисуйте SVG-иконки для каждого типа статистики
+       * Документация: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial
        *
        * Используйте SVG-элементы <path>, <circle>, <line>, <polyline> для создания иконок.
        * stroke="currentColor" означает, что цвет линий будет наследоваться от текста —
@@ -72,7 +73,8 @@ export function StatIcon({ type, size = 16, className = "" }: StatIconProps) {
     </svg>
   )
 
-  // BONUS: Задание 16.2 — Анимированный вариант иконки
+  // BONUS: Задание 2.2 — Анимированный вариант иконки
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial
   //
   // Создайте проп animated?: boolean
   // Если animated === true, добавьте CSS-анимацию:

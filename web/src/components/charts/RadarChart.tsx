@@ -8,7 +8,8 @@ interface RadarChartProps {
 }
 
 export function RadarChart({ mapWinRate, matchRecords, isDark }: RadarChartProps) {
-  // TODO: Задание 13.1 — Подготовьте данные для радарной диаграммы
+  // TODO: Задание 1.1 — Подготовьте данные для радарной диаграммы
+  // Документация: https://echarts.apache.org/en/option.html#series-radar
   //
   // Для каждой карты нужно вычислить 4 метрики:
   // 1. Винрейт (%) — из mapWinRate[map].rate
@@ -35,8 +36,7 @@ export function RadarChart({ mapWinRate, matchRecords, isDark }: RadarChartProps
   //   }
   // })
 
-  // TODO: Задание 13.1 — Настройте конфигурацию ECharts radar
-  //
+  // TODO: Задание 1.1 — Настройте конфигурацию ECharts radar
   // Документация: https://echarts.apache.org/en/option.html#series-radar
   //
   // const option = {

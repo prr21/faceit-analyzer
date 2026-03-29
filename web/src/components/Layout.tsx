@@ -40,7 +40,8 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
             </>
           )}
         </div>
-        {/* TODO: Задание 6.2 — Раскомментируйте для добавления поиска в шапку
+        {/* TODO: Задание 4.2 — Раскомментируйте для добавления поиска в шапку
+         * Документация: https://react.dev/reference/react/useState
          * <PlayerSearch />
          */}
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
@@ -49,7 +50,8 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
       {playerProfile && (
         <p className="text-sm text-gray-500 dark:text-gray-400 my-1">{stats.mapInfo}</p>
       )}
-      {/* TODO: Задание 14.2 — Раскомментируйте для добавления индикатора обновления
+      {/* TODO: Задание 5.2 — Раскомментируйте для добавления индикатора обновления
+       * Документация: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
        * <RefreshIndicator
        *   lastUpdated={null}
        *   interval={60000}

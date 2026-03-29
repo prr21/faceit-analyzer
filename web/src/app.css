@@ -5,7 +5,7 @@ body {
   @apply bg-white dark:bg-gray-900 transition-colors;
 }
 
-/* ===== Задание 16.1 — CSS-анимации и переходы ===== */
+/* ===== Задание 2.1 — CSS-анимации и переходы ===== */
 
 /* Shimmer-эффект для loading-скелетонов */
 @keyframes shimmer {
@@ -31,7 +31,8 @@ body {
   to { opacity: 1; max-height: 500px; transform: scaleY(1); }
 }
 
-/* TODO: Задание 16.1 — Создайте анимацию countUp
+/* TODO: Задание 2.1 — Создайте анимацию countUp
+ * Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
  *
  * Анимация для числового счётчика (используется в AnimatedCounter).
  * Подсказка: можно анимировать opacity и transform:
@@ -63,7 +64,8 @@ body {
 }
 
 /* Stagger-задержки для последовательного появления элементов */
-/* TODO: Задание 16.1 — Добавьте stagger-задержки
+/* TODO: Задание 2.1 — Добавьте stagger-задержки
+ * Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
  *
  * Создайте классы .stagger-1, .stagger-2, ..., .stagger-10,
  * каждый с увеличивающейся animation-delay.
@@ -97,7 +99,8 @@ body {
     transition: none !important;
   }
 
-  /* TODO: Задание 16.1 — Отключите stagger-анимации
+  /* TODO: Задание 2.1 — Отключите stagger-анимации
+   * Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
    *
    * Добавьте сюда ваши .stagger-* классы:
    * .stagger-1, .stagger-2, ..., .stagger-10 {

@@ -43,7 +43,8 @@ describe("App — интеграционные тесты", () => {
 
   // === НИЖЕ — ТЕСТЫ ДЛЯ СТУДЕНТОВ ===
 
-  // TODO: Задание 5.1 — Тест: отображение всех табов в режиме "Как лидер"
+  // TODO: Задание 7.1 — Тест: отображение всех табов в режиме "Как лидер"
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("отображает все 7 табов в режиме 'Как лидер'", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -59,7 +60,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText("Сравнение")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: переключение на режим "Все матчи"
+  // TODO: Задание 7.1 — Тест: переключение на режим "Все матчи"
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("при переключении на 'Все матчи' таб 'Баны/Пики' исчезает", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -76,7 +78,8 @@ describe("App — интеграционные тесты", () => {
   //
   // Подсказка: queryByText возвращает null если элемент не найден (не бросает ошибку)
 
-  // TODO: Задание 5.1 — Тест: навигация по табу "Матчи"
+  // TODO: Задание 7.1 — Тест: навигация по табу "Матчи"
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Матчи' отображает таблицу с историей", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -87,7 +90,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: фильтрация матчей по карте
+  // TODO: Задание 7.1 — Тест: фильтрация матчей по карте
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("фильтр по карте в табе 'Матчи' обновляет список", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -104,7 +108,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: фильтрация по результату (победы/поражения)
+  // TODO: Задание 7.1 — Тест: фильтрация по результату (победы/поражения)
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("фильтр 'Победы' показывает только выигранные матчи", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -120,7 +125,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: таб "Обзор" отображает сводные карточки
+  // TODO: Задание 7.1 — Тест: таб "Обзор" отображает сводные карточки
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Обзор' показывает общий винрейт и количество матчей", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -132,7 +138,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText("Общий винрейт")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: таб "Обзор" показывает ELO в шкале уровня
+  // TODO: Задание 7.1 — Тест: таб "Обзор" показывает ELO в шкале уровня
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Обзор' отображает текущий ELO и уровень", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -143,7 +150,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText("1835")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: переключение темы
+  // TODO: Задание 7.1 — Тест: переключение темы
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("кнопка темы переключает dark mode", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -155,7 +163,8 @@ describe("App — интеграционные тесты", () => {
   //   // После клика document.documentElement должен содержать/не содержать класс "dark"
   // })
 
-  // TODO: Задание 5.1 — Тест: раскрытие строки в таблице винрейта
+  // TODO: Задание 7.1 — Тест: раскрытие строки в таблице винрейта
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("клик по строке в WinRateTable раскрывает детали карты", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -169,7 +178,8 @@ describe("App — интеграционные тесты", () => {
   //   // Подсказка: смотрите MatchList компонент — он рендерит счёт "16:12"
   // })
 
-  // TODO: Задание 5.1 — Тест: таб "Сравнение" отображает форму ввода
+  // TODO: Задание 7.1 — Тест: таб "Сравнение" отображает форму ввода
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Сравнение' показывает два поля ввода и кнопку", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -182,7 +192,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByText("Сравнить")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: пагинация в табе "Матчи"
+  // TODO: Задание 7.1 — Тест: пагинация в табе "Матчи"
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // Подсказка: для этого теста нужно больше матчей в mockData (>20),
   // чтобы пагинация появилась. Можно создать расширенный fixture
@@ -202,7 +213,8 @@ describe("App — интеграционные тесты", () => {
   //   // expect(screen.getByText("2 / 2")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: рендеринг с пустыми данными
+  // TODO: Задание 7.1 — Тест: рендеринг с пустыми данными
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("приложение корректно рендерится с минимальными данными", () => {
   //   const emptyData: ReportData = {
@@ -228,7 +240,8 @@ describe("App — интеграционные тесты", () => {
   // Подсказка: import type { ReportData } from "../types"
   // import { mockPlayerStats } from "./fixtures/mockData"
 
-  // TODO: Задание 5.1 — Тест: таб "Радар" рендерится без ошибок
+  // TODO: Задание 7.1 — Тест: таб "Радар" рендерится без ошибок
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Радар' отображает область для радарной диаграммы", () => {
   //   render(<App data={mockPlayerReport} />)
@@ -239,7 +252,8 @@ describe("App — интеграционные тесты", () => {
   //   expect(screen.getByTestId("echarts-mock")).toBeInTheDocument()
   // })
 
-  // TODO: Задание 5.1 — Тест: режим "Все матчи" показывает "Эффект лидерства"
+  // TODO: Задание 7.1 — Тест: режим "Все матчи" показывает "Эффект лидерства"
+  // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("в режиме 'Все матчи' на табе 'Обзор' есть секция 'Эффект лидерства'", () => {
   //   render(<App data={mockPlayerReport} />)

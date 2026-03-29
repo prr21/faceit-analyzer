@@ -14,7 +14,8 @@ export function PlayerSearch() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // TODO: Задание 6.2 — Примените debounce к поисковому запросу
+  // TODO: Задание 4.2 — Примените debounce к поисковому запросу
+  // Документация: https://react.dev/reference/react/useState
   //
   // import { useDebounce } from "../../hooks/useDebounce"
   // const debouncedQuery = useDebounce(query, 300)
@@ -22,7 +23,8 @@ export function PlayerSearch() {
   // Это создаст debouncedQuery, который обновляется через 300мс после
   // последнего изменения query.
 
-  // TODO: Задание 6.2 — Загрузка результатов при изменении debouncedQuery
+  // TODO: Задание 4.2 — Загрузка результатов при изменении debouncedQuery
+  // Документация: https://react.dev/reference/react/useState
   //
   // useEffect(() => {
   //   // Не искать если запрос короче 3 символов
@@ -60,7 +62,7 @@ export function PlayerSearch() {
   // Ключевые моменты:
   // - debouncedQuery.length < 3 — не перегружать API короткими запросами
   // - AbortController — отменяет предыдущий запрос когда пользователь продолжает ввод
-  // - Паттерн аналогичен usePlayerData (Задание 6.1)
+  // - Паттерн аналогичен usePlayerData (Задание 4.1)
 
   return (
     <div className="relative">
@@ -80,7 +82,8 @@ export function PlayerSearch() {
         </div>
       )}
 
-      {/* TODO: Задание 6.2 — Отобразите выпадающий список результатов
+      {/* TODO: Задание 4.2 — Отобразите выпадающий список результатов
+       * Документация: https://react.dev/reference/react/useState
        *
        * Показывать только когда query.length >= 3 И (есть результаты ИЛИ есть ошибка)
        *

@@ -12,7 +12,8 @@ export function CompareTab({ isDark }: { isDark: boolean }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // TODO: Задание 14.1 — Реализуйте функцию сравнения двух игроков
+  // TODO: Задание 5.1 — Реализуйте функцию сравнения двух игроков
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
   //
   // async function handleCompare() {
   //   if (nickname1.length < 2 || nickname2.length < 2) {
@@ -101,7 +102,8 @@ export function CompareTab({ isDark }: { isDark: boolean }) {
           className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 placeholder-gray-400"
         />
         <button
-          // TODO: Задание 14.1 — Подключите handleCompare
+          // TODO: Задание 5.1 — Подключите handleCompare
+          // Документация: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
           // onClick={handleCompare}
           disabled={loading}
           className="cursor-pointer px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -114,7 +116,8 @@ export function CompareTab({ isDark }: { isDark: boolean }) {
       {loading && <LoadingSpinner message="Загрузка данных игроков..." />}
       {error && <ErrorMessage message={error} />}
 
-      {/* TODO: Задание 14.1 — Отобразите CompareView когда оба игрока загружены
+      {/* TODO: Задание 5.1 — Отобразите CompareView когда оба игрока загружены
+       * Документация: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
        *
        * {data1 && data2 && <CompareView player1={data1} player2={data2} />}
        *

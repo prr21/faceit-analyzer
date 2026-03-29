@@ -20,7 +20,8 @@ const FALLBACK_COLORS: Record<string, string> = {
 }
 
 export function MapImage({ mapName, size = 32 }: MapImageProps) {
-  // TODO: Задание 16.2 — Добавьте состояние для отслеживания ошибки загрузки
+  // TODO: Задание 2.2 — Добавьте состояние для отслеживания ошибки загрузки
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial
   //
   // const [hasError, setHasError] = useState(false)
   //
@@ -31,7 +32,8 @@ export function MapImage({ mapName, size = 32 }: MapImageProps) {
   const firstLetter = shortName.charAt(0).toLowerCase()
   const bgColor = FALLBACK_COLORS[firstLetter] || "bg-gray-500"
 
-  // TODO: Задание 16.2 — Реализуйте условный рендеринг: изображение или fallback
+  // TODO: Задание 2.2 — Реализуйте условный рендеринг: изображение или fallback
+  // Документация: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial
   //
   // if (!hasError) {
   //   return (
