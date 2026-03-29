@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { ReportData } from "../types"
+import type { ReportData } from "../../../types"
 
 interface UsePlayerDataResult {
   /** Загруженные данные (null пока загружаются или при ошибке) */

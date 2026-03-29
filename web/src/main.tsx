@@ -49,7 +49,7 @@ declare global {
 // 2. Замените <App data={data} /> на <AppWithDynamicData /> в render()
 //
 // Импорты, которые понадобятся:
-// import { usePlayerData } from "./hooks/usePlayerData"
+// import { usePlayerData } from "./features/theme-4-async/hooks/usePlayerData"
 // import { LoadingSpinner } from "./components/core/LoadingSpinner"
 // import { ErrorMessage } from "./components/core/ErrorMessage"
 

@@ -17,7 +17,7 @@ export function PlayerSearch() {
   // TODO: Задание 4.2 — Примените debounce к поисковому запросу
   // Документация: https://react.dev/reference/react/useState
   //
-  // import { useDebounce } from "../../hooks/useDebounce"
+  // import { useDebounce } from "../hooks/useDebounce"
   // const debouncedQuery = useDebounce(query, 300)
   //
   // Это создаст debouncedQuery, который обновляется через 300мс после
