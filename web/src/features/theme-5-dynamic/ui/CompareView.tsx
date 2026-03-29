@@ -1,4 +1,4 @@
-import type { ReportData } from "../../types"
+import type { ReportData } from "../../../types"
 
 interface CompareViewProps {
   player1: ReportData

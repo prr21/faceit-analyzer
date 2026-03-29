@@ -10,7 +10,7 @@ import { TrendsTab } from "./components/tabs/TrendsTab"
 import { MatchHistoryTab } from "./features/theme-1-frontend/tabs/MatchHistoryTab"
 import { OverviewTab } from "./components/tabs/OverviewTab"
 import { RadarTab } from "./components/tabs/RadarTab"
-import { CompareTab } from "./components/tabs/CompareTab"
+import { CompareTab } from "./features/theme-5-dynamic/tabs/CompareTab"
 
 const TEAM_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар", "Сравнение"]
 const LEADER_TABS = ["Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар", "Сравнение"]

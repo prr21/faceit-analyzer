@@ -1,8 +1,8 @@
 import { useState } from "react"
-import type { ReportData } from "../../types"
+import type { ReportData } from "../../../types"
 import { CompareView } from "../ui/CompareView"
-import { LoadingSpinner } from "../core/LoadingSpinner"
-import { ErrorMessage } from "../core/ErrorMessage"
+import { LoadingSpinner } from "../../../components/core/LoadingSpinner"
+import { ErrorMessage } from "../../../components/core/ErrorMessage"
 
 export function CompareTab({ isDark }: { isDark: boolean }) {
   const [nickname1, setNickname1] = useState("")
