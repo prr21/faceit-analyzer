@@ -50,8 +50,8 @@ declare global {
 //
 // Импорты, которые понадобятся:
 // import { usePlayerData } from "./hooks/usePlayerData"
-// import { LoadingSpinner } from "./components/ui/LoadingSpinner"
-// import { ErrorMessage } from "./components/ui/ErrorMessage"
+// import { LoadingSpinner } from "./components/core/LoadingSpinner"
+// import { ErrorMessage } from "./components/core/ErrorMessage"
 
 const data = window.__REPORT_DATA__
 

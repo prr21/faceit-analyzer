@@ -1,9 +1,9 @@
 import type { TeamDropPickStats, PlayerDropPickStats } from "../../types"
 import { WinRateChart } from "../charts/WinRateChart"
 import { CompetitionChart } from "../charts/CompetitionChart"
-import { WinRateTable } from "../ui/WinRateTable"
-import { FavoriteUnderdogCards } from "../ui/FavoriteUnderdogCards"
-import { OpponentTable } from "../ui/OpponentTable"
+import { WinRateTable } from "../core/WinRateTable"
+import { FavoriteUnderdogCards } from "../core/FavoriteUnderdogCards"
+import { OpponentTable } from "../core/OpponentTable"
 
 interface WinrateTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats

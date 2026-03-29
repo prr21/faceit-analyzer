@@ -1,9 +1,9 @@
 import type { TeamDropPickStats, PlayerDropPickStats } from "../../types"
-import { SummaryCards } from "../ui/SummaryCards"
+import { SummaryCards } from "../core/SummaryCards"
 import { CompetitionPieChart } from "../charts/CompetitionPieChart"
-import { SkillLevelBar } from "../ui/SkillLevelBar"
-import { RecentPerformance } from "../ui/RecentPerformance"
-import { LeadershipImpact } from "../ui/LeadershipImpact"
+import { SkillLevelBar } from "../core/SkillLevelBar"
+import { RecentPerformance } from "../core/RecentPerformance"
+import { LeadershipImpact } from "../core/LeadershipImpact"
 import { BestWorstCards } from "../ui/BestWorstCards"
 
 interface OverviewTabProps {

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats } from "../types"
 import { ThemeToggle } from "./ThemeToggle"
-import { PlayerHeader } from "./ui/PlayerHeader"
+import { PlayerHeader } from "./core/PlayerHeader"
 // import { PlayerSearch } from "./ui/PlayerSearch"
 // import { RefreshIndicator } from "./ui/RefreshIndicator"
 
