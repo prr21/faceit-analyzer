@@ -55,8 +55,8 @@ results.forEach((result, i) => {
 ### Задание 5.1 — Сравнение двух игроков
 
 **Файлы:**
-- `web/src/components/tabs/CompareTab.tsx` — форма и логика сравнения
-- `web/src/components/ui/CompareView.tsx` — отображение результатов
+- `web/src/features/theme-5-dynamic/tabs/CompareTab.tsx` — форма и логика сравнения
+- `web/src/features/theme-5-dynamic/ui/CompareView.tsx` — отображение результатов
 
 **TODO:** 2 маркера
 
@@ -73,8 +73,8 @@ results.forEach((result, i) => {
 ### Задание 5.2 — Автообновление данных
 
 **Файлы:**
-- `web/src/hooks/usePolling.ts` — хук периодического опроса
-- `web/src/components/ui/RefreshIndicator.tsx` — индикатор обновления
+- `web/src/features/theme-5-dynamic/hooks/usePolling.ts` — хук периодического опроса
+- `web/src/features/theme-5-dynamic/ui/RefreshIndicator.tsx` — индикатор обновления
 - `web/src/components/Layout.tsx` — подключение индикатора (раскомментировать)
 
 **TODO:** 4 маркера

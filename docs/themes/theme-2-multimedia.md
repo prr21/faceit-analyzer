@@ -56,8 +56,8 @@ SVG-иконки можно встраивать прямо в JSX как inline
 ### Задание 2.1 — CSS-анимации и transition-эффекты
 
 **Файлы:**
-- `web/src/components/ui/SkeletonCard.tsx` — скелетон-заглушка
-- `web/src/components/ui/AnimatedCounter.tsx` — анимированный счётчик
+- `web/src/features/theme-2-multimedia/ui/SkeletonCard.tsx` — скелетон-заглушка
+- `web/src/features/theme-2-multimedia/ui/AnimatedCounter.tsx` — анимированный счётчик
 - `web/src/app.css` — keyframes и утилитарные классы
 
 **TODO:** 3 маркера в компонентах + 2 в CSS
@@ -74,8 +74,8 @@ SVG-иконки можно встраивать прямо в JSX как inline
 ### Задание 2.2 — Изображения и SVG-иконки
 
 **Файлы:**
-- `web/src/components/ui/MapImage.tsx` — изображение карты с fallback
-- `web/src/components/ui/StatIcon.tsx` — SVG-иконки метрик
+- `web/src/features/theme-2-multimedia/ui/MapImage.tsx` — изображение карты с fallback
+- `web/src/features/theme-2-multimedia/ui/StatIcon.tsx` — SVG-иконки метрик
 - `web/public/maps/` — директория для изображений карт
 
 **TODO:** 2 маркера + 1 BONUS

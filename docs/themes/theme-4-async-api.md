@@ -66,10 +66,10 @@ function useDebounce<T>(value: T, delay: number): T {
 ### Задание 4.1 — Динамическая загрузка данных
 
 **Файлы:**
-- `web/src/hooks/usePlayerData.ts` — кастомный хук загрузки
+- `web/src/features/theme-4-async/hooks/usePlayerData.ts` — кастомный хук загрузки
 - `web/src/main.tsx` — альтернативная точка входа
-- `web/src/components/ui/LoadingSpinner.tsx` — спиннер (готов)
-- `web/src/components/ui/ErrorMessage.tsx` — сообщение об ошибке (готов)
+- `web/src/components/core/LoadingSpinner.tsx` — спиннер (готов)
+- `web/src/components/core/ErrorMessage.tsx` — сообщение об ошибке (готов)
 
 **TODO:** 2 маркера
 
@@ -86,8 +86,8 @@ function useDebounce<T>(value: T, delay: number): T {
 ### Задание 4.2 — Поиск с debounce
 
 **Файлы:**
-- `web/src/hooks/useDebounce.ts` — хук debounce
-- `web/src/components/ui/PlayerSearch.tsx` — компонент поиска
+- `web/src/features/theme-4-async/hooks/useDebounce.ts` — хук debounce
+- `web/src/features/theme-4-async/ui/PlayerSearch.tsx` — компонент поиска
 - `web/src/components/Layout.tsx` — подключение в шапку (раскомментировать)
 
 **TODO:** 3 маркера

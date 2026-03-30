@@ -108,29 +108,50 @@ web/                                    # React-фронтенд
     main.tsx                            # Точка входа                    [4.1]
     types.ts                            # TypeScript-интерфейсы
     app.css                             # Стили + анимации               [2.1]
+    features/                           # Учебные задания по темам
+      theme-1-frontend/
+        charts/RadarChart.tsx           # Радарная диаграмма             [1.1]
+        tabs/MatchHistoryTab.tsx        # Таб "Матчи" (раскрытие строк) [1.2]
+        ui/MatchDetailCard.tsx          # Детали матча                   [1.2]
+        ui/BestWorstCards.tsx           # Лучшие/худшие карты            [1.3]
+      theme-2-multimedia/
+        ui/SkeletonCard.tsx             # Скелетон-заглушка              [2.1]
+        ui/AnimatedCounter.tsx          # Анимированный счётчик          [2.1]
+        ui/MapImage.tsx                 # Изображение карты              [2.2]
+        ui/StatIcon.tsx                 # SVG-иконки                     [2.2]
+      theme-4-async/
+        hooks/usePlayerData.ts          # Загрузка данных                [4.1]
+        hooks/useDebounce.ts            # Debounce хук                   [4.2]
+        ui/PlayerSearch.tsx             # Поиск игроков                  [4.2]
+      theme-5-dynamic/
+        tabs/CompareTab.tsx             # Таб "Сравнение"               [5.1]
+        ui/CompareView.tsx              # Сравнение двух игроков         [5.1]
+        hooks/usePolling.ts             # Polling хук                    [5.2]
+        ui/RefreshIndicator.tsx         # Индикатор обновления           [5.2]
     components/
-      charts/RadarChart.tsx             # Радарная диаграмма             [1.1]
-      tabs/
-        RadarTab.tsx                    # Таб "Радар"                    [1.1]
-        MatchHistoryTab.tsx             # Таб "Матчи" (раскрытие строк) [1.2]
-        OverviewTab.tsx                 # Таб "Обзор"                   [1.3]
-        CompareTab.tsx                  # Таб "Сравнение"               [5.1]
-      ui/
-        MatchDetailCard.tsx             # Детали матча                   [1.2]
-        BestWorstCards.tsx              # Лучшие/худшие карты            [1.3]
-        PlayerSearch.tsx                # Поиск игроков                  [4.2]
-        CompareView.tsx                 # Сравнение двух игроков         [5.1]
-        RefreshIndicator.tsx            # Индикатор обновления           [5.2]
-        SkeletonCard.tsx                # Скелетон-заглушка              [2.1]
-        AnimatedCounter.tsx             # Анимированный счётчик          [2.1]
-        MapImage.tsx                    # Изображение карты              [2.2]
-        StatIcon.tsx                    # SVG-иконки                     [2.2]
+      core/                             # Готовые UI-компоненты
+        Card.tsx                        # Базовая карточка (готов)
+        PlayerHeader.tsx                # Шапка игрока (готов)
         LoadingSpinner.tsx              # Спиннер загрузки (готов)
         ErrorMessage.tsx                # Сообщение об ошибке (готов)
+        MatchList.tsx                   # Список матчей (готов)
+        WinRateTable.tsx                # Таблица винрейта (готов)
+        OpponentTable.tsx               # Таблица противников (готов)
+        SummaryCards.tsx                # Сводные карточки (готов)
+        FavoriteUnderdogCards.tsx       # Любимые/слабые карты (готов)
+        LeadershipImpact.tsx            # Эффект лидерства (готов)
+        RecentPerformance.tsx           # Недавние результаты (готов)
+        SkillLevelBar.tsx               # Уровень навыка (готов)
+        WinLossStreak.tsx               # Серии побед/поражений (готов)
+      charts/                           # Готовые графики
+      tabs/                             # Готовые табы
+        BanPickTab.tsx                  # Таб "Баны/Пики"
+        OverviewTab.tsx                 # Таб "Обзор"                   [1.3]
+        RadarTab.tsx                    # Таб "Радар"                    [1.1]
+        TrendsTab.tsx                   # Таб "Тренды"
+        WinrateTab.tsx                  # Таб "Винрейт"
+      Layout.tsx, ModeToggle.tsx, TabNavigation.tsx, ThemeToggle.tsx
     hooks/
-      usePlayerData.ts                  # Загрузка данных                [4.1]
-      useDebounce.ts                    # Debounce хук                   [4.2]
-      usePolling.ts                     # Polling хук                    [5.2]
       useTheme.ts                       # Тема (готов)
     utils/colors.ts                     # Цветовая система (готов)
     __tests__/
