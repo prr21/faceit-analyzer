@@ -1,6 +1,6 @@
 import { useMemo } from "react"
-import type { MapWinRate, MatchRecord } from "../../../types"
-import { Card } from "../../../components/core/Card"
+import type { MapWinRate, MatchRecord } from "@/types"
+import { Card } from "@/components/core/Card"
 
 interface BestWorstCardsProps {
   mapWinRate: Record<string, MapWinRate>

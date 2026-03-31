@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react"
-import type { TeamDropPickStats, PlayerDropPickStats, MatchRecord } from "../../../types"
-import { getStatColor } from "../../../utils/colors"
+import type { TeamDropPickStats, PlayerDropPickStats, MatchRecord } from "@/types"
+import { getStatColor } from "@/utils/colors"
 import { MatchDetailCard } from "../ui/MatchDetailCard"
 
 type FlatMatchRecord = MatchRecord & { mapName: string }
