@@ -53,7 +53,9 @@ declare global {
 // import { LoadingSpinner } from "./components/core/LoadingSpinner"
 // import { ErrorMessage } from "./components/core/ErrorMessage"
 
-const data = window.__REPORT_DATA__
+import { mockPlayerReport } from "./__tests__/fixtures/mockData"
+
+const data = window.__REPORT_DATA__ ?? (import.meta.env.DEV ? mockPlayerReport : null)
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
