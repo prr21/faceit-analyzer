@@ -93,18 +93,18 @@ export function WinRateTable({ winRate, matchRecords }: WinRateTableProps) {
                   {hasAnyStats && (
                     <>
                       <td className={TD}>
-                        {perf?.avgKd !== null ? (
-                          <span className={`font-medium ${getStatColor(perf!.avgKd!, "kd")}`}>{perf!.avgKd}</span>
+                        {perf?.avgKd != null ? (
+                          <span className={`font-medium ${getStatColor(perf.avgKd, "kd")}`}>{perf.avgKd}</span>
                         ) : "—"}
                       </td>
                       <td className={TD}>
-                        {perf?.avgAdr !== null ? (
-                          <span className={getStatColor(perf!.avgAdr!, "adr")}>{perf!.avgAdr}</span>
+                        {perf?.avgAdr != null ? (
+                          <span className={getStatColor(perf.avgAdr, "adr")}>{perf.avgAdr}</span>
                         ) : "—"}
                       </td>
                       <td className={TD}>
-                        {perf?.avgHs !== null ? (
-                          <span className={getStatColor(perf!.avgHs!, "hs")}>{perf!.avgHs}%</span>
+                        {perf?.avgHs != null ? (
+                          <span className={getStatColor(perf.avgHs, "hs")}>{perf.avgHs}%</span>
                         ) : "—"}
                       </td>
                     </>
