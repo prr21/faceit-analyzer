@@ -1,10 +1,13 @@
 import { HashRouter } from "react-router-dom"
 import { AppRoutes } from "./routing"
+import { StoreProvider } from "./store"
 
 export function App() {
   return (
-    <HashRouter>
-      <AppRoutes />
-    </HashRouter>
+    <StoreProvider>
+      <HashRouter>
+        <AppRoutes />
+      </HashRouter>
+    </StoreProvider>
   )
 }
