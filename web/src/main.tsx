@@ -14,57 +14,14 @@ declare global {
 // TODO: Задание 4.1 — Динамическая загрузка данных
 // Документация: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API, https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 //
-// Сейчас данные берутся из window.__REPORT_DATA__ (встроены в HTML при генерации).
-// Задача: добавить альтернативный путь — загрузка через API по никнейму из URL.
+// - #/report      → встроенные данные (window.__REPORT_DATA__) или mock в DEV
+// - #/player/:nickname → динамическая загрузка через usePlayerData (задание 4.1)
 //
-// Пример URL: http://localhost:5173/?player=dErzz
-//
-// Шаги:
-// 1. Создайте компонент-обёртку AppWithDynamicData:
-//
-// function AppWithDynamicData() {
-//   // Получить nickname из URL search params
-//   const params = new URLSearchParams(window.location.search)
-//   const nickname = params.get("player") || ""
-//
-//   // Если есть предзагруженные данные — использовать их
-//   const staticData = window.__REPORT_DATA__
-//   if (staticData) {
-//     return <App data={staticData} />
-//   }
-//
-//   // Иначе — загрузить динамически
-//   const { data, loading, error, refetch } = usePlayerData(nickname)
-//
-//   if (!nickname) {
-//     return <div className="...">Укажите ?player=nickname в URL</div>
-//   }
-//   if (loading) return <LoadingSpinner />
-//   if (error) return <ErrorMessage message={error} onRetry={refetch} />
-//   if (!data) return null
-//
-//   return <App data={data} />
-// }
-//
-// 2. Замените <App data={data} /> на <AppWithDynamicData /> в render()
-//
-// Импорты, которые понадобятся:
-// import { usePlayerData } from "./features/theme-4-async/hooks/usePlayerData"
-// import { LoadingSpinner } from "./components/core/LoadingSpinner"
-// import { ErrorMessage } from "./components/core/ErrorMessage"
-
-import { mockPlayerReport } from "./__tests__/fixtures/mockData"
-
-const data = window.__REPORT_DATA__ ?? (import.meta.env.DEV ? mockPlayerReport : null)
+// Для реализации динамической загрузки см. src/pages/PlayerPage.tsx
+// и src/features/theme-4-async/hooks/usePlayerData.ts
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {data ? (
-      <App data={data} />
-    ) : (
-      <div className="max-w-[960px] mx-auto p-5 text-gray-500 dark:text-gray-400">
-        <p>Нет данных для отображения. Запустите анализ через CLI.</p>
-      </div>
-    )}
+    <App />
   </StrictMode>,
 )

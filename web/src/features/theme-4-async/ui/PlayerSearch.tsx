@@ -95,9 +95,9 @@ export function PlayerSearch() {
        *       <p className="p-3 text-sm text-red-500">{error}</p>
        *     ) : (
        *       results.map(player => (
-       *         <a
+       *         <Link
        *           key={player.player_id}
-       *           href={`?player=${player.nickname}`}
+       *           to={`/player/${player.nickname}`}
        *           className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100
        *             dark:hover:bg-gray-700 transition-colors"
        *         >
@@ -113,7 +113,7 @@ export function PlayerSearch() {
        *               Уровень {player.skill_level} · {player.country}
        *             </div>
        *           </div>
-       *         </a>
+       *         </Link>
        *       ))
        *     )}
        *
@@ -124,6 +124,7 @@ export function PlayerSearch() {
        * )}
        *
        * Подсказки:
+       * - import { Link } from "react-router-dom" — для навигации по роутам
        * - z-50 — чтобы выпадающий список был поверх остального контента
        * - overflow-y-auto — прокрутка при большом количестве результатов
        * - onError на img — скрыть аватар если он не загрузился

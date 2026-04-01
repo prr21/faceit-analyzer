@@ -1,6 +1,7 @@
 import { describe, test, expect, vi, beforeAll } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { App } from "../App"
+import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { ReportView } from "../components/ReportView"
 import { mockPlayerReport } from "./fixtures/mockData"
 
 // Мок для ECharts — в тестовой среде нет canvas, поэтому мокаем компонент
@@ -20,25 +21,40 @@ beforeAll(() => {
   }
 })
 
+/** Хелпер: рендерит ReportView внутри MemoryRouter с нужным маршрутом */
+function renderReport(tab = "bans", mode?: string) {
+  const modeParam = mode ? `?mode=${mode}` : ""
+  return render(
+    <MemoryRouter initialEntries={[`/report/${tab}${modeParam}`]}>
+      <Routes>
+        <Route
+          path="/report/:tab?"
+          element={<ReportView data={mockPlayerReport} basePath="/report" />}
+        />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
 describe("App — интеграционные тесты", () => {
   // === ПРИМЕР 1: Рендеринг заголовка из данных ===
   test("отображает никнейм игрока в шапке", () => {
-    render(<App data={mockPlayerReport} />)
+    renderReport()
     // mockPlayerReport.stats.playerProfile.nickname = "TestPlayer"
     expect(screen.getByText("TestPlayer")).toBeInTheDocument()
   })
 
   // === ПРИМЕР 2: Переключение табов по клику ===
   test("переключает таб при клике на 'Винрейт'", () => {
-    render(<App data={mockPlayerReport} />)
+    renderReport()
 
     // По умолчанию активен первый таб "Баны/Пики"
     const winrateTab = screen.getByText("Винрейт")
     fireEvent.click(winrateTab)
 
     // После клика должна появиться таблица винрейта
-    // В mockData есть карта de_dust2 с rate 67
-    expect(screen.getByText("67%")).toBeInTheDocument()
+    // В mockData leaderMapWinRate de_dust2 rate = 71
+    expect(screen.getByText("71%")).toBeInTheDocument()
   })
 
   // === НИЖЕ — ТЕСТЫ ДЛЯ СТУДЕНТОВ ===
@@ -47,7 +63,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("отображает все 7 табов в режиме 'Как лидер'", () => {
-  //   render(<App data={mockPlayerReport} />)
+  //   renderReport()
   //
   //   // В режиме leader (по умолчанию) должны быть 7 табов:
   //   // "Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар", "Сравнение"
@@ -64,7 +80,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("при переключении на 'Все матчи' таб 'Баны/Пики' исчезает", () => {
-  //   render(<App data={mockPlayerReport} />)
+  //   renderReport()
   //
   //   // Найти кнопку "Все матчи" и кликнуть
   //   const allModeBtn = screen.getByText("Все матчи")
@@ -82,9 +98,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Матчи' отображает таблицу с историей", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Матчи"))
+  //   renderReport("matches")
   //
   //   // В mockData есть матчи с противниками "Team Alpha", "Team Beta", "Team Gamma"
   //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
@@ -94,9 +108,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("фильтр по карте в табе 'Матчи' обновляет список", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Матчи"))
+  //   renderReport("matches")
   //
   //   // Найти select фильтра карт и выбрать "de_dust2"
   //   const mapFilter = screen.getByDisplayValue("Все карты")
@@ -112,9 +124,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("фильтр 'Победы' показывает только выигранные матчи", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Матчи"))
+  //   renderReport("matches")
   //
   //   // Кликаем на кнопку "Победы"
   //   fireEvent.click(screen.getByText("Победы"))
@@ -129,9 +139,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Обзор' показывает общий винрейт и количество матчей", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Обзор"))
+  //   renderReport("overview")
   //
   //   // Должны быть видны карточки с метриками
   //   expect(screen.getByText("Всего матчей")).toBeInTheDocument()
@@ -142,9 +150,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Обзор' отображает текущий ELO и уровень", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Обзор"))
+  //   renderReport("overview")
   //
   //   // В mockData: currentElo = 1835, skillLevel = 8
   //   expect(screen.getByText("1835")).toBeInTheDocument()
@@ -154,7 +160,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("кнопка темы переключает dark mode", () => {
-  //   render(<App data={mockPlayerReport} />)
+  //   renderReport()
   //
   //   // Найти кнопку переключения темы (иконка солнца/луны)
   //   // Подсказка: используйте screen.getByRole("button") или screen.getByLabelText
@@ -167,9 +173,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("клик по строке в WinRateTable раскрывает детали карты", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Винрейт"))
+  //   renderReport("winrate")
   //
   //   // Найти строку с картой de_dust2 и кликнуть
   //   // Подсказка: screen.getByText("de_dust2") → fireEvent.click
@@ -182,9 +186,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Сравнение' показывает два поля ввода и кнопку", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Сравнение"))
+  //   renderReport("compare")
   //
   //   // Должны быть видны два поля ввода и кнопка "Сравнить"
   //   expect(screen.getByPlaceholderText("Никнейм игрока 1")).toBeInTheDocument()
@@ -201,9 +203,7 @@ describe("App — интеграционные тесты", () => {
   //
   // test("пагинация в табе 'Матчи' переключает страницы", () => {
   //   // Создайте расширенные mockData с 25+ матчами
-  //   // render(<App data={extendedMockReport} />)
-  //   //
-  //   // fireEvent.click(screen.getByText("Матчи"))
+  //   // renderReport("matches") или renderReport с extendedMockReport
   //   //
   //   // // Должна быть кнопка "Далее →"
   //   // const nextBtn = screen.getByText("Далее →")
@@ -232,7 +232,13 @@ describe("App — интеграционные тесты", () => {
   //   }
   //
   //   // Не должно бросить ошибку
-  //   const { container } = render(<App data={emptyData} />)
+  //   const { container } = render(
+  //     <MemoryRouter initialEntries={["/report/bans"]}>
+  //       <Routes>
+  //         <Route path="/report/:tab?" element={<ReportView data={emptyData} basePath="/report" />} />
+  //       </Routes>
+  //     </MemoryRouter>,
+  //   )
   //   expect(container).toBeTruthy()
   //   expect(screen.getByText("EmptyPlayer")).toBeInTheDocument()
   // })
@@ -244,9 +250,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("таб 'Радар' отображает область для радарной диаграммы", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   fireEvent.click(screen.getByText("Радар"))
+  //   renderReport("radar")
   //
   //   // Поскольку ECharts замокан, ищем data-testid="echarts-mock"
   //   expect(screen.getByTestId("echarts-mock")).toBeInTheDocument()
@@ -256,13 +260,7 @@ describe("App — интеграционные тесты", () => {
   // Документация: https://testing-library.com/docs/react-testing-library/api
   //
   // test("в режиме 'Все матчи' на табе 'Обзор' есть секция 'Эффект лидерства'", () => {
-  //   render(<App data={mockPlayerReport} />)
-  //
-  //   // Переключить на "Все матчи"
-  //   fireEvent.click(screen.getByText("Все матчи"))
-  //
-  //   // Перейти на "Обзор"
-  //   fireEvent.click(screen.getByText("Обзор"))
+  //   renderReport("overview", "all")
   //
   //   // Должна быть секция "Эффект лидерства"
   //   expect(screen.getByText("Эффект лидерства")).toBeInTheDocument()
