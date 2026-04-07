@@ -1,5 +1,5 @@
 {
-  "name": "faceit-proxy-server",
+  "name": "@faceit/server",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@faceit/core": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.1.0"

@@ -1,21 +1,20 @@
 {
   "name": "faceit",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "workspaces": ["core", "cli", "server", "web"],
   "scripts": {
-    "team": "tsx src/scripts/team-ban-pick.ts",
-    "player": "tsx src/scripts/player-ban-picks.ts",
-    "smurfs": "tsx src/scripts/find-smurfs.ts",
-    "typecheck": "tsc --noEmit",
-    "build:web": "cd web && npm run build",
-    "dev:web": "cd web && npm run dev"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.9.0",
-    "dotenv": "^17.3.1"
+    "team": "tsx cli/team.ts",
+    "player": "tsx cli/player.ts",
+    "smurfs": "tsx cli/smurfs.ts",
+    "dev:web": "npm run dev -w @faceit/web",
+    "dev:server": "npm run dev -w @faceit/server",
+    "build:web": "npm run build -w @faceit/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck:core": "tsc --noEmit -p core/tsconfig.json",
+    "typecheck:cli": "tsc --noEmit -p cli/tsconfig.json",
+    "typecheck:server": "npm run typecheck -w @faceit/server",
+    "typecheck:web": "npm run typecheck -w @faceit/web"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
