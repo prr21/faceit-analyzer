@@ -1,5 +1,5 @@
 import {
-  FACEIT_API_KEY,
+  getFaceitApiKey,
   DEFAULT_GAME,
   DEFAULT_CONCURRENCY,
   createFaceitClient,
@@ -15,7 +15,7 @@ import {
 const SMURF_ELO_THRESHOLD = 1300
 const PLAYER_NICKNAME = process.argv[2] || "ed1v9k"
 
-const client = createFaceitClient(FACEIT_API_KEY)
+const client = createFaceitClient(getFaceitApiKey())
 
 async function main() {
   const playerId = await getPlayerId(client, PLAYER_NICKNAME)

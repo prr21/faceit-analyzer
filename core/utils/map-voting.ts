@@ -1,4 +1,4 @@
-import { ACTIVE_MAP_POOL } from "../config.js"
+import { ACTIVE_MAP_POOL } from "../constants.js"
 import type { MapCountRecord, VotingEntity, VotingPayload, VotingTicket } from "../types/faceit.js"
 
 export type VotingPhase =
@@ -14,8 +14,10 @@ export function findMapVotingTicket(
   return history.tickets?.find(ticket => ticket.entity_type === "map")
 }
 
-export function isPoolMap(mapName: string): boolean {
-  return ACTIVE_MAP_POOL.includes(mapName)
+const defaultPool = new Set(ACTIVE_MAP_POOL)
+
+export function isPoolMap(mapName: string, pool: Set<string> = defaultPool): boolean {
+  return pool.has(mapName)
 }
 
 export function getDeciderRound(ticket: VotingTicket): number {

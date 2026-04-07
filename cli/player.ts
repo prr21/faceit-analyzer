@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import {
-  FACEIT_API_KEY,
+  getFaceitApiKey,
   DEFAULT_CONCURRENCY,
   createFaceitClient,
   getPlayerId,
@@ -10,12 +10,12 @@ import {
   getMatchWithVoting,
   batchWithLimit,
   analyzePlayerMapStrategy,
-  writePlayerReport,
 } from "@faceit/core"
+import { writePlayerReport } from "./report-writer.js"
 
 const PLAYER_NICKNAME = process.argv[2] || "dErzz"
 
-const client = createFaceitClient(FACEIT_API_KEY)
+const client = createFaceitClient(getFaceitApiKey())
 
 async function main() {
   const playerId = await getPlayerId(client, PLAYER_NICKNAME)

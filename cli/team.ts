@@ -1,21 +1,23 @@
 import fs from "fs"
 import path from "path"
 import {
-  FACEIT_API_KEY,
+  getFaceitApiKey,
   DEFAULT_CONCURRENCY,
-  teams,
   createFaceitClient,
   getPlayerMatches,
   getMatchWithVoting,
   batchWithLimit,
   analyzeTeamMapStrategy,
-  writeTeamReport,
 } from "@faceit/core"
+import { writeTeamReport } from "./report-writer.js"
+import teamsData from "./data/teams.json" with { type: "json" }
+
+const teams: Record<string, string[]> = teamsData
 
 const TEAM_NAME = process.argv[2] || "Satanics Aura"
 const MIN_PLAYERS_IN_MATCH = 3
 
-const client = createFaceitClient(FACEIT_API_KEY)
+const client = createFaceitClient(getFaceitApiKey())
 
 async function main() {
   const teamPlayerIds = teams[TEAM_NAME]

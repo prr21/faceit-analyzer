@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs"
 import { dirname, resolve } from "node:path"
-import type { TeamDropPickStats, PlayerDropPickStats } from "../types/faceit.js"
+import type { TeamDropPickStats, PlayerDropPickStats } from "@faceit/core"
 
 const TEMPLATE_PATH = resolve("web", "dist", "index.html")
 
