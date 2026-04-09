@@ -3,6 +3,10 @@ import express from "express"
 import { corsMiddleware } from "./middleware/cors.js"
 import { rateLimit } from "./middleware/rateLimit.js"
 import { apiRouter } from "./routes/api.js"
+import { bootstrap } from "./bootstrap"
+import { createPlayerRouter } from "./routes/player.routes"
+import { createTeamRouter } from "./routes/team.routes"
+import { errorHandler } from "./middleware/errorHandler"
 
 const app = express()
 
@@ -18,10 +22,18 @@ app.use(rateLimit({ windowMs: 60_000, maxRequests: 100 }))
 // API маршруты
 app.use("/api", apiRouter)
 
+// Инициализация core/ и продвинутые маршруты
+const ctx = bootstrap()
+app.use("/api/player", createPlayerRouter(ctx))
+app.use("/api/team", createTeamRouter(ctx))
+
 // Проверка работоспособности
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
 })
+
+// Централизованная обработка ошибок
+app.use(errorHandler)
 
 // TODO: Задание 3.1 — Запустите сервер на порту из переменной окружения
 // Документация: https://expressjs.com/en/starter/hello-world.html
