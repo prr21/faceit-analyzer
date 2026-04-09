@@ -1,5 +1,6 @@
 // API
 export { createFaceitClient } from "./api/client"
+export type { FaceitClient } from "./api/client"
 export {
   getPlayerId,
   getPlayerMatches,
