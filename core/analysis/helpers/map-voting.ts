@@ -1,12 +1,6 @@
-import { ACTIVE_MAP_POOL } from "../constants.js"
-import type { MapCountRecord, VotingEntity, VotingPayload, VotingTicket } from "../types/faceit.js"
-
-export type VotingPhase =
-  | "firstBan"
-  | "firstPick"
-  | "secondBan"
-  | "thirdBan"
-  | "decider"
+import { ACTIVE_MAP_POOL } from "../../constants"
+import type { VotingEntity, VotingPayload, VotingTicket } from "../../types/index"
+import type { VotingPhase } from "../../types/analysis"
 
 export function findMapVotingTicket(
   history: VotingPayload,
@@ -42,11 +36,4 @@ export function classifyVotingEntity(
   if (isStep3 && status === "drop") return "thirdBan"
 
   return null
-}
-
-export function incrementMapCount(
-  record: MapCountRecord,
-  mapName: string,
-): void {
-  record[mapName] = (record[mapName] || 0) + 1
 }
