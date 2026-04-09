@@ -1,41 +1,17 @@
-import {
-  findMapVotingTicket,
-  isPoolMap,
-  classifyVotingEntity,
-  getDeciderRound,
-  incrementMapCount,
-} from "../utils/map-voting.js"
-import {
-  createEmptyFactionStats,
-  createEmptyFavoriteUnderdog,
-  trackWinRate,
-  trackFavoriteUnderdog,
-  trackCompetitionType,
-  buildMatchRecord,
-  addMatchRecord,
-  getMonthKey,
-  getOrCreateTrend,
-  calcStreaks,
-  fillEloChanges,
-} from "../utils/match-stats.js"
-import type {
-  FaceitMatchDetail,
-  FaceitMatchStats,
-  PlayerDropPickStats,
-  TrendPeriod,
-  VotingPayload,
-} from "../types/faceit.js"
-
-export interface MatchWithData {
-  match: FaceitMatchDetail
-  history: VotingPayload | null
-  stats: FaceitMatchStats | null
-}
+import { formatTimestamp } from "../infra/date-format"
+import type { FaceitMatchDetail, PlayerDropPickStats, MapWinRate, MatchRecord } from "../types/index"
+import type { MatchWithData, AnalysisConfig, FactionKey } from "../types/analysis"
+import { runAnalysisPipeline } from "./pipeline"
+import { incrementMapCount, trackWinRate } from "./helpers/trackers"
+import { isPoolMap } from "./helpers/map-voting"
+import { buildMatchRecord, addMatchRecord } from "./helpers/match-record"
+import { calcStreaks } from "./helpers/streaks"
+import { fillEloChanges } from "./helpers/elo-changes"
 
 export function findPlayerFaction(
   match: FaceitMatchDetail,
   playerId: string,
-): "faction1" | "faction2" | null {
+): FactionKey | null {
   if (match.teams.faction1.leader === playerId) return "faction1"
   if (match.teams.faction2.leader === playerId) return "faction2"
   const f1players = match.teams.faction1.roster || match.teams.faction1.players
@@ -54,167 +30,91 @@ export function analyzePlayerMapStrategy(
   playerId: string,
   nickname: string,
 ): PlayerDropPickStats {
-  const playerStats: PlayerDropPickStats = {
-    stats: createEmptyFactionStats(),
-    decider: {},
-    mapWinRate: {},
-    deciderWinRate: {},
-    eloHistory: [],
-    favoriteUnderdog: createEmptyFavoriteUnderdog(),
-    competitionStats: {},
-    matchRecords: {},
-    leaderMapWinRate: {},
-    leaderMatchRecords: {},
-    avgElo: 0,
-    trends: [],
-    earliestGame: "",
-    latestGame: "",
-    mapInfo: "",
-    count: 0,
+  const leaderMapWinRate: Record<string, MapWinRate> = {}
+  const leaderMatchRecords: Record<string, MatchRecord[]> = {}
+
+  const config: AnalysisConfig = {
+    resolveFaction: (match) => findPlayerFaction(match, playerId),
+    shouldProcessVoting: (match) => isLeader(match, playerId) && !!match,
+    processVotingEntity: (entity, phase, targetFaction, acc, trend) => {
+      if (entity.selected_by === targetFaction) {
+        incrementMapCount(acc.targetStats[phase], entity.guid)
+        incrementMapCount(trend.stats[phase], entity.guid)
+      }
+    },
+    playerId,
+    onMatch: (ctx, acc, trend) => {
+      const playerIsLeader = isLeader(ctx.match, playerId)
+
+      // Leader-специфичный win rate
+      const playedMaps = ctx.match.voting?.map?.pick || []
+      if (playerIsLeader && ctx.match.results?.winner && playedMaps.length > 0) {
+        if (ctx.match.detailed_results && ctx.match.detailed_results.length > 0) {
+          const count = Math.min(playedMaps.length, ctx.match.detailed_results.length)
+          for (let i = 0; i < count; i++) {
+            if (!isPoolMap(playedMaps[i])) continue
+            const mapWon = ctx.match.detailed_results[i].winner === ctx.targetFaction
+            trackWinRate(leaderMapWinRate, playedMaps[i], mapWon)
+            trackWinRate(trend.leaderMapWinRate, playedMaps[i], mapWon)
+            const record = buildMatchRecord(ctx.match, ctx.targetFaction, playedMaps[i], i, mapWon, ctx.matchStats, playerId)
+            addMatchRecord(leaderMatchRecords, playedMaps[i], record)
+          }
+        } else {
+          for (let i = 0; i < playedMaps.length; i++) {
+            if (!isPoolMap(playedMaps[i])) continue
+            trackWinRate(leaderMapWinRate, playedMaps[i], ctx.won)
+            trackWinRate(trend.leaderMapWinRate, playedMaps[i], ctx.won)
+            const record = buildMatchRecord(ctx.match, ctx.targetFaction, playedMaps[i], i, ctx.won, ctx.matchStats, playerId)
+            addMatchRecord(leaderMatchRecords, playedMaps[i], record)
+          }
+        }
+        trend.leaderMatchCount++
+      } else if (playerIsLeader) {
+        trend.leaderMatchCount++
+      }
+    },
+  }
+
+  const acc = runAnalysisPipeline(matchesData, config)
+
+  // Post-processing
+  acc.eloHistory.sort((a, b) => a.date - b.date)
+
+  const result: PlayerDropPickStats = {
+    stats: acc.targetStats,
+    decider: acc.decider,
+    mapWinRate: acc.mapWinRate,
+    deciderWinRate: acc.deciderWinRate,
+    eloHistory: acc.eloHistory,
+    favoriteUnderdog: acc.favoriteUnderdog,
+    competitionStats: acc.competitionStats,
+    matchRecords: acc.matchRecords,
+    leaderMapWinRate,
+    leaderMatchRecords,
+    avgElo: acc.eloCount > 0 ? Math.round(acc.eloSum / acc.eloCount) : 0,
+    trends: [...acc.trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label)),
+    earliestGame: acc.earliestGame < Infinity ? formatTimestamp(acc.earliestGame) : "",
+    latestGame: acc.latestGame > 0 ? formatTimestamp(acc.latestGame) : "",
+    mapInfo: `Анализ на основе ${acc.analyzedMatches} матчей, где "${nickname}" был лидером`,
+    count: acc.analyzedMatches,
     allCount: matchesData.length,
   }
-  const trendsMap = new Map<string, TrendPeriod>()
-  let analyzedMatches = 0
-  let latestGame = 0
-  let earliestGame = Infinity
-  let eloSum = 0
-  let eloCount = 0
 
-  for (const { match, history, stats: matchStats } of matchesData) {
-    if (match.started_at > latestGame) latestGame = match.started_at
-    if (match.started_at < earliestGame) earliestGame = match.started_at
-
-    const playerFaction = findPlayerFaction(match, playerId)
-    if (!playerFaction) continue
-
-    const won = match.results?.winner === playerFaction
-
-    const monthKey = getMonthKey(match.started_at)
-    const trend = getOrCreateTrend(trendsMap, monthKey)
-
-    const factionStats = match.teams[playerFaction].stats
-    if (factionStats?.rating) {
-      playerStats.eloHistory.push({
-        date: match.started_at,
-        elo: factionStats.rating,
-        result: won ? "win" : "loss",
-        matchId: match.match_id,
-      })
-      eloSum += factionStats.rating
-      eloCount++
-    }
-
-    if (factionStats?.winProbability !== undefined && match.results?.winner) {
-      trackFavoriteUnderdog(playerStats.favoriteUnderdog, factionStats.winProbability, won)
-    }
-
-    if (match.competition_type && match.results?.winner) {
-      trackCompetitionType(playerStats.competitionStats, match.competition_type, won)
-    }
-
-    // Баны/пики — только если игрок лидер и есть voting history
-    if (isLeader(match, playerId) && history) {
-      const mapVoting = findMapVotingTicket(history)
-      if (mapVoting) {
-        const deciderRound = getDeciderRound(mapVoting)
-
-        for (const entity of mapVoting.entities) {
-          if (!isPoolMap(entity.guid)) continue
-
-          const phase = classifyVotingEntity(entity, deciderRound)
-          if (!phase) continue
-
-          if (phase === "decider") {
-            incrementMapCount(playerStats.decider, entity.guid)
-            incrementMapCount(trend.decider, entity.guid)
-            if (match.results?.winner) {
-              trackWinRate(playerStats.deciderWinRate, entity.guid, won)
-            }
-            continue
-          }
-
-          if (entity.selected_by === playerFaction) {
-            incrementMapCount(playerStats.stats[phase], entity.guid)
-            incrementMapCount(trend.stats[phase], entity.guid)
-          }
-        }
-
-        analyzedMatches++
-      }
-    }
-
-    const isPlayerLeader = isLeader(match, playerId)
-
-    // Винрейт — для ВСЕХ матчей (не только leader)
-    const playedMaps = match.voting?.map?.pick || []
-    if (match.results?.winner && playedMaps.length > 0) {
-      if (match.detailed_results && match.detailed_results.length > 0) {
-        const playedCount = Math.min(playedMaps.length, match.detailed_results.length)
-        for (let i = 0; i < playedCount; i++) {
-          if (!isPoolMap(playedMaps[i])) continue
-          const mapWon = match.detailed_results[i].winner === playerFaction
-          trackWinRate(playerStats.mapWinRate, playedMaps[i], mapWon)
-          trackWinRate(trend.mapWinRate, playedMaps[i], mapWon)
-          const record = buildMatchRecord(match, playerFaction, playedMaps[i], i, mapWon, matchStats, playerId)
-          addMatchRecord(playerStats.matchRecords, playedMaps[i], record)
-          if (isPlayerLeader) {
-            trackWinRate(playerStats.leaderMapWinRate, playedMaps[i], mapWon)
-            trackWinRate(trend.leaderMapWinRate, playedMaps[i], mapWon)
-            addMatchRecord(playerStats.leaderMatchRecords, playedMaps[i], record)
-          }
-        }
-      } else {
-        for (let i = 0; i < playedMaps.length; i++) {
-          const mapName = playedMaps[i]
-          if (!isPoolMap(mapName)) continue
-          trackWinRate(playerStats.mapWinRate, mapName, won)
-          trackWinRate(trend.mapWinRate, mapName, won)
-          const record = buildMatchRecord(match, playerFaction, mapName, i, won, matchStats, playerId)
-          addMatchRecord(playerStats.matchRecords, mapName, record)
-          if (isPlayerLeader) {
-            trackWinRate(playerStats.leaderMapWinRate, mapName, won)
-            trackWinRate(trend.leaderMapWinRate, mapName, won)
-            addMatchRecord(playerStats.leaderMatchRecords, mapName, record)
-          }
-        }
-      }
-    }
-
-    if (isPlayerLeader) {
-      trend.leaderMatchCount++
-    }
-
-    if (factionStats?.rating) {
-      const trendEloEntries = playerStats.eloHistory.filter(e => getMonthKey(e.date) === monthKey)
-      trend.avgElo = Math.round(trendEloEntries.reduce((s, e) => s + e.elo, 0) / trendEloEntries.length)
-    }
-
-    trend.matchCount++
+  if (result.eloHistory.length > 0) {
+    const streaks = calcStreaks(result.eloHistory)
+    result.longestWinStreak = streaks.longest
+    result.currentStreak = streaks.current
   }
 
-  playerStats.avgElo = eloCount > 0 ? Math.round(eloSum / eloCount) : 0
-  playerStats.count = analyzedMatches
-  playerStats.mapInfo = `Анализ на основе ${analyzedMatches} матчей, где "${nickname}" был лидером`
-  playerStats.latestGame = latestGame > 0 ? new Date(latestGame * 1000).toLocaleString("ru-RU") : ""
-  playerStats.earliestGame = earliestGame < Infinity ? new Date(earliestGame * 1000).toLocaleString("ru-RU") : ""
-  playerStats.trends = [...trendsMap.values()].sort((a, b) => a.label.localeCompare(b.label))
-  playerStats.eloHistory.sort((a, b) => a.date - b.date)
+  fillEloChanges(result.matchRecords, result.eloHistory)
+  fillEloChanges(leaderMatchRecords, result.eloHistory)
 
-  if (playerStats.eloHistory.length > 0) {
-    const streaks = calcStreaks(playerStats.eloHistory)
-    playerStats.longestWinStreak = streaks.longest
-    playerStats.currentStreak = streaks.current
-  }
-
-  fillEloChanges(playerStats.matchRecords, playerStats.eloHistory)
-  fillEloChanges(playerStats.leaderMatchRecords, playerStats.eloHistory)
-
-  for (const records of Object.values(playerStats.matchRecords)) {
+  for (const records of Object.values(result.matchRecords)) {
     records.sort((a, b) => b.date - a.date)
   }
-  for (const records of Object.values(playerStats.leaderMatchRecords)) {
+  for (const records of Object.values(leaderMatchRecords)) {
     records.sort((a, b) => b.date - a.date)
   }
 
-  return playerStats
+  return result
 }

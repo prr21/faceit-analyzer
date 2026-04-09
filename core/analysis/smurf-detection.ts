@@ -1,5 +1,5 @@
-import type { FaceitFactionPlayer, FaceitMatch, FaceitPlayer } from "../types/faceit.js"
-import { replaceLangPlaceholder } from "../utils/dedup.js"
+import type { FaceitFactionPlayer, FaceitMatch, FaceitPlayer } from "../types/index"
+import { replaceLangPlaceholder } from "../infra/dedup"
 
 export interface SmurfDetectionResult {
   /** URL смурфа → список URL матчей, где он встречался */

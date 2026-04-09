@@ -1,5 +1,5 @@
 // API
-export { createFaceitClient } from "./api/client.js"
+export { createFaceitClient } from "./api/client"
 export {
   getPlayerId,
   getPlayerMatches,
@@ -7,38 +7,42 @@ export {
   getMatchInfo,
   getMatchStats,
   getPlayerInfo,
-} from "./api/faceit-open.js"
+} from "./api/faceit-open"
 export {
   getMatchVotingHistory,
   getMatchWithVoting,
-} from "./api/faceit-internal.js"
+} from "./api/faceit-internal"
 
-// Utils
-export { withCache, getCached, setCache } from "./utils/cache.js"
-export { withRetry } from "./utils/retry.js"
-export { batchWithLimit } from "./utils/concurrency.js"
-export { uniqueByField, replaceLangPlaceholder } from "./utils/dedup.js"
+// Infra
+export { withCache, getCached, setCache, setCacheProvider } from "./infra/cache"
+export type { CacheProvider } from "./infra/cache"
+export { withRetry, setRetryLogger } from "./infra/retry"
+export type { RetryLogger } from "./infra/retry"
+export { batchWithLimit } from "./infra/concurrency"
+export { uniqueByField, replaceLangPlaceholder } from "./infra/dedup"
+export { formatTimestamp } from "./infra/date-format"
+
+// Analysis helpers
 export {
   findMapVotingTicket,
   isPoolMap,
   classifyVotingEntity,
   getDeciderRound,
-  incrementMapCount,
-} from "./utils/map-voting.js"
-export type { VotingPhase } from "./utils/map-voting.js"
+} from "./analysis/helpers/map-voting"
 export {
-  createEmptyFactionStats,
-  createEmptyFavoriteUnderdog,
   trackWinRate,
   trackFavoriteUnderdog,
   trackCompetitionType,
-  buildMatchRecord,
-  addMatchRecord,
-  getMonthKey,
-  getOrCreateTrend,
-  calcStreaks,
-  fillEloChanges,
-} from "./utils/match-stats.js"
+  incrementMapCount,
+} from "./analysis/helpers/trackers"
+export {
+  createEmptyFactionStats,
+  createEmptyFavoriteUnderdog,
+} from "./analysis/helpers/factories"
+export { buildMatchRecord, addMatchRecord } from "./analysis/helpers/match-record"
+export { getMonthKey, getOrCreateTrend } from "./analysis/helpers/trends"
+export { calcStreaks } from "./analysis/helpers/streaks"
+export { fillEloChanges } from "./analysis/helpers/elo-changes"
 
 // Constants
 export {
@@ -46,27 +50,26 @@ export {
   DEFAULT_GAME,
   ACTIVE_MAP_POOL,
   DEFAULT_CONCURRENCY,
-} from "./constants.js"
+} from "./constants"
 
 // Env
-export { getFaceitApiKey } from "./env.js"
+export { getFaceitApiKey } from "./env"
 
 // Analysis
 export {
   analyzePlayerMapStrategy,
   findPlayerFaction,
   isLeader,
-} from "./analysis/player-strategy.js"
-export type { MatchWithData } from "./analysis/player-strategy.js"
+} from "./analysis/player-strategy"
 export {
   analyzeTeamMapStrategy,
   findTargetFaction,
-} from "./analysis/team-strategy.js"
+} from "./analysis/team-strategy"
 export {
   collectEnemyPlayers,
   filterSmurfs,
-} from "./analysis/smurf-detection.js"
-export type { SmurfDetectionResult } from "./analysis/smurf-detection.js"
+} from "./analysis/smurf-detection"
+export type { SmurfDetectionResult } from "./analysis/smurf-detection"
 
 // Types — re-export all
-export type * from "./types/faceit.js"
+export type * from "./types/index"
