@@ -1,8 +1,8 @@
 import type { AxiosInstance } from "axios"
-import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../constants.js"
-import { withCache } from "../utils/cache.js"
-import { withRetry } from "../utils/retry.js"
-import type { FaceitMatch, FaceitMatchDetail, FaceitMatchStats, FaceitPlayer } from "../types/faceit.js"
+import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../constants"
+import { withCache } from "../infra/cache"
+import { withRetry } from "../infra/retry"
+import type { FaceitMatch, FaceitMatchDetail, FaceitMatchStats, FaceitPlayer } from "../types/index"
 
 export async function getPlayerId(
   client: AxiosInstance,

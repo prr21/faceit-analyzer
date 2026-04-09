@@ -1,8 +1,8 @@
 import type { AxiosInstance } from "axios"
-import type { FaceitMatchDetail, FaceitMatchStats, VotingPayload } from "../types/faceit.js"
-import { getMatchInfo, getMatchStats } from "./faceit-open.js"
-import { withCache } from "../utils/cache.js"
-import { withRetry } from "../utils/retry.js"
+import type { FaceitMatchDetail, FaceitMatchStats, VotingPayload } from "../types/index"
+import { getMatchInfo, getMatchStats } from "./faceit-open"
+import { withCache } from "../infra/cache"
+import { withRetry } from "../infra/retry"
 
 const DEMOCRACY_API_URL = "https://www.faceit.com/api/democracy/v1"
 

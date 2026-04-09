@@ -55,30 +55,48 @@ core/
   constants.ts         # pure values: ACTIVE_MAP_POOL, DEFAULT_GAME, DEFAULT_CONCURRENCY, DEFAULT_MATCH_LIMIT
   env.ts               # getFaceitApiKey() — lazy access, throws only when called (not on import)
   index.ts             # barrel export for the entire package
+  types/
+    api.ts             # FACEIT API response types: FaceitPlayer, FaceitMatch, FaceitMatchDetail, Voting*
+    domain.ts          # domain types: *Stats, MatchRecord, TrendPeriod, EloSnapshot
+    analysis.ts        # pipeline types: MatchWithData, MatchContext, AnalysisAccumulator, AnalysisConfig
+    index.ts           # barrel re-export of all types
   api/
     client.ts          # createFaceitClient(apiKey) — axios instance factory
     faceit-open.ts     # getPlayerId, getPlayerMatches, getAllPlayerMatches, getMatchInfo, getMatchStats, getPlayerInfo
     faceit-internal.ts # getMatchVotingHistory (fetch), getMatchWithVoting (combined)
   analysis/
-    player-strategy.ts # analyzePlayerMapStrategy() — extracted from CLI script, pure function
-    team-strategy.ts   # analyzeTeamMapStrategy() — extracted from CLI script, pure function
+    pipeline.ts        # runAnalysisPipeline(matchesData, config) — shared analysis loop
+    steps/             # pipeline steps — each does one thing
+      elo-tracking.ts, favorite-underdog.ts, competition-type.ts,
+      voting-analysis.ts, win-rate.ts, trend-elo.ts
+    helpers/           # domain building blocks for pipeline and post-processing
+      map-voting.ts    # isPoolMap, classifyVotingEntity, findMapVotingTicket, getDeciderRound
+      match-record.ts  # buildMatchRecord, addMatchRecord
+      trackers.ts      # trackWinRate, trackFavoriteUnderdog, trackCompetitionType, incrementMapCount
+      factories.ts     # createEmptyFactionStats, createEmptyFavoriteUnderdog
+      trends.ts        # getMonthKey, getOrCreateTrend
+      streaks.ts       # calcStreaks
+      elo-changes.ts   # fillEloChanges
+    player-strategy.ts # analyzePlayerMapStrategy — thin wrapper over pipeline + post-processing
+    team-strategy.ts   # analyzeTeamMapStrategy — thin wrapper over pipeline + post-processing
     smurf-detection.ts # collectEnemyPlayers(), filterSmurfs() — pure functions
-  utils/
-    cache.ts           # withCache — file-based caching for immutable API responses (.cache/)
+  infra/               # generic infrastructure, not FACEIT-specific
+    cache.ts           # CacheProvider interface + FileSystemCache + setCacheProvider
+    retry.ts           # withRetry + RetryLogger + setRetryLogger
     concurrency.ts     # batchWithLimit — bounded parallel execution with progress callback
-    retry.ts           # withRetry — exponential backoff for 429/5xx errors
-    match-stats.ts     # shared helpers: createEmptyFactionStats, trackWinRate, getMonthKey, getOrCreateTrend
     dedup.ts           # uniqueByField, replaceLangPlaceholder
-    map-voting.ts      # classifyVotingEntity, getDeciderRound, findMapVotingTicket, isPoolMap(name, pool?)
-  types/
-    faceit.ts          # all FACEIT API response interfaces + domain types (single source of truth)
+    date-format.ts     # formatTimestamp — locale-independent date formatting
 ```
 
 Key design decisions:
 - **constants.ts vs env.ts**: constants are pure values (no side effects), env.ts uses `dotenv` and provides lazy `getFaceitApiKey()` that only throws when called — so web/ can safely import core/ without having an API key.
-- **analysis/**: business logic extracted from CLI scripts into pure functions. They take already-fetched data and return structured stats. No I/O, no API calls.
+- **analysis/pipeline.ts**: shared analysis loop eliminates ~80% duplication between player and team strategies. Differences injected via `AnalysisConfig` (resolveFaction, shouldProcessVoting, processVotingEntity, onMatch callback).
+- **analysis/steps/**: each step is a pure function handling one concern (ELO, voting, win rate, etc.). Trend ELO uses O(1) incremental accumulator instead of O(n) filter.
+- **infra/ vs analysis/helpers/**: `infra/` is generic infrastructure (cache, retry, concurrency) — reusable in any project. `analysis/helpers/` are FACEIT-domain building blocks used only inside `analysis/`.
+- **CacheProvider**: interface abstraction — CLI uses FileSystemCache by default, server/ can swap to Redis via `setCacheProvider()`.
+- **RetryLogger**: configurable via `setRetryLogger()` — server/ can use pino/winston instead of console.warn.
 - **isPoolMap(name, pool?)**: parametric — defaults to ACTIVE_MAP_POOL but accepts custom pool for testing/flexibility.
-- **Types**: `core/types/faceit.ts` is the single source of truth. `web/src/types.ts` re-exports from `@faceit/core`.
+- **Types split**: `types/api.ts` (API responses), `types/domain.ts` (business types), `types/analysis.ts` (pipeline coordination). `web/src/types.ts` re-exports from `@faceit/core`.
 
 ### cli/ (@faceit/cli)
 
