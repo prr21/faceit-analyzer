@@ -2,6 +2,7 @@
 export { createFaceitClient } from "./api/client"
 export type { FaceitClient } from "./api/client"
 export {
+  searchPlayers,
   getPlayerId,
   getPlayerMatches,
   getAllPlayerMatches,
@@ -9,6 +10,7 @@ export {
   getMatchStats,
   getPlayerInfo,
 } from "./api/faceit-open"
+export type { SearchPlayerResult } from "./api/faceit-open"
 export {
   getMatchVotingHistory,
   getMatchWithVoting,
@@ -71,6 +73,12 @@ export {
   filterSmurfs,
 } from "./analysis/smurf-detection"
 export type { SmurfDetectionResult } from "./analysis/smurf-detection"
+
+// Use cases — high-level orchestration (CLI & server share these)
+export { fetchAndAnalyzePlayer } from "./usecases/player"
+export type { PlayerAnalysisResult } from "./usecases/player"
+export { fetchAndAnalyzeTeam } from "./usecases/team"
+export type { TeamAnalysisResult } from "./usecases/team"
 
 // Types — re-export all
 export type * from "./types/index"

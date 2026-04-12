@@ -1,4 +1,4 @@
-import type { AxiosInstance } from "axios"
+import type { FaceitClient } from "./client"
 import type { FaceitMatchDetail, FaceitMatchStats, VotingPayload } from "../types/index"
 import { getMatchInfo, getMatchStats } from "./faceit-open"
 import { withCache } from "../infra/cache"
@@ -30,7 +30,7 @@ export async function getMatchVotingHistory(
 }
 
 export async function getMatchWithVoting(
-  client: AxiosInstance,
+  client: FaceitClient,
   matchId: string,
 ): Promise<{ match: FaceitMatchDetail; history: VotingPayload | null; stats: FaceitMatchStats | null }> {
   const [match, history, stats] = await Promise.all([

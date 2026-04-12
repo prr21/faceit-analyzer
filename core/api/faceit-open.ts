@@ -1,11 +1,39 @@
-import type { AxiosInstance } from "axios"
+import type { FaceitClient } from "./client"
 import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../constants"
 import { withCache } from "../infra/cache"
 import { withRetry } from "../infra/retry"
 import type { FaceitMatch, FaceitMatchDetail, FaceitMatchStats, FaceitPlayer } from "../types/index"
 
+export interface SearchPlayerResult {
+  player_id: string
+  nickname: string
+  avatar: string
+  country: string
+  skill_level: number
+}
+
+export async function searchPlayers(
+  client: FaceitClient,
+  query: string,
+  limit: number = 5,
+): Promise<SearchPlayerResult[]> {
+  return withRetry(async () => {
+    const response = await client.get("/search/players", {
+      params: { nickname: query, game: DEFAULT_GAME, limit },
+    })
+    const items = response.data.items || []
+    return items.map((item: any) => ({
+      player_id: item.player_id,
+      nickname: item.nickname,
+      avatar: item.avatar || "",
+      country: item.country || "",
+      skill_level: item.games?.[DEFAULT_GAME]?.skill_level ?? 0,
+    }))
+  })
+}
+
 export async function getPlayerId(
-  client: AxiosInstance,
+  client: FaceitClient,
   nickname: string,
 ): Promise<string> {
   return withRetry(async () => {
@@ -15,7 +43,7 @@ export async function getPlayerId(
 }
 
 export async function getPlayerMatches(
-  client: AxiosInstance,
+  client: FaceitClient,
   playerId: string,
   options: { limit?: number; from?: number; to?: number } = {},
 ): Promise<FaceitMatch[]> {
@@ -31,7 +59,7 @@ export async function getPlayerMatches(
 }
 
 export async function getAllPlayerMatches(
-  client: AxiosInstance,
+  client: FaceitClient,
   playerId: string,
 ): Promise<FaceitMatch[]> {
   const PAGE_SIZE = 100
@@ -52,7 +80,7 @@ export async function getAllPlayerMatches(
 }
 
 export async function getMatchInfo(
-  client: AxiosInstance,
+  client: FaceitClient,
   matchId: string,
 ): Promise<FaceitMatchDetail> {
   return withCache(`match:${matchId}`, () =>
@@ -64,7 +92,7 @@ export async function getMatchInfo(
 }
 
 export async function getMatchStats(
-  client: AxiosInstance,
+  client: FaceitClient,
   matchId: string,
 ): Promise<FaceitMatchStats | null> {
   return withCache(`matchstats:${matchId}`, async () => {
@@ -80,7 +108,7 @@ export async function getMatchStats(
 }
 
 export async function getPlayerInfo(
-  client: AxiosInstance,
+  client: FaceitClient,
   playerId: string,
 ): Promise<FaceitPlayer | null> {
   try {

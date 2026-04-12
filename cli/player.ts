@@ -2,14 +2,8 @@ import fs from "fs"
 import path from "path"
 import {
   getFaceitApiKey,
-  DEFAULT_CONCURRENCY,
   createFaceitClient,
-  getPlayerId,
-  getPlayerMatches,
-  getPlayerInfo,
-  getMatchWithVoting,
-  batchWithLimit,
-  analyzePlayerMapStrategy,
+  fetchAndAnalyzePlayer,
 } from "@faceit/core"
 import { writePlayerReport } from "./report-writer.js"
 
@@ -18,38 +12,14 @@ const PLAYER_NICKNAME = process.argv[2] || "dErzz"
 const client = createFaceitClient(getFaceitApiKey())
 
 async function main() {
-  const playerId = await getPlayerId(client, PLAYER_NICKNAME)
+  console.log(`\n🔍 Анализ игрока: ${PLAYER_NICKNAME}`)
 
-  const [playerInfo, matches] = await Promise.all([
-    getPlayerInfo(client, playerId),
-    getPlayerMatches(client, playerId),
-  ])
-  const matchIds = matches.map(m => m.match_id)
-
-  console.log(`\n🔍 Всего найдено ${matchIds.length} матчей`)
-
-  const matchesData = await batchWithLimit(
-    matchIds.map(matchId => () => getMatchWithVoting(client, matchId)),
-    DEFAULT_CONCURRENCY,
-    (done, total) => {
+  const { stats: playerStats } = await fetchAndAnalyzePlayer(client, PLAYER_NICKNAME, {
+    onProgress: (done, total) => {
       process.stdout.write(`\r⏳ Загрузка матчей: ${done}/${total}`)
     },
-  )
+  })
   console.log()
-
-  const playerStats = analyzePlayerMapStrategy(matchesData, playerId, PLAYER_NICKNAME)
-
-  // Заполняем профиль игрока
-  if (playerInfo) {
-    const cs2 = playerInfo.games?.cs2
-    playerStats.playerProfile = {
-      nickname: playerInfo.nickname,
-      avatar: playerInfo.avatar,
-      skillLevel: cs2?.skill_level ?? 0,
-      currentElo: cs2?.faceit_elo ?? 0,
-      country: playerInfo.country,
-    }
-  }
 
   console.log(`\n✅ Анализ завершен! ${playerStats.mapInfo}`)
 

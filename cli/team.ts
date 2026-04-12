@@ -2,12 +2,8 @@ import fs from "fs"
 import path from "path"
 import {
   getFaceitApiKey,
-  DEFAULT_CONCURRENCY,
   createFaceitClient,
-  getPlayerMatches,
-  getMatchWithVoting,
-  batchWithLimit,
-  analyzeTeamMapStrategy,
+  fetchAndAnalyzeTeam,
 } from "@faceit/core"
 import { writeTeamReport } from "./report-writer.js"
 import teamsData from "./data/teams.json" with { type: "json" }
@@ -15,7 +11,6 @@ import teamsData from "./data/teams.json" with { type: "json" }
 const teams: Record<string, string[]> = teamsData
 
 const TEAM_NAME = process.argv[2] || "Satanics Aura"
-const MIN_PLAYERS_IN_MATCH = 3
 
 const client = createFaceitClient(getFaceitApiKey())
 
@@ -27,40 +22,12 @@ async function main() {
 
   console.log("🚀 Запуск анализа команды:", TEAM_NAME)
 
-  // Собираем все матчи игроков команды
-  const playersMatches = await batchWithLimit(
-    teamPlayerIds.map(id => () => getPlayerMatches(client, id)),
-    DEFAULT_CONCURRENCY,
-  )
-  const allMatches = playersMatches.flat()
-
-  // Группируем матчи — только те, где минимум 3 игрока команды
-  const matchPlayerCount: Record<string, number> = {}
-  for (const match of allMatches) {
-    matchPlayerCount[match.match_id] = (matchPlayerCount[match.match_id] || 0) + 1
-  }
-
-  const uniqueMatchCount = Object.keys(matchPlayerCount).length
-  console.log(`\n🔍 Всего найдено ${uniqueMatchCount} уникальных матчей`)
-
-  const teamMatchIds = Object.keys(matchPlayerCount).filter(
-    id => matchPlayerCount[id] >= MIN_PLAYERS_IN_MATCH,
-  )
-
-  console.log(
-    `✅ Найдено ${teamMatchIds.length} матчей, где участвовали хотя бы ${MIN_PLAYERS_IN_MATCH} игрока команды ${TEAM_NAME}`,
-  )
-
-  const matchesWithDetail = await batchWithLimit(
-    teamMatchIds.map(id => () => getMatchWithVoting(client, id)),
-    DEFAULT_CONCURRENCY,
-    (done, total) => {
+  const { stats: mapStatistic } = await fetchAndAnalyzeTeam(client, teamPlayerIds, TEAM_NAME, {
+    onProgress: (done, total) => {
       process.stdout.write(`\r⏳ Загрузка матчей: ${done}/${total}`)
     },
-  )
+  })
   console.log()
-
-  const mapStatistic = analyzeTeamMapStrategy(matchesWithDetail, teamPlayerIds, TEAM_NAME)
 
   console.log("\n✅ Анализ завершен!", mapStatistic.mapInfo)
 
