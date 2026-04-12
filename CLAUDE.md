@@ -61,8 +61,8 @@ core/
     analysis.ts        # pipeline types: MatchWithData, MatchContext, AnalysisAccumulator, AnalysisConfig
     index.ts           # barrel re-export of all types
   api/
-    client.ts          # createFaceitClient(apiKey) — axios instance factory
-    faceit-open.ts     # getPlayerId, getPlayerMatches, getAllPlayerMatches, getMatchInfo, getMatchStats, getPlayerInfo
+    client.ts          # createFaceitClient(apiKey), FaceitClient type alias (hides AxiosInstance)
+    faceit-open.ts     # searchPlayers, getPlayerId, getPlayerMatches, getAllPlayerMatches, getMatchInfo, getMatchStats, getPlayerInfo
     faceit-internal.ts # getMatchVotingHistory (fetch), getMatchWithVoting (combined)
   analysis/
     pipeline.ts        # runAnalysisPipeline(matchesData, config) — shared analysis loop
@@ -80,6 +80,10 @@ core/
     player-strategy.ts # analyzePlayerMapStrategy — thin wrapper over pipeline + post-processing
     team-strategy.ts   # analyzeTeamMapStrategy — thin wrapper over pipeline + post-processing
     smurf-detection.ts # collectEnemyPlayers(), filterSmurfs() — pure functions
+  usecases/            # high-level orchestration shared by CLI and server
+    player.ts          # fetchAndAnalyzePlayer(client, nickname) — full player pipeline
+    team.ts            # fetchAndAnalyzeTeam(client, playerIds, teamName) — full team pipeline
+    index.ts           # barrel export
   infra/               # generic infrastructure, not FACEIT-specific
     cache.ts           # CacheProvider interface + FileSystemCache + setCacheProvider
     retry.ts           # withRetry + RetryLogger + setRetryLogger
@@ -100,7 +104,7 @@ Key design decisions:
 
 ### cli/ (@faceit/cli)
 
-Thin wrappers: read args → call core/ API → call core/ analysis → write output.
+Thin wrappers: read args → call `core/usecases` → write output.
 
 ```
 cli/
@@ -113,14 +117,34 @@ cli/
 
 ### server/ (@faceit/server)
 
-Express proxy server. Imports analysis functions from `@faceit/core` to generate stats in runtime.
+Express server with layered architecture. Uses `@faceit/core` for API calls and analysis.
 
 ```
 server/src/
-  index.ts             # Express app setup
-  routes/api.ts        # API endpoints (search, player stats, reports)
-  middleware/           # CORS, rate limiting
+  index.ts             # Express app setup, middleware chain, route mounting
+  bootstrap.ts         # Composition Root: FaceitClient init, provider config (AppContext)
+  lib/
+    errors.ts          # AppError class (badRequest, notFound, internal)
+  services/
+    player.service.ts  # getPlayerAnalysis — delegates to core/usecases
+    team.service.ts    # getTeamAnalysis — delegates to core/usecases
+    search.service.ts  # searchPlayer — player lookup by nickname
+  routes/
+    api.ts             # Student TODO stubs (search, basic player, reports)
+    search.routes.ts   # GET /api/search?q= — working search via core/
+    player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
+    team.routes.ts     # POST /api/team/analysis — full team analysis
+  middleware/
+    cors.ts            # CORS (student TODO stub)
+    rateLimit.ts       # Rate limiting (student TODO stub)
+    errorHandler.ts    # Centralized error handler (AppError + Axios + fallback)
 ```
+
+Key patterns:
+- **Composition Root** (`bootstrap.ts`): creates `AppContext { client }`, configures retry logger. Single initialization point.
+- **Service Layer**: services orchestrate core/ functions, throw `AppError`, don't know about Express.
+- **Factory Routers**: `createPlayerRouter(ctx)` — routes receive dependencies via argument, not global import.
+- **Error Boundary**: `errorHandler` middleware catches AppError, Axios errors, and unhandled exceptions.
 
 ### web/ (@faceit/web)
 
@@ -139,8 +163,8 @@ web/src/
 ## Data Flow
 
 ```
-CLI:     process.argv → core/api → core/analysis → console + JSON + HTML report
-Server:  HTTP request → core/api → core/analysis → HTTP response
+CLI:     process.argv → core/usecases → console + JSON + HTML report
+Server:  HTTP request → services → core/usecases → HTTP response
 Web:     user input   → fetch(/api) → server → React UI
 ```
 
@@ -152,6 +176,7 @@ Authenticated via Bearer token (`FACEIT_API_KEY`). Rate limit: 10,000 requests/h
 
 | Endpoint | Used in | Cached | Notes |
 |---|---|---|---|
+| `GET /search/players?nickname=X` | `searchPlayers()` | No | Fuzzy search, returns up to `limit` results |
 | `GET /players?nickname=X` | `getPlayerId()` | No | Returns `player_id` by nickname |
 | `GET /players/{id}` | `getPlayerInfo()` | No | Player profile + ELO (changes every match) |
 | `GET /players/{id}/history` | `getPlayerMatches()` | No | Match history. Params: `game`, `offset`, `limit`, `from`, `to` (unix timestamps) |
