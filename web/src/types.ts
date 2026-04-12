@@ -1,3 +1,8 @@
+import type {
+  TeamDropPickStats,
+  PlayerDropPickStats,
+} from "@faceit/core"
+
 // Re-export domain types from @faceit/core — single source of truth
 export type {
   MapCountRecord,
@@ -19,5 +24,5 @@ export type {
 export interface ReportData {
   type: "team" | "player"
   name: string
-  stats: import("@faceit/core").TeamDropPickStats | import("@faceit/core").PlayerDropPickStats
+  stats: TeamDropPickStats | PlayerDropPickStats
 }

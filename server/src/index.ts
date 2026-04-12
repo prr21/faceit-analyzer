@@ -4,6 +4,7 @@ import { corsMiddleware } from "./middleware/cors.js"
 import { rateLimit } from "./middleware/rateLimit.js"
 import { apiRouter } from "./routes/api.js"
 import { bootstrap } from "./bootstrap"
+import { createSearchRouter } from "./routes/search.routes"
 import { createPlayerRouter } from "./routes/player.routes"
 import { createTeamRouter } from "./routes/team.routes"
 import { errorHandler } from "./middleware/errorHandler"
@@ -19,13 +20,14 @@ app.use(corsMiddleware)
 // Rate limiting (Задание 3.1)
 app.use(rateLimit({ windowMs: 60_000, maxRequests: 100 }))
 
-// API маршруты
-app.use("/api", apiRouter)
-
 // Инициализация core/ и продвинутые маршруты
 const ctx = bootstrap()
+app.use("/api", createSearchRouter(ctx))
 app.use("/api/player", createPlayerRouter(ctx))
 app.use("/api/team", createTeamRouter(ctx))
+
+// API маршруты (студенческие заглушки — после продвинутых роутов)
+app.use("/api", apiRouter)
 
 // Проверка работоспособности
 app.get("/health", (_req, res) => {

@@ -10,7 +10,7 @@ export async function fetchPlayerReport(
   if (IS_MOCK) {
     return mockFetchPlayerReport(nickname)
   }
-  return apiFetch<ReportData>(`/api/player/${encodeURIComponent(nickname)}`)
+  return apiFetch<ReportData>(`/api/player/${encodeURIComponent(nickname)}/analysis`)
 }
 
 /** Поиск игроков по запросу */
