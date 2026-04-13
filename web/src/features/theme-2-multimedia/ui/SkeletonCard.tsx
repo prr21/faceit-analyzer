@@ -1,5 +1,4 @@
 interface SkeletonCardProps {
-  /** Вариант размера: "sm" (маленький), "md" (средний), "lg" (большой) */
   variant?: "sm" | "md" | "lg"
 }
 
@@ -16,30 +15,16 @@ export function SkeletonCard({ variant = "md" }: SkeletonCardProps) {
         flex-1 min-w-[100px] sm:min-w-[140px]
         bg-gray-200 dark:bg-gray-700
         rounded-lg ${sizes[variant]}
+        animate-shimmer overflow-hidden
       `}
     >
-      {/* TODO: Задание 2.1 — Примените shimmer-анимацию
-       * Документация: https://developer.mozilla.org/en-US/docs/Web/CSS/animation, https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
-       *
-       * Сейчас скелетон — просто серый блок. Нужно добавить анимацию "мерцания":
-       *
-       * 1. Добавьте класс "animate-shimmer" к внешнему <div>:
-       *    className={`... animate-shimmer`}
-       *
-       * 2. Добавьте внутренние "полоски" для имитации текста:
-       *    <div className="p-3 sm:p-4 space-y-2">
-       *      <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
-       *      <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-2/3" />
-       *      {variant !== "sm" && (
-       *        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
-       *      )}
-       *    </div>
-       *
-       * CSS-класс animate-shimmer определён в app.css.
-       * Он создаёт эффект бегущего блика через linear-gradient + animation.
-       *
-       * Аналог: посмотрите структуру Card.tsx — скелетон имитирует такую же форму.
-       */}
+      <div className="p-3 sm:p-4 space-y-2">
+        <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3" />
+        <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-2/3" />
+        {variant !== "sm" && (
+          <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2" />
+        )}
+      </div>
     </div>
   )
 }
