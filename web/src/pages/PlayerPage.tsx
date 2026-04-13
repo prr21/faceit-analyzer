@@ -7,9 +7,6 @@ import { ReportView } from "@/components/ReportView"
 export function PlayerPage() {
   const { nickname } = useParams<{ nickname: string }>()
 
-  // TODO: Задание 4.1 — usePlayerData загружает данные по никнейму
-  // Сейчас хук-заглушка (data всегда null). После реализации задания 4.1
-  // данные будут подгружаться автоматически при переходе на /player/:nickname
   const { data, loading, error, refetch } = usePlayerData(nickname ?? "")
 
   if (!nickname) {
@@ -34,8 +31,8 @@ export function PlayerPage() {
 
   if (!data) {
     return (
-      <div className="max-w-[960px] mx-auto px-3 sm:px-5 py-4 sm:py-5 text-gray-500 dark:text-gray-400">
-        <p>Загрузка данных для «{nickname}»... Реализуйте задание 4.1 для динамической загрузки.</p>
+      <div className="max-w-[960px] mx-auto px-3 sm:px-5 py-4 sm:py-5">
+        <LoadingSpinner />
       </div>
     )
   }

@@ -2,8 +2,7 @@ import type { ReactNode } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats } from "../types"
 import { ThemeToggle } from "./ThemeToggle"
 import { PlayerHeader } from "./core/PlayerHeader"
-// import { PlayerSearch } from "../features/theme-4-async/ui/PlayerSearch"
-// import { RefreshIndicator } from "../features/theme-5-dynamic/ui/RefreshIndicator"
+import { PlayerSearch } from "../features/theme-4-async/ui/PlayerSearch"
 
 interface LayoutProps {
   title: string
@@ -40,29 +39,15 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
             </>
           )}
         </div>
-        {/* TODO: Задание 4.2 — Раскомментируйте для добавления поиска в шапку
-         * Документация: https://react.dev/reference/react/useState
-         * <PlayerSearch />
-         */}
-        <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
+        <div className="flex items-center gap-2">
+          <PlayerSearch />
+          <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
+        </div>
       </div>
       {/* Подзаголовок с mapInfo для player с profileHeader */}
       {playerProfile && (
         <p className="text-sm text-gray-500 dark:text-gray-400 my-1">{stats.mapInfo}</p>
       )}
-      {/* TODO: Задание 5.2 — Раскомментируйте для добавления индикатора обновления
-       * Документация: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
-       * <RefreshIndicator
-       *   lastUpdated={null}
-       *   interval={60000}
-       *   isRefreshing={false}
-       *   onRefresh={() => {}}
-       * />
-       *
-       * Подключите реальные значения из usePolling хука.
-       * Для этого нужно поднять usePolling на уровень App.tsx
-       * и передать значения через props.
-       */}
       {children}
     </div>
   )
