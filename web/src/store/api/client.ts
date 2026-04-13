@@ -1,6 +1,7 @@
 // Переключение mock/real API
-// В DEV без VITE_API_URL используем мок-данные
-export const IS_MOCK = import.meta.env.DEV && !import.meta.env.VITE_API_URL
+// По умолчанию идём на реальный сервер (через vite proxy /api → server).
+// Мок включается явным VITE_USE_MOCK=true в .env.
+export const IS_MOCK = import.meta.env.VITE_USE_MOCK === "true"
 const API_BASE = import.meta.env.VITE_API_URL ?? ""
 
 /**
