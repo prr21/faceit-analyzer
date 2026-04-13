@@ -130,13 +130,13 @@ server/src/
     team.service.ts    # getTeamAnalysis — delegates to core/usecases
     search.service.ts  # searchPlayer — player lookup by nickname
   routes/
-    api.ts             # Student TODO stubs (search, basic player, reports)
-    search.routes.ts   # GET /api/search?q= — working search via core/
+    api.ts             # /reports — 501 stub (not implemented)
+    search.routes.ts   # GET /api/search?q= — player search via core/
     player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
     team.routes.ts     # POST /api/team/analysis — full team analysis
   middleware/
-    cors.ts            # CORS (student TODO stub)
-    rateLimit.ts       # Rate limiting (student TODO stub)
+    cors.ts            # CORS via `cors` package
+    rateLimit.ts       # Rate limiting via `express-rate-limit`
     errorHandler.ts    # Centralized error handler (AppError + Axios + fallback)
 ```
 
@@ -153,12 +153,14 @@ React SPA with Vite, Tailwind CSS, ECharts. Dark/light theme, mobile responsive.
 ```
 web/src/
   components/          # UI components (charts/, core/, tabs/)
-  features/            # Feature modules (theme-1-frontend, theme-2-multimedia, etc.)
+  features/            # Feature modules (theme-1-frontend, theme-2-multimedia, theme-4-async, theme-5-dynamic)
   pages/               # PlayerPage, TeamPage, SearchPage, ReportPage
   routing/             # HashRouter, paths, tabs, routes
   store/               # Zustand slices + TanStack Query hooks + API layer (mock/real)
   types.ts             # re-exports from @faceit/core
 ```
+
+**`features/theme-*/`**: feature modules grouped by theme. On `master` — working implementations imported by production UI (Layout, ReportView, etc.). On the `education` branch, the same files contain TODO stubs used as student assignments. Don't rename the directories — it keeps merges between `master` and `education` manageable.
 
 ## Data Flow
 
