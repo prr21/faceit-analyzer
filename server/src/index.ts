@@ -1,4 +1,11 @@
-import "dotenv/config"
+import path from "path"
+import { fileURLToPath } from "url"
+import { config as loadEnv } from "dotenv"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+loadEnv({ path: path.resolve(__dirname, "../../.env") })
+
 import express from "express"
 import { corsMiddleware } from "./middleware/cors"
 import { rateLimit } from "./middleware/rateLimit"
@@ -28,11 +35,12 @@ app.get("/health", (_req, res) => {
 app.use(errorHandler)
 
 const PORT = parseInt(process.env.PORT || "3000", 10)
+const HOST = process.env.HOST || "127.0.0.1"
 
-app.listen(PORT, () => {
-  console.log(`Сервер запущен: http://localhost:${PORT}`)
-  console.log(`Health check: http://localhost:${PORT}/health`)
-  console.log(`API: http://localhost:${PORT}/api/search?q=nickname`)
+app.listen(PORT, HOST, () => {
+  console.log(`Сервер запущен: http://${HOST}:${PORT}`)
+  console.log(`Health check: http://${HOST}:${PORT}/health`)
+  console.log(`API: http://${HOST}:${PORT}/api/search?q=nickname`)
 
   if (!process.env.FACEIT_API_KEY) {
     console.warn("⚠ FACEIT_API_KEY не задан в .env — API-запросы не будут работать")
