@@ -1,8 +1,8 @@
 import "dotenv/config"
 import express from "express"
-import { corsMiddleware } from "./middleware/cors.js"
-import { rateLimit } from "./middleware/rateLimit.js"
-import { apiRouter } from "./routes/api.js"
+import { corsMiddleware } from "./middleware/cors"
+import { rateLimit } from "./middleware/rateLimit"
+import { apiRouter } from "./routes/api"
 import { bootstrap } from "./bootstrap"
 import { createSearchRouter } from "./routes/search.routes"
 import { createPlayerRouter } from "./routes/player.routes"
@@ -11,50 +11,30 @@ import { errorHandler } from "./middleware/errorHandler"
 
 const app = express()
 
-// Парсинг JSON-тела запросов
 app.use(express.json())
-
-// CORS middleware (Задание 3.1)
 app.use(corsMiddleware)
-
-// Rate limiting (Задание 3.1)
 app.use(rateLimit({ windowMs: 60_000, maxRequests: 100 }))
 
-// Инициализация core/ и продвинутые маршруты
 const ctx = bootstrap()
 app.use("/api", createSearchRouter(ctx))
 app.use("/api/player", createPlayerRouter(ctx))
 app.use("/api/team", createTeamRouter(ctx))
-
-// API маршруты (студенческие заглушки — после продвинутых роутов)
 app.use("/api", apiRouter)
 
-// Проверка работоспособности
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
 })
 
-// Централизованная обработка ошибок
 app.use(errorHandler)
 
-// TODO: Задание 3.1 — Запустите сервер на порту из переменной окружения
-// Документация: https://expressjs.com/en/starter/hello-world.html
-//
-// const PORT = parseInt(process.env.PORT || "3000", 10)
-//
-// app.listen(PORT, () => {
-//   console.log(`Сервер запущен: http://localhost:${PORT}`)
-//   console.log(`Health check: http://localhost:${PORT}/health`)
-//   console.log(`API: http://localhost:${PORT}/api/search?q=nickname`)
-//
-//   if (!process.env.FACEIT_API_KEY) {
-//     console.warn("⚠ FACEIT_API_KEY не задан в .env — API-запросы не будут работать")
-//   }
-// })
-//
-// Подсказки:
-// - process.env.PORT — порт из переменной окружения (или 3000 по умолчанию)
-// - parseInt() — преобразование строки в число
-// - app.listen(port, callback) — запускает HTTP-сервер
+const PORT = parseInt(process.env.PORT || "3000", 10)
 
-console.log("Сервер не запущен — реализуйте TODO в index.ts")
+app.listen(PORT, () => {
+  console.log(`Сервер запущен: http://localhost:${PORT}`)
+  console.log(`Health check: http://localhost:${PORT}/health`)
+  console.log(`API: http://localhost:${PORT}/api/search?q=nickname`)
+
+  if (!process.env.FACEIT_API_KEY) {
+    console.warn("⚠ FACEIT_API_KEY не задан в .env — API-запросы не будут работать")
+  }
+})
