@@ -1,59 +1,43 @@
-# FACEIT Proxy Server
+# @faceit/server
 
-REST API proxy-сервер, который проксирует запросы к FACEIT API и скрывает API-ключ от браузера.
+Express proxy-сервер для FACEIT API. Скрывает API-ключ от браузера, предоставляет аналитические эндпоинты через `@faceit/core`.
 
-## Установка и запуск
+## Запуск
 
 ```bash
 npm install
-
-# Настройте API-ключ (файл .env в корне проекта)
-cp ../.env.example ../.env
-# Впишите FACEIT_API_KEY в .env
-
-# Запуск в режиме разработки (с hot reload)
-npm run dev          # http://localhost:3000
+cp ../.env.example ../.env       # вписать FACEIT_API_KEY
+npm run dev                      # http://localhost:3000 (с hot reload)
+npm start                        # без hot reload
 ```
 
-## Задание 3.1 — Express-сервер
+## Архитектура
 
-4 файла, 7 TODO-маркеров:
+Layered: Routes → Services → Core. Детали — в [CLAUDE.md](../CLAUDE.md#server-faceitserver).
 
-| Файл | Что реализовать |
-|------|----------------|
-| `src/middleware/cors.ts` | CORS-заголовки + обработка preflight (OPTIONS) |
-| `src/middleware/rateLimit.ts` | Sliding window rate limiting по IP |
-| `src/routes/api.ts` | 3 эндпоинта + error handler middleware |
-| `src/index.ts` | Запуск сервера (`app.listen`) |
+```
+src/
+  index.ts                # Express app, middleware chain, mount routes
+  bootstrap.ts            # Composition Root: FaceitClient init
+  lib/errors.ts           # AppError (badRequest, notFound, internal)
+  services/               # Оркестрация core/usecases + AppError boundary
+  routes/                 # Factory routers (createXxxRouter(ctx))
+  middleware/             # CORS, rate limit, errorHandler
+```
 
-Подробная теория и документация: [docs/themes/theme-3-rest-api.md](../docs/themes/theme-3-rest-api.md)
-
-## API-эндпоинты
-
-После реализации сервер предоставляет:
+## Эндпоинты
 
 | Метод | URL | Описание |
 |-------|-----|----------|
-| GET | `/health` | Health check (уже работает) |
-| GET | `/api/search?q=<nickname>` | Поиск игрока по никнейму |
-| GET | `/api/player/:nickname` | Статистика игрока |
-| GET | `/api/reports` | Список сгенерированных HTML-отчётов |
+| GET  | `/health` | Health check |
+| GET  | `/api/search?q=<nickname>` | Поиск игроков (FACEIT Search API) |
+| GET  | `/api/player/:nickname/analysis` | Полный анализ игрока |
+| POST | `/api/team/analysis` | Анализ команды (body: `{ playerIds, teamName }`) |
 
 ## Проверка
 
 ```bash
-# Запустите сервер
-npm run dev
-
-# В другом терминале
 curl http://localhost:3000/health
-# → {"status":"ok"}
+curl "http://localhost:3000/api/search?q=dErzz"
+curl http://localhost:3000/api/player/dErzz/analysis
 ```
-
-## Полезные команды
-
-| Команда | Описание |
-|---------|----------|
-| `npm run dev` | Запуск с hot reload |
-| `npm start` | Запуск без hot reload |
-| `npm run typecheck` | Проверка TypeScript-типов |

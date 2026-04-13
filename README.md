@@ -1,201 +1,87 @@
-# FACEIT CS2 Dashboard — Учебный проект
+# FACEIT CS2 Dashboard
 
-Аналитический дашборд для визуализации статистики игроков CS2 с платформы FACEIT: графики, таблицы, карточки с метриками, история матчей, сравнение игроков. Приложение поддерживает тёмную и светлую тему, адаптировано под мобильные устройства.
-
-В коде расставлены `// TODO:` маркеры с подробными подсказками — нужно дописать логику в подготовленных местах. Подробные описания заданий — в [EDUCATION_TASKS.md](EDUCATION_TASKS.md).
-
-## Стек технологий
-
-| Технология | Версия | Назначение |
-|-----------|--------|-----------|
-| React | 19 | UI-фреймворк (компоненты, хуки, состояние) |
-| TypeScript | 5.9 | Статическая типизация |
-| Vite | 6 | Сборка и dev-сервер с hot reload |
-| Tailwind CSS | 4 | Утилитарные CSS-классы (`@import "tailwindcss"`, НЕ v3) |
-| ECharts | 5 | Интерактивные графики и диаграммы |
-| Vitest | 3 | Unit и интеграционные тесты |
-| Express.js | 5 | REST API proxy-сервер |
-
-## Предварительные требования
-
-- **Node.js** >= 18 и **npm** — [nodejs.org](https://nodejs.org/)
-- **Git** — [git-scm.com](https://git-scm.com/)
-- **VS Code** с расширением **[Todo Tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree)** (Gruntfuggly) — выделяет TODO/BONUS в коде, создаёт панель навигации по всем заданиям
-- **FACEIT API ключ** — нужен для тем 3-5. Получить: [developers.faceit.com](https://developers.faceit.com/)
-
-## Быстрый старт
-
-```bash
-# 1. Установка зависимостей
-cd web && npm install
-cd ../server && npm install
-cd ..
-
-# 2. Настройка API-ключа (нужен для тем 3-5)
-cp .env.example .env
-# Откройте .env и вставьте ваш FACEIT_API_KEY
-
-# 3. Запуск фронтенда
-cd web && npm run dev
-# Откройте http://localhost:5173 — приложение работает с предзагруженными данными
-```
-
-### Дополнительные команды
-
-```bash
-# Запуск сервера (для тем 3, 4, 5)
-cd server && npm run dev          # http://localhost:3000
-
-# Тесты (для тем 6, 7)
-cd web && npm test                # watch mode
-cd web && npm run test:coverage   # отчёт покрытия
-
-# Проверка типов
-cd web && npm run typecheck
-```
-
-## Как работать с заданиями
-
-1. Установите расширение **Todo Tree** в VS Code — оно покажет все TODO и BONUS маркеры в панели слева
-2. Ищите `// TODO: Задание X.Y` в коде — каждый содержит задачу, подсказки и ссылку на документацию
-3. `// BONUS:` — дополнительные задания для продвинутых (3 штуки)
-4. Подробные описания каждого задания — в [EDUCATION_TASKS.md](EDUCATION_TASKS.md)
-5. **Правило:** все новые элементы должны поддерживать тёмную тему (`dark:` классы Tailwind) и мобильную вёрстку
-
-## Содержание
-
-| # | Тема | Задания | TODO | Файлы |
-|---|------|---------|------|-------|
-| 1 | [Frontend-компоненты](docs/themes/theme-1-frontend.md) | 1.1, 1.2, 1.3 | 8 + 2 BONUS | RadarChart, MatchHistoryTab, BestWorstCards |
-| 2 | [Мультимедиа и анимации](docs/themes/theme-2-multimedia.md) | 2.1, 2.2 | 7 + 1 BONUS | SkeletonCard, AnimatedCounter, MapImage, StatIcon, app.css |
-| 3 | [REST API сервер](docs/themes/theme-3-rest-api.md) | 3.1 | 7 | server/src/* |
-| 4 | [Асинхронное API](docs/themes/theme-4-async-api.md) | 4.1, 4.2 | 5 | usePlayerData, useDebounce, PlayerSearch |
-| 5 | [Динамическое обновление](docs/themes/theme-5-dynamic.md) | 5.1, 5.2 | 6 | CompareTab, CompareView, usePolling, RefreshIndicator |
-| 6 | [Unit-тестирование](docs/themes/theme-6-unit-tests.md) | 6.1 | 3 | colors.test.ts, useTheme.test.ts |
-| 7 | [Интеграционное тестирование](docs/themes/theme-7-integration-tests.md) | 7.1 | 14 | App.integration.test.tsx |
-
-## Порядок выполнения
-
-```
-Трек A — Фронтенд (работает сразу, без сервера)
-  Тема 1 (компоненты) ─┐
-  Тема 2 (анимации)  ──┤── независимые, в любом порядке
-                        │
-Трек B — Полный стек    │
-  Тема 3 (сервер)  ─────┤
-       │                │
-       ├── Тема 4 (fetch, поиск)
-       │        │
-       │        └── Тема 5.2 (автообновление)
-       │
-       └── Тема 5.1 (сравнение)
-
-Тестирование (параллельно с любым треком)
-  Тема 6 (unit-тесты)
-  Тема 7 (интеграционные тесты)
-```
-
-**Трек A** не требует сервера — компоненты работают с предзагруженными данными.
-**Трек B** начинается с Темы 3 (сервер), затем Темы 4-5 используют его API.
-**Тестирование** можно выполнять параллельно с любой темой.
+Аналитический дашборд для визуализации статистики игроков и команд CS2 с платформы FACEIT: баны/пики карт, винрейт, тренды, история матчей, сравнение игроков, обнаружение смурфов. Поддержка тёмной/светлой темы и мобильной вёрстки.
 
 ## Структура проекта
 
-```
-web/                                    # React-фронтенд
-  src/
-    App.tsx                             # Главный компонент (табы, навигация)
-    main.tsx                            # Точка входа                    [4.1]
-    types.ts                            # TypeScript-интерфейсы
-    app.css                             # Стили + анимации               [2.1]
-    features/                           # Учебные задания по темам
-      theme-1-frontend/
-        charts/RadarChart.tsx           # Радарная диаграмма             [1.1]
-        tabs/MatchHistoryTab.tsx        # Таб "Матчи" (раскрытие строк) [1.2]
-        ui/MatchDetailCard.tsx          # Детали матча                   [1.2]
-        ui/BestWorstCards.tsx           # Лучшие/худшие карты            [1.3]
-      theme-2-multimedia/
-        ui/SkeletonCard.tsx             # Скелетон-заглушка              [2.1]
-        ui/AnimatedCounter.tsx          # Анимированный счётчик          [2.1]
-        ui/MapImage.tsx                 # Изображение карты              [2.2]
-        ui/StatIcon.tsx                 # SVG-иконки                     [2.2]
-      theme-4-async/
-        hooks/usePlayerData.ts          # Загрузка данных                [4.1]
-        hooks/useDebounce.ts            # Debounce хук                   [4.2]
-        ui/PlayerSearch.tsx             # Поиск игроков                  [4.2]
-      theme-5-dynamic/
-        tabs/CompareTab.tsx             # Таб "Сравнение"               [5.1]
-        ui/CompareView.tsx              # Сравнение двух игроков         [5.1]
-        hooks/usePolling.ts             # Polling хук                    [5.2]
-        ui/RefreshIndicator.tsx         # Индикатор обновления           [5.2]
-    components/
-      core/                             # Готовые UI-компоненты
-        Card.tsx                        # Базовая карточка (готов)
-        PlayerHeader.tsx                # Шапка игрока (готов)
-        LoadingSpinner.tsx              # Спиннер загрузки (готов)
-        ErrorMessage.tsx                # Сообщение об ошибке (готов)
-        MatchList.tsx                   # Список матчей (готов)
-        WinRateTable.tsx                # Таблица винрейта (готов)
-        OpponentTable.tsx               # Таблица противников (готов)
-        SummaryCards.tsx                # Сводные карточки (готов)
-        FavoriteUnderdogCards.tsx       # Любимые/слабые карты (готов)
-        LeadershipImpact.tsx            # Эффект лидерства (готов)
-        RecentPerformance.tsx           # Недавние результаты (готов)
-        SkillLevelBar.tsx               # Уровень навыка (готов)
-        WinLossStreak.tsx               # Серии побед/поражений (готов)
-      charts/                           # Готовые графики
-      tabs/                             # Готовые табы
-        BanPickTab.tsx                  # Таб "Баны/Пики"
-        OverviewTab.tsx                 # Таб "Обзор"                   [1.3]
-        RadarTab.tsx                    # Таб "Радар"                    [1.1]
-        TrendsTab.tsx                   # Таб "Тренды"
-        WinrateTab.tsx                  # Таб "Винрейт"
-      Layout.tsx, ModeToggle.tsx, TabNavigation.tsx, ThemeToggle.tsx
-    hooks/
-      useTheme.ts                       # Тема (готов)
-    utils/colors.ts                     # Цветовая система (готов)
-    __tests__/
-      colors.test.ts                    # Unit-тесты цветов              [6.1]
-      useTheme.test.ts                  # Unit-тесты темы                [6.1]
-      App.integration.test.tsx          # Интеграционные тесты           [7.1]
-      fixtures/mockData.ts              # Тестовые данные (готов)
-      setup.ts                          # Настройка тестов (готов)
-  public/maps/                          # Изображения карт               [2.2]
+TypeScript monorepo на npm workspaces:
 
-server/                                 # Express API-сервер
-  src/
-    index.ts                            # Точка входа                    [3.1]
-    routes/api.ts                       # API-маршруты                   [3.1]
-    middleware/cors.ts                   # CORS middleware                [3.1]
-    middleware/rateLimit.ts             # Rate limiting                   [3.1]
-  README.md                             # Инструкции к серверу
+```
+faceit/
+├── core/       # @faceit/core — бизнес-логика, API-клиенты, типы
+├── cli/        # @faceit/cli — CLI-скрипты для оффлайн-анализа
+├── server/     # @faceit/server — Express proxy с layered architecture
+├── web/        # @faceit/web — React SPA (Vite + Tailwind + ECharts)
+└── browser/    # DevTools-скрипты (не workspace)
 ```
 
-## Полезные команды
+Детали архитектуры — в [CLAUDE.md](CLAUDE.md).
 
-| Команда | Директория | Описание |
-|---------|-----------|----------|
-| `npm run dev` | `web/` | Запуск Vite dev-сервера (localhost:5173) |
-| `npm run build` | `web/` | Сборка для продакшена |
-| `npm run typecheck` | `web/` | Проверка TypeScript-типов |
-| `npm test` | `web/` | Запуск тестов (watch mode) |
-| `npm run test:coverage` | `web/` | Отчёт покрытия кода |
-| `npm run dev` | `server/` | Запуск Express-сервера (localhost:3000) |
-| `npm run typecheck` | `server/` | Проверка типов сервера |
+## Стек технологий
 
-## FAQ
+| Технология | Назначение |
+|-----------|-----------|
+| TypeScript 5.9 | Единая типизация во всех workspace-ах |
+| React 19 | UI-фреймворк (web/) |
+| Vite 6 | Сборка и dev-сервер |
+| Tailwind CSS 4 | Утилитарные CSS-классы |
+| ECharts 5 | Интерактивные графики |
+| Express.js 5 | REST API proxy-сервер |
+| Axios | HTTP-клиент для FACEIT API |
 
-**Нет данных на localhost:5173**
-Приложение работает с предзагруженными данными из HTML. В режиме `npm run dev` данные встроены в шаблон `index.html`. Для динамической загрузки выполните Тему 4.1 и запустите сервер.
+## Предварительные требования
 
-**CORS-ошибка в консоли браузера**
-Нужно реализовать CORS middleware в Теме 3.1 (`server/src/middleware/cors.ts`).
+- **Node.js** >= 18 и **npm**
+- **FACEIT API ключ** — получить на [developers.faceit.com](https://developers.faceit.com/)
 
-**Тесты не запускаются**
-Убедитесь, что выполнили `npm install` в `web/`. Зависимости тестов (vitest, testing-library) устанавливаются вместе с остальными.
+## Установка
 
-**Tailwind-классы не работают**
-Проект использует Tailwind CSS **v4** — конфигурация через `@import "tailwindcss"` в CSS, без `tailwind.config.js`.
+```bash
+npm install                      # поставит зависимости для всех workspace-ов
+cp .env.example .env             # затем вписать FACEIT_API_KEY
+```
 
-**Как найти все TODO**
-Установите расширение **Todo Tree** в VS Code — оно покажет дерево всех TODO и BONUS маркеров с навигацией.
+## Запуск
+
+### CLI-анализ
+
+```bash
+npm run team -- "Satanics Aura"  # анализ стратегии команды
+npm run player -- "dErzz"        # анализ игрока
+npm run smurfs -- "ed1v9k"       # обнаружение смурфов в матчах
+```
+
+Отчёты сохраняются в `output/reports/*.html` — standalone HTML с графиками.
+
+### Web-приложение
+
+```bash
+npm run dev:server               # Express API → http://localhost:3000
+npm run dev:web                  # Vite dev-сервер → http://localhost:5173
+npm run build:web                # продакшн-сборка
+```
+
+### Проверка типов
+
+```bash
+npm run typecheck                # все workspace-ы
+npm run typecheck:core           # только core/
+npm run typecheck:web            # только web/
+```
+
+## FACEIT API
+
+Проект использует два API:
+- **Open Data API** (`open.faceit.com/data/v4`) — требует Bearer-токен, лимит 10k req/h
+- **Democracy API** (`www.faceit.com/api/democracy/v1`) — без авторизации, для истории голосований по картам
+
+Полный справочник эндпоинтов — в [CLAUDE.md](CLAUDE.md#faceit-api-reference).
+
+## Образовательная ветка
+
+Ветка `education` содержит тот же код с TODO-заглушками и пошаговыми инструкциями в `docs/themes/` — используется как учебный материал (46 заданий по React, Express, тестированию). Тег `education-v1` фиксирует первую выпускную версию.
+
+```bash
+git checkout education           # переключиться на обучающую версию
+git checkout master              # вернуться к продакшну
+```
