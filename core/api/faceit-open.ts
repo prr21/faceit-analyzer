@@ -12,6 +12,28 @@ export interface SearchPlayerResult {
   skill_level: number
 }
 
+export interface SearchTeamResult {
+  team_id: string
+  name: string
+  avatar: string
+  verified: boolean
+}
+
+export interface TeamMember {
+  player_id: string
+  nickname: string
+  avatar: string
+  country: string
+  skill_level: number
+}
+
+export interface TeamInfo {
+  team_id: string
+  name: string
+  avatar: string
+  members: TeamMember[]
+}
+
 export async function searchPlayers(
   client: FaceitClient,
   query: string,
@@ -30,6 +52,52 @@ export async function searchPlayers(
       skill_level: item.games?.[DEFAULT_GAME]?.skill_level ?? 0,
     }))
   })
+}
+
+export async function searchTeams(
+  client: FaceitClient,
+  query: string,
+  limit: number = 5,
+): Promise<SearchTeamResult[]> {
+  return withRetry(async () => {
+    const response = await client.get("/search/teams", {
+      params: { nickname: query, game: DEFAULT_GAME, limit },
+    })
+    const items = response.data.items || []
+    return items.map((item: any) => ({
+      team_id: item.team_id,
+      name: item.name,
+      avatar: item.avatar || "",
+      verified: Boolean(item.verified),
+    }))
+  })
+}
+
+export async function getTeamInfo(
+  client: FaceitClient,
+  teamId: string,
+): Promise<TeamInfo | null> {
+  try {
+    return await withRetry(async () => {
+      const response = await client.get(`/teams/${teamId}`)
+      const data = response.data
+      const members = Array.isArray(data.members) ? data.members : []
+      return {
+        team_id: data.team_id,
+        name: data.name,
+        avatar: data.avatar || "",
+        members: members.map((m: any) => ({
+          player_id: m.user_id ?? m.player_id,
+          nickname: m.nickname,
+          avatar: m.avatar || "",
+          country: m.country || "",
+          skill_level: m.game_skill_level ?? m.games?.[DEFAULT_GAME]?.skill_level ?? 0,
+        })),
+      }
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function getPlayerId(

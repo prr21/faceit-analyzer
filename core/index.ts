@@ -3,6 +3,8 @@ export { createFaceitClient } from "./api/client"
 export type { FaceitClient } from "./api/client"
 export {
   searchPlayers,
+  searchTeams,
+  getTeamInfo,
   getPlayerId,
   getPlayerMatches,
   getAllPlayerMatches,
@@ -10,7 +12,12 @@ export {
   getMatchStats,
   getPlayerInfo,
 } from "./api/faceit-open"
-export type { SearchPlayerResult } from "./api/faceit-open"
+export type {
+  SearchPlayerResult,
+  SearchTeamResult,
+  TeamMember,
+  TeamInfo,
+} from "./api/faceit-open"
 export {
   getMatchVotingHistory,
   getMatchWithVoting,
