@@ -62,7 +62,7 @@ core/
     index.ts           # barrel re-export of all types
   api/
     client.ts          # createFaceitClient(apiKey), FaceitClient type alias (hides AxiosInstance)
-    faceit-open.ts     # searchPlayers, getPlayerId, getPlayerMatches, getAllPlayerMatches, getMatchInfo, getMatchStats, getPlayerInfo
+    faceit-open.ts     # searchPlayers, searchTeams, getTeamInfo, getPlayerId, getPlayerMatches, getAllPlayerMatches, getMatchInfo, getMatchStats, getPlayerInfo
     faceit-internal.ts # getMatchVotingHistory (fetch), getMatchWithVoting (combined)
   analysis/
     pipeline.ts        # runAnalysisPipeline(matchesData, config) — shared analysis loop
@@ -127,13 +127,13 @@ server/src/
     errors.ts          # AppError class (badRequest, notFound, internal)
   services/
     player.service.ts  # getPlayerAnalysis — delegates to core/usecases
-    team.service.ts    # getTeamAnalysis — delegates to core/usecases
-    search.service.ts  # searchPlayer — player lookup by nickname
+    team.service.ts    # getTeamAnalysis (minPlayers=min(3,N)) + getTeamRoster (team info by UUID)
+    search.service.ts  # searchAll (players+teams parallel) + searchPlayer (nickname lookup)
   routes/
     api.ts             # /reports — 501 stub (not implemented)
-    search.routes.ts   # GET /api/search?q= — player search via core/
+    search.routes.ts   # GET /api/search?q= — combined {players, teams} search
     player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
-    team.routes.ts     # POST /api/team/analysis — full team analysis
+    team.routes.ts     # GET /api/team/:teamId (roster) + POST /api/team/analysis (full analysis)
   middleware/
     cors.ts            # CORS via `cors` package
     rateLimit.ts       # Rate limiting via `express-rate-limit`
@@ -154,11 +154,18 @@ React SPA with Vite, Tailwind CSS, ECharts. Dark/light theme, mobile responsive.
 web/src/
   components/          # UI components (charts/, core/, tabs/)
   features/            # Feature modules (theme-1-frontend, theme-2-multimedia, theme-4-async, theme-5-dynamic)
-  pages/               # PlayerPage, TeamPage, SearchPage, ReportPage
+  pages/               # SearchPage, PlayerPage, TeamRosterPage, TeamPage, ReportPage
   routing/             # HashRouter, paths, tabs, routes
   store/               # Zustand slices + TanStack Query hooks + API layer (mock/real)
   types.ts             # re-exports from @faceit/core
 ```
+
+**Search & team flow (web):**
+
+- `features/theme-4-async/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; иначе два блока результатов — игроки и команды.
+- `/team/:teamId` → `TeamRosterPage` (состав команды, чекбоксы — все отмечены по умолчанию, валидация 2–5 игроков, мутация анализа через `useAnalyzeTeamMutation` кладёт результат в TanStack Query cache).
+- `/team/:teamId/analysis/:tab?` → `TeamPage` читает результат из кеша (fallback 1: `window.__REPORT_DATA__` для CLI-отчётов, fallback 2: ссылка на страницу ростера).
+- `store/api/player.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.
 
 **`features/theme-*/`**: feature modules grouped by theme. On `master` — working implementations imported by production UI (Layout, ReportView, etc.). On the `education` branch, the same files contain TODO stubs used as student assignments. Don't rename the directories — it keeps merges between `master` and `education` manageable.
 
@@ -179,6 +186,8 @@ Authenticated via Bearer token (`FACEIT_API_KEY`). Rate limit: 10,000 requests/h
 | Endpoint | Used in | Cached | Notes |
 |---|---|---|---|
 | `GET /search/players?nickname=X` | `searchPlayers()` | No | Fuzzy search, returns up to `limit` results |
+| `GET /search/teams?nickname=X` | `searchTeams()` | No | Fuzzy team search by name |
+| `GET /teams/{team_id}` | `getTeamInfo()` | No | Team info + `members[]` (player_id, nickname, avatar, skill_level) |
 | `GET /players?nickname=X` | `getPlayerId()` | No | Returns `player_id` by nickname |
 | `GET /players/{id}` | `getPlayerInfo()` | No | Player profile + ELO (changes every match) |
 | `GET /players/{id}/history` | `getPlayerMatches()` | No | Match history. Params: `game`, `offset`, `limit`, `from`, `to` (unix timestamps) |
@@ -217,7 +226,7 @@ Cache storage: `.cache/` directory, MD5-hashed filenames, JSON format, no TTL.
 - **BO1**: all rounds are bans (drop), decider is last map standing. **BO3**: rounds 3-4 are picks, rounds 5-6 are bans.
 - **Win rate**: tracked per map using `match.results.winner` + `match.voting.map.pick`. BO3 uses `detailed_results` for per-map results.
 - **Trends**: matches grouped by calendar month (`started_at`) — shows how ban/pick preferences change over time.
-- **Team match detection**: match counts as "team match" if 3+ roster players appear; target faction identified by leader.
+- **Team match detection**: match counts as "team match" if `minPlayers` roster players appear (default 3). `server/team.service.getTeamAnalysis` передаёт `minPlayers = Math.min(3, playerIds.length)`, чтобы выбор из 2 игроков тоже имел смысл. Target faction identified by leader.
 - **Player analysis**: bans/picks tracked only when player is faction leader; win rate tracked for ALL matches (faction detected via leader first, then fallback to `players[]` array).
 
 ## Key Conventions
