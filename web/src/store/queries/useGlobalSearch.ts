@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { searchPlayers } from "../api/player"
-import type { SearchResult } from "../api/player"
+import { searchAll } from "../api/player"
+import type { SearchAllResult } from "../api/player"
 
 /**
- * Хук для поиска игроков с debounce.
- * Запрос отправляется только если query >= 3 символов.
+ * Совмещённый поиск по игрокам и командам.
+ * Запрос отправляется, только если query >= 3 символов.
  * keepPreviousData — сохраняет предыдущие результаты при вводе.
  */
-export function usePlayerSearch(query: string) {
+export function useGlobalSearch(query: string) {
   const [debouncedQuery, setDebouncedQuery] = useState(query)
 
   useEffect(() => {
@@ -16,9 +16,9 @@ export function usePlayerSearch(query: string) {
     return () => clearTimeout(timer)
   }, [query])
 
-  return useQuery<SearchResult[]>({
-    queryKey: ["player-search", debouncedQuery],
-    queryFn: () => searchPlayers(debouncedQuery),
+  return useQuery<SearchAllResult>({
+    queryKey: ["global-search", debouncedQuery],
+    queryFn: () => searchAll(debouncedQuery),
     enabled: debouncedQuery.length >= 3,
     placeholderData: keepPreviousData,
   })

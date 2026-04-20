@@ -4,6 +4,7 @@ import { SearchPage } from "@/pages/SearchPage"
 import { ReportPage } from "@/pages/ReportPage"
 import { PlayerPage } from "@/pages/PlayerPage"
 import { TeamPage } from "@/pages/TeamPage"
+import { TeamRosterPage } from "@/pages/TeamRosterPage"
 
 export function AppRoutes() {
   return (
@@ -11,7 +12,8 @@ export function AppRoutes() {
       <Route path={PATHS.home} element={<RootRedirect />} />
       <Route path={PATHS.report} element={<ReportPage />} />
       <Route path={PATHS.player} element={<PlayerPage />} />
-      <Route path={PATHS.team} element={<TeamPage />} />
+      <Route path={PATHS.team} element={<TeamRosterPage />} />
+      <Route path={PATHS.teamAnalysis} element={<TeamPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

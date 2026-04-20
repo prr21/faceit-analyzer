@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats } from "../types"
 import { ThemeToggle } from "./ThemeToggle"
 import { PlayerHeader } from "./core/PlayerHeader"
-import { PlayerSearch } from "../features/theme-4-async/ui/PlayerSearch"
+import { GlobalSearch } from "../features/theme-4-async/ui/GlobalSearch"
 
 interface LayoutProps {
   title: string
@@ -40,7 +40,7 @@ export function Layout({ title, stats, isDark, onToggleTheme, children }: Layout
           )}
         </div>
         <div className="flex items-center gap-2">
-          <PlayerSearch />
+          <GlobalSearch />
           <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
         </div>
       </div>

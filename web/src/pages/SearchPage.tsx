@@ -1,6 +1,6 @@
 import { useTheme } from "@/hooks/useTheme"
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { PlayerSearch } from "@/features/theme-4-async/ui/PlayerSearch"
+import { GlobalSearch } from "@/features/theme-4-async/ui/GlobalSearch"
 
 export function SearchPage() {
   const { isDark, toggleTheme } = useTheme()
@@ -13,11 +13,11 @@ export function SearchPage() {
       </div>
 
       <div className="flex flex-col items-center gap-6 mt-16">
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          Введите никнейм игрока для анализа статистики
+        <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
+          Введите никнейм игрока, название команды, UUID или ссылку на команду
         </p>
         <div className="w-full max-w-md">
-          <PlayerSearch />
+          <GlobalSearch />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import type { ReportData, PlayerDropPickStats } from "../../types"
+import type { ReportData, PlayerDropPickStats, TeamDropPickStats } from "../../types"
 
 // Реалистичные тестовые данные для player-отчёта
 export const mockPlayerStats: PlayerDropPickStats = {
@@ -136,4 +136,55 @@ export const mockPlayerReport: ReportData = {
   type: "player",
   name: "TestPlayer",
   stats: mockPlayerStats,
+}
+
+export const mockTeamStats: TeamDropPickStats = {
+  target: {
+    firstBan: { de_vertigo: 4, de_anubis: 3 },
+    firstPick: { de_mirage: 5, de_inferno: 3 },
+    secondBan: { de_ancient: 2, de_nuke: 2 },
+    thirdBan: { de_overpass: 1 },
+  },
+  enemy: {
+    firstBan: { de_mirage: 3, de_inferno: 2 },
+    firstPick: { de_dust2: 4 },
+    secondBan: { de_anubis: 2 },
+    thirdBan: {},
+  },
+  decider: { de_dust2: 2, de_mirage: 1 },
+  mapWinRate: {
+    de_mirage: { wins: 6, losses: 2, total: 8, rate: 75 },
+    de_inferno: { wins: 3, losses: 4, total: 7, rate: 43 },
+    de_dust2: { wins: 2, losses: 3, total: 5, rate: 40 },
+  },
+  deciderWinRate: {
+    de_dust2: { wins: 1, losses: 1, total: 2, rate: 50 },
+  },
+  eloHistory: [
+    { date: 1710000000, elo: 1750, result: "win" },
+    { date: 1710100000, elo: 1780, result: "win" },
+    { date: 1710200000, elo: 1760, result: "loss" },
+  ],
+  favoriteUnderdog: {
+    asFavorite: { wins: 7, losses: 3, total: 10, rate: 70 },
+    asUnderdog: { wins: 4, losses: 6, total: 10, rate: 40 },
+  },
+  competitionStats: {
+    "5v5 PREMIUM": { wins: 8, losses: 5, total: 13, rate: 62 },
+    "CS2 5v5": { wins: 3, losses: 4, total: 7, rate: 43 },
+  },
+  matchRecords: {},
+  avgElo: 1763,
+  trends: [],
+  earliestGame: "10.03.2024",
+  latestGame: "13.03.2024",
+  mapInfo: "Пул карт: de_mirage, de_inferno, de_dust2",
+  count: 20,
+  allCount: 35,
+}
+
+export const mockTeamReport: ReportData = {
+  type: "team",
+  name: "Mock Team",
+  stats: mockTeamStats,
 }

@@ -1,7 +1,22 @@
+import type {
+  SearchPlayerResult,
+  SearchTeamResult,
+  TeamInfo,
+  TeamDropPickStats,
+} from "@faceit/core"
 import type { ReportData } from "@/types"
 import { IS_MOCK, apiFetch } from "./client"
-import { mockFetchPlayerReport, mockSearchPlayers } from "./mock"
-import type { SearchResult } from "./mock"
+import {
+  mockAnalyzeTeam,
+  mockFetchPlayerReport,
+  mockFetchTeamRoster,
+  mockSearchAll,
+} from "./mock"
+
+export interface SearchAllResult {
+  players: SearchPlayerResult[]
+  teams: SearchTeamResult[]
+}
 
 /** Загрузка отчёта игрока по никнейму */
 export async function fetchPlayerReport(
@@ -13,16 +28,39 @@ export async function fetchPlayerReport(
   return apiFetch<ReportData>(`/api/player/${encodeURIComponent(nickname)}/analysis`)
 }
 
-/** Поиск игроков по запросу */
-export async function searchPlayers(
-  query: string,
-): Promise<SearchResult[]> {
+/** Совмещённый поиск по игрокам и командам */
+export async function searchAll(query: string): Promise<SearchAllResult> {
   if (IS_MOCK) {
-    return mockSearchPlayers(query)
+    return mockSearchAll(query)
   }
-  return apiFetch<SearchResult[]>(
+  return apiFetch<SearchAllResult>(
     `/api/search?q=${encodeURIComponent(query)}`,
   )
 }
 
-export type { SearchResult }
+/** Ростер команды по UUID */
+export async function fetchTeamRoster(teamId: string): Promise<TeamInfo> {
+  if (IS_MOCK) {
+    return mockFetchTeamRoster(teamId)
+  }
+  return apiFetch<TeamInfo>(`/api/team/${encodeURIComponent(teamId)}`)
+}
+
+/** Запуск анализа команды по выбранным игрокам */
+export async function analyzeTeam(
+  teamName: string,
+  playerIds: string[],
+): Promise<ReportData> {
+  if (IS_MOCK) {
+    return mockAnalyzeTeam(teamName, playerIds)
+  }
+  // Сервер возвращает TeamAnalysisResult = { stats }, оборачиваем в ReportData,
+  // чтобы ReportView корректно различал team/player по полю `type`.
+  const result = await apiFetch<{ stats: TeamDropPickStats }>(`/api/team/analysis`, {
+    method: "POST",
+    body: JSON.stringify({ teamName, playerIds }),
+  })
+  return { type: "team", name: teamName, stats: result.stats }
+}
+
+export type { SearchPlayerResult, SearchTeamResult, TeamInfo }

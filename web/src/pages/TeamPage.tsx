@@ -1,25 +1,41 @@
-import { Navigate, useParams } from "react-router-dom"
-import type { ReportData } from "@/types"
+import { Link, Navigate, useParams } from "react-router-dom"
+import { useCachedTeamAnalysis } from "@/store"
 import { ReportView } from "@/components/ReportView"
+import { teamAnalysisPath, teamPath } from "@/routing"
 
 export function TeamPage() {
-  const { name } = useParams<{ name: string }>()
+  const { teamId } = useParams<{ teamId: string }>()
 
-  if (!name) {
+  // 1) Кеш от мутации «Анализировать» на TeamRosterPage.
+  const { data: cached } = useCachedTeamAnalysis(teamId)
+
+  if (!teamId) {
     return <Navigate to="/" replace />
   }
 
-  // Пока команды загружаются только через embedded data
-  // TODO: добавить динамическую загрузку команд через API
-  const data = window.__REPORT_DATA__
-
-  if (!data || data.type !== "team") {
-    return (
-      <div className="max-w-[960px] mx-auto px-3 sm:px-5 py-4 sm:py-5 text-gray-500 dark:text-gray-400">
-        <p>Данные для команды «{name}» не найдены. Запустите анализ через CLI.</p>
-      </div>
-    )
+  if (cached) {
+    return <ReportView data={cached} basePath={teamAnalysisPath(teamId)} />
   }
 
-  return <ReportView data={data} basePath={`/team/${name}`} />
+  // 2) Статический CLI-отчёт (встроенные данные в HTML).
+  const embedded = window.__REPORT_DATA__
+  if (embedded && embedded.type === "team") {
+    return <ReportView data={embedded} basePath={teamAnalysisPath(teamId)} />
+  }
+
+  // 3) Нет данных — отправляем пользователя на страницу выбора ростера.
+  return (
+    <div className="max-w-[960px] mx-auto px-3 sm:px-5 py-4 sm:py-5 text-gray-500 dark:text-gray-400">
+      <p className="mb-3">
+        Анализ команды ещё не запускался в этой сессии. Откройте страницу ростера
+        и выберите игроков.
+      </p>
+      <Link
+        to={teamPath(teamId)}
+        className="inline-block px-4 py-2 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+      >
+        Перейти к ростеру
+      </Link>
+    </div>
+  )
 }
