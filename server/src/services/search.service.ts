@@ -1,9 +1,35 @@
 import {
   getPlayerId,
   getPlayerInfo,
+  searchPlayers,
+  searchTeams,
 } from "@faceit/core"
-import type { FaceitClient, FaceitPlayer } from "@faceit/core"
+import type {
+  FaceitClient,
+  FaceitPlayer,
+  SearchPlayerResult,
+  SearchTeamResult,
+} from "@faceit/core"
 import { AppError } from "../lib/errors"
+
+export interface SearchAllResult {
+  players: SearchPlayerResult[]
+  teams: SearchTeamResult[]
+}
+
+export async function searchAll(
+  client: FaceitClient,
+  query: string,
+): Promise<SearchAllResult> {
+  if (!query || query.length < 2) {
+    throw AppError.badRequest("Параметр q должен быть строкой длиной >= 2")
+  }
+  const [players, teams] = await Promise.all([
+    searchPlayers(client, query),
+    searchTeams(client, query),
+  ])
+  return { players, teams }
+}
 
 export async function searchPlayer(
   client: FaceitClient,

@@ -1,20 +1,17 @@
 import { Router } from "express"
-import { searchPlayers } from "@faceit/core"
 import type { AppContext } from "../bootstrap"
-import { AppError } from "../lib/errors"
+import { searchAll } from "../services/search.service"
 
 export function createSearchRouter(ctx: AppContext): Router {
   const router = Router()
 
-  // GET /api/search?q=nickname — поиск игроков
+  // GET /api/search?q=query — совмещённый поиск по игрокам и командам
   router.get("/search", async (req, res, next) => {
     try {
       const query = req.query.q
-      if (typeof query !== "string" || query.length < 2) {
-        throw AppError.badRequest("Параметр q должен быть строкой длиной >= 2")
-      }
-      const results = await searchPlayers(ctx.client, query)
-      res.json(results)
+      const q = typeof query === "string" ? query : ""
+      const result = await searchAll(ctx.client, q)
+      res.json(result)
     } catch (err) {
       next(err)
     }

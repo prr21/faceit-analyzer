@@ -1,10 +1,20 @@
 import { Router } from "express"
 import type { AppContext } from "../bootstrap"
-import { getTeamAnalysis } from "../services/team.service"
+import { getTeamAnalysis, getTeamRoster } from "../services/team.service"
 import { AppError } from "../lib/errors"
 
 export function createTeamRouter(ctx: AppContext): Router {
   const router = Router()
+
+  // GET /api/team/:teamId — состав команды для выбора игроков перед анализом
+  router.get("/:teamId", async (req, res, next) => {
+    try {
+      const info = await getTeamRoster(ctx.client, req.params.teamId)
+      res.json(info)
+    } catch (err) {
+      next(err)
+    }
+  })
 
   // POST /api/team/analysis — полный анализ стратегии команды
   // Body: { playerIds: string[], teamName: string }
