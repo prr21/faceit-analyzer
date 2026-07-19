@@ -4,25 +4,63 @@ import {
   getFaceitApiKey,
   createFaceitClient,
   fetchAndAnalyzeTeam,
+  searchTeams,
+  getTeamInfo,
 } from "@faceit/core"
+import type { FaceitClient, TeamInfo } from "@faceit/core"
 import { writeTeamReport } from "./report-writer.js"
-import teamsData from "./data/teams.json" with { type: "json" }
 
-const teams: Record<string, string[]> = teamsData
+// Аргумент: имя команды, UUID или ссылка faceit.com/*/teams/{uuid}
+const QUERY = process.argv[2] || "Satanics Aura"
 
-const TEAM_NAME = process.argv[2] || "Satanics Aura"
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 
 const client = createFaceitClient(getFaceitApiKey())
 
-async function main() {
-  const teamPlayerIds = teams[TEAM_NAME]
-  if (!teamPlayerIds) {
-    throw new Error(`Команда "${TEAM_NAME}" не найдена в ростерах`)
+async function resolveTeam(client: FaceitClient, query: string): Promise<TeamInfo> {
+  const uuidMatch = query.match(UUID_RE)
+  if (uuidMatch) {
+    const info = await getTeamInfo(client, uuidMatch[0])
+    if (!info) {
+      throw new Error(`Команда с id ${uuidMatch[0]} не найдена в FACEIT`)
+    }
+    return info
   }
 
-  console.log("🚀 Запуск анализа команды:", TEAM_NAME)
+  const results = await searchTeams(client, query)
+  if (results.length === 0) {
+    throw new Error(`Команда "${query}" не найдена в FACEIT`)
+  }
+  const exact = results.find(t => t.name.toLowerCase() === query.toLowerCase())
+  const picked = exact ?? results[0]
+  if (!exact && results.length > 1) {
+    console.log(
+      `🔎 Точного совпадения нет, беру "${picked.name}". Другие варианты: ${results
+        .slice(1)
+        .map(t => t.name)
+        .join(", ")}`,
+    )
+  }
 
-  const { stats: mapStatistic } = await fetchAndAnalyzeTeam(client, teamPlayerIds, TEAM_NAME, {
+  const info = await getTeamInfo(client, picked.team_id)
+  if (!info) {
+    throw new Error(`Не удалось загрузить состав команды "${picked.name}"`)
+  }
+  return info
+}
+
+async function main() {
+  const team = await resolveTeam(client, QUERY)
+  const teamPlayerIds = team.members.map(m => m.player_id)
+  if (teamPlayerIds.length === 0) {
+    throw new Error(`У команды "${team.name}" пустой состав`)
+  }
+
+  console.log("🚀 Запуск анализа команды:", team.name)
+  console.log("👥 Состав:", team.members.map(m => m.nickname).join(", "))
+
+  const { stats: mapStatistic } = await fetchAndAnalyzeTeam(client, teamPlayerIds, team.name, {
+    minPlayers: Math.min(3, teamPlayerIds.length),
     onProgress: (done, total) => {
       process.stdout.write(`\r⏳ Загрузка матчей: ${done}/${total}`)
     },
@@ -44,11 +82,11 @@ async function main() {
 
   const statsDir = path.resolve("output", "stats")
   fs.mkdirSync(statsDir, { recursive: true })
-  const statPath = path.join(statsDir, TEAM_NAME + ".json")
+  const statPath = path.join(statsDir, team.name + ".json")
   fs.writeFileSync(statPath, JSON.stringify(mapStatistic, null, 2), "utf-8")
 
-  const reportPath = path.join("output", "reports", TEAM_NAME + ".html")
-  writeTeamReport(reportPath, TEAM_NAME, mapStatistic)
+  const reportPath = path.join("output", "reports", team.name + ".html")
+  writeTeamReport(reportPath, team.name, mapStatistic)
   console.log(`\n📊 HTML-отчёт: ${reportPath}`)
 }
 
