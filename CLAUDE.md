@@ -148,26 +148,36 @@ Key patterns:
 
 ### web/ (@faceit/web)
 
-React SPA with Vite, Tailwind CSS, ECharts. Dark/light theme, mobile responsive.
+React SPA with Vite, Tailwind CSS v4, ECharts, TanStack Query. Dark/light theme, mobile responsive. Feature-based structure (details in `web/README.md`):
 
 ```
 web/src/
-  components/          # UI components (charts/, core/, tabs/)
-  features/            # Feature modules (theme-1-frontend, theme-2-multimedia, theme-4-async, theme-5-dynamic)
+  main.tsx             # entry: echarts-setup, css, window.__REPORT_DATA__
+  app/                 # App, StoreProvider, query-client, routing/routes.tsx
   pages/               # SearchPage, PlayerPage, TeamRosterPage, TeamPage, ReportPage
-  routing/             # HashRouter, paths, tabs, routes
-  store/               # Zustand slices + TanStack Query hooks + API layer (fetch → server)
-  types.ts             # re-exports from @faceit/core
+  features/
+    search/            # GlobalSearch ui + useGlobalSearch model
+    team/              # useTeamRoster, useTeamAnalysis (model only, UI in pages/)
+    compare/           # CompareTab, CompareView
+    report/            # ReportView, Layout, model/ (tabs, usePlayerReport), tabs/, charts/, ui/
+  shared/
+    ui/                # Card, LoadingSpinner, ErrorMessage, ThemeToggle
+    api/               # client.ts (apiFetch), endpoints.ts (fetch → server)
+    routing/paths.ts   # PATHS + path builders
+    hooks/ lib/ types/ fixtures/
+  __tests__/           # vitest tests + setup.ts
 ```
+
+**Import rules**: layers `app → pages → features → shared` (shared imports nothing above itself); features don't import each other (exception: `features/report` and `pages` compose other features); cross-folder imports via `@/` alias only, relative paths only within a folder/feature; no barrel files.
 
 **Search & team flow (web):**
 
-- `features/theme-4-async/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; иначе два блока результатов — игроки и команды.
+- `features/search/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; иначе два блока результатов — игроки и команды.
 - `/team/:teamId` → `TeamRosterPage` (состав команды, чекбоксы — все отмечены по умолчанию, валидация 2–5 игроков, мутация анализа через `useAnalyzeTeamMutation` кладёт результат в TanStack Query cache).
 - `/team/:teamId/analysis/:tab?` → `TeamPage` читает результат из кеша (fallback 1: `window.__REPORT_DATA__` для CLI-отчётов, fallback 2: ссылка на страницу ростера).
-- `store/api/player.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.
+- `shared/api/endpoints.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.
 
-**`features/theme-*/`**: feature modules grouped by theme — historical naming from the education scaffolding. `master` is the development branch: it contains only working implementations imported by production UI (Layout, ReportView, etc.); unused education stubs have been removed. The `education` branch keeps TODO-stub versions as student assignments. Don't rename the directories — it keeps merges with `education` manageable.
+The education scaffolding (`features/theme-*` layout, CONTRIBUTING.md, TODO markers) has been fully removed from `master`; the `education` branch keeps the student-assignment versions and is maintained separately.
 
 ## Data Flow
 
