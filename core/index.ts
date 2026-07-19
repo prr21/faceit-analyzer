@@ -91,14 +91,5 @@ export type { PlayerAnalysisResult } from "./usecases/player"
 export { fetchAndAnalyzeTeam } from "./usecases/team"
 export type { TeamAnalysisResult } from "./usecases/team"
 
-// Voice — manifest assembly
-export {
-  parseMatchId,
-  extractSteamId,
-  collectRoster,
-  buildVoiceManifest,
-} from "./voice/manifest"
-export type { RosterEntry } from "./voice/manifest"
-
 // Types — re-export all
 export type * from "./types/index"
