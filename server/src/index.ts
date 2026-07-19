@@ -13,6 +13,7 @@ import { bootstrap } from "./bootstrap"
 import { createSearchRouter } from "./routes/search.routes"
 import { createPlayerRouter } from "./routes/player.routes"
 import { createTeamRouter } from "./routes/team.routes"
+import { createVoiceRouter } from "./routes/voice.routes"
 import { errorHandler } from "./middleware/errorHandler"
 
 const app = express()
@@ -25,6 +26,7 @@ const ctx = bootstrap()
 app.use("/api", createSearchRouter(ctx))
 app.use("/api/player", createPlayerRouter(ctx))
 app.use("/api/team", createTeamRouter(ctx))
+app.use("/api/match", createVoiceRouter(ctx))
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
@@ -42,5 +44,8 @@ app.listen(PORT, HOST, () => {
 
   if (!process.env.FACEIT_API_KEY) {
     console.warn("⚠ FACEIT_API_KEY не задан в .env — API-запросы не будут работать")
+  }
+  if (!process.env.FACEIT_SESSION_TOKEN) {
+    console.warn("⚠ FACEIT_SESSION_TOKEN не задан в .env — извлечение голосов из демок не будет работать")
   }
 })
