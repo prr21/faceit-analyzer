@@ -27,6 +27,7 @@ npm install                          # install all workspace dependencies
 npm run team -- "Satanics Aura"      # analyze team map ban/pick strategy
 npm run player -- "dErzz"            # analyze individual player ban/picks
 npm run smurfs -- "ed1v9k"           # detect smurf accounts in match history
+npm run voice -- "<matchId|url>"     # извлечь голоса игроков матча в MP3 (.cache/voices/)
 npm run dev:web                      # start web dev server (Vite)
 npm run dev:server                   # start Express server (tsx watch)
 npm run build:web                    # build web app
@@ -83,7 +84,10 @@ core/
   usecases/            # high-level orchestration shared by CLI and server
     player.ts          # fetchAndAnalyzePlayer(client, nickname) — full player pipeline
     team.ts            # fetchAndAnalyzeTeam(client, playerIds, teamName) — full team pipeline
+    voice.ts           # fetchMatchVoices — full voice extraction pipeline
     index.ts           # barrel export
+  voice/               # извлечение голосов из демок: binary (csgove), demo (скачивание),
+                       # runner/extract/transcode, manifest; usecases/voice.ts — fetchMatchVoices
   infra/               # generic infrastructure, not FACEIT-specific
     cache.ts           # CacheProvider interface + FileSystemCache + setCacheProvider
     retry.ts           # withRetry + RetryLogger + setRetryLogger
@@ -218,6 +222,16 @@ No authentication required. Uses `fetch` (not axios).
 | `GET /match/{id}/history` | `getMatchVotingHistory()` | Yes | Map veto rounds: bans, picks, decider. Returns `payload.tickets[]` |
 
 **Important**: `fetch` does not throw on HTTP errors — must check `response.ok` manually and create error with `.status` for `withRetry` compatibility.
+
+### Internal Download API (`www.faceit.com/api/download/v2`)
+
+Authenticated via session Bearer token (`FACEIT_SESSION_TOKEN`), not the Open Data API key. Uses `fetch`.
+
+| Endpoint | Used in | Cached | Notes |
+|---|---|---|---|
+| `POST /demos/download-url` | `fetchSignedDemoUrl()` | No | Exchanges match `demo_url` for a signed, time-limited download URL |
+
+`FACEIT_SESSION_TOKEN` — сессионный Bearer-токен faceit.com для скачивания демок (внутренний download-url эндпоинт; официальный Downloads API требует отдельной заявки). Взять из DevTools → Network → заголовок `Authorization` любого запроса к api на faceit.com.
 
 ### What gets cached and why
 
