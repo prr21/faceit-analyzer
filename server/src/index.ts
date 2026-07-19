@@ -9,7 +9,6 @@ loadEnv({ path: path.resolve(__dirname, "../../.env") })
 import express from "express"
 import { corsMiddleware } from "./middleware/cors"
 import { rateLimit } from "./middleware/rateLimit"
-import { apiRouter } from "./routes/api"
 import { bootstrap } from "./bootstrap"
 import { createSearchRouter } from "./routes/search.routes"
 import { createPlayerRouter } from "./routes/player.routes"
@@ -26,7 +25,6 @@ const ctx = bootstrap()
 app.use("/api", createSearchRouter(ctx))
 app.use("/api/player", createPlayerRouter(ctx))
 app.use("/api/team", createTeamRouter(ctx))
-app.use("/api", apiRouter)
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() })
