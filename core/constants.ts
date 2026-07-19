@@ -10,5 +10,6 @@ export const ACTIVE_MAP_POOL = [
   "de_inferno",
   "de_anubis",
   "de_train",
+  "de_cache",
   // "de_vertigo",
 ]
