@@ -1,6 +1,5 @@
-{
+﻿{
   "recommendations": [
-    "Gruntfuggly.todo-tree",
     "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode"

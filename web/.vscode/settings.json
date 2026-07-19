@@ -1,21 +1,5 @@
-{
+﻿{
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.tabSize": 2,
-  "todo-tree.general.tags": ["TODO: Задание", "BONUS:"],
-  "todo-tree.highlights.customHighlight": {
-    "TODO: Задание": {
-      "icon": "checklist",
-      "foreground": "#fff",
-      "background": "#3b82f6",
-      "iconColour": "#3b82f6"
-    },
-    "BONUS:": {
-      "icon": "star",
-      "foreground": "#fff",
-      "background": "#f59e0b",
-      "iconColour": "#f59e0b"
-    }
-  },
-  "todo-tree.regex.regex": "(TODO: Задание|BONUS:)"
+  "editor.tabSize": 2
 }
