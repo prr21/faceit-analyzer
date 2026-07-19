@@ -3,6 +3,7 @@ import type {
   SearchTeamResult,
   TeamInfo,
   TeamDropPickStats,
+  VoiceStatusDto,
 } from "@faceit/core"
 import type { ReportData } from "@/shared/types"
 import { apiFetch } from "./client"
@@ -43,6 +44,19 @@ export async function analyzeTeam(
     body: JSON.stringify({ teamName, playerIds }),
   })
   return { type: "team", name: teamName, stats: result.stats }
+}
+
+/** Запуск извлечения голосов матча */
+export async function startVoiceExtraction(matchId: string): Promise<VoiceStatusDto> {
+  return apiFetch<VoiceStatusDto>(
+    `/api/match/${encodeURIComponent(matchId)}/voices`,
+    { method: "POST" },
+  )
+}
+
+/** Статус извлечения голосов + список аудио */
+export async function getVoiceStatus(matchId: string): Promise<VoiceStatusDto> {
+  return apiFetch<VoiceStatusDto>(`/api/match/${encodeURIComponent(matchId)}/voices`)
 }
 
 export type { SearchPlayerResult, SearchTeamResult, TeamInfo }
