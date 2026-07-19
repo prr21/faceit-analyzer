@@ -1,6 +1,6 @@
 import { fetchAndAnalyzeTeam, getTeamInfo } from "@faceit/core"
 import type { FaceitClient, TeamAnalysisResult, TeamInfo } from "@faceit/core"
-import { AppError } from "../lib/errors"
+import { AppError, upstreamStatus } from "../lib/errors"
 
 export type { TeamAnalysisResult }
 
@@ -30,11 +30,21 @@ export async function getTeamAnalysis(
 
   const minPlayers = Math.min(3, teamPlayerIds.length)
 
+  let result: TeamAnalysisResult
   try {
-    return await fetchAndAnalyzeTeam(client, teamPlayerIds, teamName, {
+    result = await fetchAndAnalyzeTeam(client, teamPlayerIds, teamName, {
       minPlayers,
     })
-  } catch {
+  } catch (err) {
+    // 404 от FACEIT = несуществующий player_id в запросе; остальное пробрасываем
+    if (upstreamStatus(err) === 404) {
+      throw AppError.badRequest("Один из playerIds не найден в FACEIT")
+    }
+    throw err
+  }
+
+  if (result.stats.count === 0) {
     throw AppError.notFound(`Не найдено командных матчей для "${teamName}"`)
   }
+  return result
 }

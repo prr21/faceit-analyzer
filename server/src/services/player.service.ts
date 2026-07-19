@@ -1,6 +1,6 @@
 import { fetchAndAnalyzePlayer } from "@faceit/core"
 import type { FaceitClient, PlayerAnalysisResult } from "@faceit/core"
-import { AppError } from "../lib/errors"
+import { AppError, upstreamStatus } from "../lib/errors"
 
 export type { PlayerAnalysisResult }
 
@@ -10,7 +10,11 @@ export async function getPlayerAnalysis(
 ): Promise<PlayerAnalysisResult> {
   try {
     return await fetchAndAnalyzePlayer(client, nickname)
-  } catch {
-    throw AppError.notFound(`Игрок "${nickname}" не найден`)
+  } catch (err) {
+    // 404 от FACEIT = такого никнейма нет; остальное — не наша зона, пробрасываем
+    if (upstreamStatus(err) === 404) {
+      throw AppError.notFound(`Игрок "${nickname}" не найден`)
+    }
+    throw err
   }
 }

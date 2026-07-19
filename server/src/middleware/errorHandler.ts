@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express"
-import { AppError } from "../lib/errors"
+import { AppError, upstreamStatus } from "../lib/errors"
 
 export function errorHandler(
   err: Error,
@@ -15,11 +15,27 @@ export function errorHandler(
     return
   }
 
-  // Axios errors от FACEIT API
-  if ("response" in err) {
-    const status = (err as any).response?.status ?? 502
-    res.status(status).json({
-      error: "Upstream API error",
+  // Ошибки FACEIT API (axios или fetch из faceit-internal)
+  const status = upstreamStatus(err)
+  if (status !== undefined) {
+    console.error(`Ошибка FACEIT API (${status}):`, err.message)
+
+    if (status === 401 || status === 403) {
+      res.status(502).json({
+        error: "FACEIT API отклонил запрос — проверьте FACEIT_API_KEY в .env",
+        code: "UPSTREAM_AUTH",
+      })
+      return
+    }
+    if (status === 429) {
+      res.status(503).json({
+        error: "FACEIT API rate limit исчерпан — повторите позже",
+        code: "UPSTREAM_RATE_LIMIT",
+      })
+      return
+    }
+    res.status(502).json({
+      error: `Ошибка FACEIT API (${status})`,
       code: "UPSTREAM_ERROR",
     })
     return

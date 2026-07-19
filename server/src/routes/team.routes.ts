@@ -25,8 +25,15 @@ export function createTeamRouter(ctx: AppContext): Router {
         teamName?: string
       }
 
-      if (!Array.isArray(playerIds) || playerIds.length === 0) {
-        throw AppError.badRequest("playerIds должен быть непустым массивом")
+      if (
+        !Array.isArray(playerIds) ||
+        playerIds.length === 0 ||
+        !playerIds.every((id) => typeof id === "string" && id.length > 0)
+      ) {
+        throw AppError.badRequest("playerIds должен быть непустым массивом строк")
+      }
+      if (playerIds.length > 10) {
+        throw AppError.badRequest("Слишком много playerIds (максимум 10)")
       }
       if (!teamName || typeof teamName !== "string") {
         throw AppError.badRequest("teamName обязателен")
