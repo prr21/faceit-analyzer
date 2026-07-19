@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react"
 import type { TeamDropPickStats, PlayerDropPickStats, MatchRecord } from "@/shared/types"
 import { getStatColor } from "@/shared/lib/colors"
 import { MatchDetailCard } from "../ui/MatchDetailCard"
+import { VoicePanel } from "@/features/voice/ui/VoicePanel"
 
 type FlatMatchRecord = MatchRecord & { mapName: string }
 
@@ -41,9 +42,11 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
   const [mapFilter, setMapFilter] = useState<string | null>(null)
   const [resultFilter, setResultFilter] = useState<"all" | "win" | "loss">("all")
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null)
+  const [voiceMatchId, setVoiceMatchId] = useState<string | null>(null)
 
   const useLeaderData = mode === "leader" && isPlayerStats(stats)
   const matchRecords = useLeaderData && isPlayerStats(stats) ? stats.leaderMatchRecords : stats.matchRecords
+  const highlightNickname = isPlayerStats(stats) ? stats.playerProfile?.nickname : undefined
 
   const allRecords = useMemo(() => flattenMatchRecords(matchRecords), [matchRecords])
 
@@ -111,6 +114,7 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
               <th className="text-left font-medium px-2 py-1">Счёт</th>
               <th className="text-left font-medium px-2 py-1">Противник</th>
               <th className="text-left font-medium px-2 py-1">Турнир</th>
+              <th className="text-center font-medium px-2 py-1 w-[36px]" title="Голоса из демки">🎤</th>
               {hasStats && (
                 <>
                   <th className="text-right font-medium px-2 py-1 w-[70px]">K/D/A</th>
@@ -166,6 +170,21 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                       compLabel
                     )}
                   </td>
+                  <td className="px-2 py-1.5 text-center">
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        setVoiceMatchId(voiceMatchId === r.matchId ? null : r.matchId)
+                      }}
+                      title="Голоса из демки"
+                      aria-label="🎤"
+                      className={`cursor-pointer transition-colors ${
+                        voiceMatchId === r.matchId ? "text-blue-500" : "text-gray-400 hover:text-blue-500"
+                      }`}
+                    >
+                      🎤
+                    </button>
+                  </td>
                   {hasStats && (
                     <>
                       <td className={`px-2 py-1.5 text-right tabular-nums whitespace-nowrap ${r.kdRatio !== undefined ? getStatColor(r.kdRatio, "kd") : "text-gray-500"}`}>
@@ -182,8 +201,15 @@ export function MatchHistoryTab({ stats, mode }: MatchHistoryTabProps) {
                 </tr>
                 {expandedMatchId === r.matchId && (
                   <tr>
-                    <td colSpan={hasStats ? 8 : 5} className="p-0">
+                    <td colSpan={hasStats ? 9 : 6} className="p-0">
                       <MatchDetailCard record={r} mapName={r.mapName} />
+                    </td>
+                  </tr>
+                )}
+                {voiceMatchId === r.matchId && (
+                  <tr>
+                    <td colSpan={hasStats ? 9 : 6} className="px-3 py-0 bg-gray-50 dark:bg-gray-800/40">
+                      <VoicePanel matchId={r.matchId} highlightNickname={highlightNickname} />
                     </td>
                   </tr>
                 )}
