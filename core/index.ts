@@ -60,10 +60,14 @@ export {
   DEFAULT_GAME,
   ACTIVE_MAP_POOL,
   DEFAULT_CONCURRENCY,
+  CSGOVE_VERSION,
+  CSGOVE_DOWNLOAD_BASE,
+  FACEIT_DOWNLOAD_API_URL,
+  VOICE_MP3_BITRATE,
 } from "./constants"
 
 // Env
-export { getFaceitApiKey } from "./env"
+export { getFaceitApiKey, getFaceitSessionToken } from "./env"
 
 // Analysis
 export {
