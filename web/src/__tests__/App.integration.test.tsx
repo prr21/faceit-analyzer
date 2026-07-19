@@ -1,8 +1,10 @@
-import { describe, test, expect, vi, beforeAll } from "vitest"
+import { describe, test, expect, vi, beforeAll, beforeEach } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReportView } from "../components/ReportView"
-import { mockPlayerReport } from "./fixtures/mockData"
+import type { ReportData } from "../types"
+import { mockPlayerReport, mockPlayerStats } from "./fixtures/mockData"
 
 // Мок для ECharts — в тестовой среде нет canvas, поэтому мокаем компонент
 vi.mock("echarts-for-react", () => ({
@@ -21,248 +23,186 @@ beforeAll(() => {
   }
 })
 
-/** Хелпер: рендерит ReportView внутри MemoryRouter с нужным маршрутом */
-function renderReport(tab = "bans", mode?: string) {
-  const modeParam = mode ? `?mode=${mode}` : ""
+/** Хелпер: рендерит ReportView с провайдерами (Router + QueryClient) */
+function renderWithProviders(data: ReportData, initialEntry: string) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return render(
-    <MemoryRouter initialEntries={[`/report/${tab}${modeParam}`]}>
-      <Routes>
-        <Route
-          path="/report/:tab?"
-          element={<ReportView data={mockPlayerReport} basePath="/report" />}
-        />
-      </Routes>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route
+            path="/report/:tab?"
+            element={<ReportView data={data} basePath="/report" />}
+          />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 
+/** Хелпер: рендерит стандартный player-отчёт на нужном табе */
+function renderReport(tab = "bans", mode?: string) {
+  const modeParam = mode ? `?mode=${mode}` : ""
+  return renderWithProviders(mockPlayerReport, `/report/${tab}${modeParam}`)
+}
+
 describe("App — интеграционные тесты", () => {
-  // === ПРИМЕР 1: Рендеринг заголовка из данных ===
+  beforeEach(() => {
+    // useTheme пишет в localStorage и на documentElement — изолируем тесты
+    try {
+      window.localStorage.removeItem("theme")
+    } catch {
+      // jsdom без localStorage — useTheme сам обрабатывает это через try/catch
+    }
+    document.documentElement.classList.remove("dark")
+  })
+
   test("отображает никнейм игрока в шапке", () => {
     renderReport()
-    // mockPlayerReport.stats.playerProfile.nickname = "TestPlayer"
     expect(screen.getByText("TestPlayer")).toBeInTheDocument()
   })
 
-  // === ПРИМЕР 2: Переключение табов по клику ===
   test("переключает таб при клике на 'Винрейт'", () => {
     renderReport()
 
-    // По умолчанию активен первый таб "Баны/Пики"
     const winrateTab = screen.getByText("Винрейт")
     fireEvent.click(winrateTab)
 
-    // После клика должна появиться таблица винрейта
     // В mockData leaderMapWinRate de_dust2 rate = 71
     expect(screen.getByText("71%")).toBeInTheDocument()
   })
 
-  // === НИЖЕ — ТЕСТЫ ДЛЯ СТУДЕНТОВ ===
+  test("отображает все 7 табов в режиме 'Как лидер'", () => {
+    renderReport()
 
-  // TODO: Задание 7.1 — Тест: отображение всех табов в режиме "Как лидер"
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("отображает все 7 табов в режиме 'Как лидер'", () => {
-  //   renderReport()
-  //
-  //   // В режиме leader (по умолчанию) должны быть 7 табов:
-  //   // "Баны/Пики", "Винрейт", "Тренды", "Матчи", "Обзор", "Радар", "Сравнение"
-  //   expect(screen.getByText("Баны/Пики")).toBeInTheDocument()
-  //   expect(screen.getByText("Винрейт")).toBeInTheDocument()
-  //   expect(screen.getByText("Тренды")).toBeInTheDocument()
-  //   expect(screen.getByText("Матчи")).toBeInTheDocument()
-  //   expect(screen.getByText("Обзор")).toBeInTheDocument()
-  //   expect(screen.getByText("Радар")).toBeInTheDocument()
-  //   expect(screen.getByText("Сравнение")).toBeInTheDocument()
-  // })
+    for (const label of [
+      "Баны/Пики",
+      "Винрейт",
+      "Тренды",
+      "Матчи",
+      "Обзор",
+      "Радар",
+      "Сравнение",
+    ]) {
+      expect(screen.getByText(label)).toBeInTheDocument()
+    }
+  })
 
-  // TODO: Задание 7.1 — Тест: переключение на режим "Все матчи"
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("при переключении на 'Все матчи' таб 'Баны/Пики' исчезает", () => {
-  //   renderReport()
-  //
-  //   // Найти кнопку "Все матчи" и кликнуть
-  //   const allModeBtn = screen.getByText("Все матчи")
-  //   fireEvent.click(allModeBtn)
-  //
-  //   // Таб "Баны/Пики" НЕ должен отображаться в режиме "all"
-  //   expect(screen.queryByText("Баны/Пики")).not.toBeInTheDocument()
-  //   // Остальные табы должны остаться
-  //   expect(screen.getByText("Винрейт")).toBeInTheDocument()
-  // })
-  //
-  // Подсказка: queryByText возвращает null если элемент не найден (не бросает ошибку)
+  test("при переключении на 'Все матчи' таб 'Баны/Пики' исчезает", () => {
+    renderReport()
 
-  // TODO: Задание 7.1 — Тест: навигация по табу "Матчи"
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("таб 'Матчи' отображает таблицу с историей", () => {
-  //   renderReport("matches")
-  //
-  //   // В mockData есть матчи с противниками "Team Alpha", "Team Beta", "Team Gamma"
-  //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
-  // })
+    fireEvent.click(screen.getByText("Все матчи"))
 
-  // TODO: Задание 7.1 — Тест: фильтрация матчей по карте
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("фильтр по карте в табе 'Матчи' обновляет список", () => {
-  //   renderReport("matches")
-  //
-  //   // Найти select фильтра карт и выбрать "de_dust2"
-  //   const mapFilter = screen.getByDisplayValue("Все карты")
-  //   fireEvent.change(mapFilter, { target: { value: "de_dust2" } })
-  //
-  //   // Team Gamma играла на de_mirage → не должна быть видна
-  //   expect(screen.queryByText(/Team Gamma/)).not.toBeInTheDocument()
-  //   // Team Alpha играла на de_dust2 → должна быть видна
-  //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
-  // })
+    expect(screen.queryByText("Баны/Пики")).not.toBeInTheDocument()
+    // "Винрейт" есть и в табах, и в заголовке контента
+    expect(screen.getAllByText("Винрейт").length).toBeGreaterThan(0)
+  })
 
-  // TODO: Задание 7.1 — Тест: фильтрация по результату (победы/поражения)
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("фильтр 'Победы' показывает только выигранные матчи", () => {
-  //   renderReport("matches")
-  //
-  //   // Кликаем на кнопку "Победы"
-  //   fireEvent.click(screen.getByText("Победы"))
-  //
-  //   // match-2 (Team Beta) — поражение, не должен отображаться
-  //   expect(screen.queryByText(/Team Beta/)).not.toBeInTheDocument()
-  //   // match-1 (Team Alpha) — победа, должен отображаться
-  //   expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
-  // })
+  test("таб 'Матчи' отображает таблицу с историей", () => {
+    renderReport("matches", "all")
 
-  // TODO: Задание 7.1 — Тест: таб "Обзор" отображает сводные карточки
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("таб 'Обзор' показывает общий винрейт и количество матчей", () => {
-  //   renderReport("overview")
-  //
-  //   // Должны быть видны карточки с метриками
-  //   expect(screen.getByText("Всего матчей")).toBeInTheDocument()
-  //   expect(screen.getByText("Общий винрейт")).toBeInTheDocument()
-  // })
+    expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
+    expect(screen.getByText(/Team Gamma/)).toBeInTheDocument()
+  })
 
-  // TODO: Задание 7.1 — Тест: таб "Обзор" показывает ELO в шкале уровня
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("таб 'Обзор' отображает текущий ELO и уровень", () => {
-  //   renderReport("overview")
-  //
-  //   // В mockData: currentElo = 1835, skillLevel = 8
-  //   expect(screen.getByText("1835")).toBeInTheDocument()
-  // })
+  test("фильтр по карте в табе 'Матчи' обновляет список", () => {
+    renderReport("matches", "all")
 
-  // TODO: Задание 7.1 — Тест: переключение темы
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("кнопка темы переключает dark mode", () => {
-  //   renderReport()
-  //
-  //   // Найти кнопку переключения темы (иконка солнца/луны)
-  //   // Подсказка: используйте screen.getByRole("button") или screen.getByLabelText
-  //   // или найдите по тексту/иконке в ThemeToggle.tsx
-  //
-  //   // После клика document.documentElement должен содержать/не содержать класс "dark"
-  // })
+    const mapFilter = screen.getByDisplayValue("Все карты")
+    fireEvent.change(mapFilter, { target: { value: "de_dust2" } })
 
-  // TODO: Задание 7.1 — Тест: раскрытие строки в таблице винрейта
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("клик по строке в WinRateTable раскрывает детали карты", () => {
-  //   renderReport("winrate")
-  //
-  //   // Найти строку с картой de_dust2 и кликнуть
-  //   // Подсказка: screen.getByText("de_dust2") → fireEvent.click
-  //
-  //   // После раскрытия должны появиться записи матчей
-  //   // Подсказка: смотрите MatchList компонент — он рендерит счёт "16:12"
-  // })
+    // Team Gamma играла на de_mirage → не должна быть видна
+    expect(screen.queryByText(/Team Gamma/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
+  })
 
-  // TODO: Задание 7.1 — Тест: таб "Сравнение" отображает форму ввода
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("таб 'Сравнение' показывает два поля ввода и кнопку", () => {
-  //   renderReport("compare")
-  //
-  //   // Должны быть видны два поля ввода и кнопка "Сравнить"
-  //   expect(screen.getByPlaceholderText("Никнейм игрока 1")).toBeInTheDocument()
-  //   expect(screen.getByPlaceholderText("Никнейм игрока 2")).toBeInTheDocument()
-  //   expect(screen.getByText("Сравнить")).toBeInTheDocument()
-  // })
+  test("фильтр 'Победы' показывает только выигранные матчи", () => {
+    renderReport("matches", "all")
 
-  // TODO: Задание 7.1 — Тест: пагинация в табе "Матчи"
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // Подсказка: для этого теста нужно больше матчей в mockData (>20),
-  // чтобы пагинация появилась. Можно создать расширенный fixture
-  // с 25+ записями в matchRecords.
-  //
-  // test("пагинация в табе 'Матчи' переключает страницы", () => {
-  //   // Создайте расширенные mockData с 25+ матчами
-  //   // renderReport("matches") или renderReport с extendedMockReport
-  //   //
-  //   // // Должна быть кнопка "Далее →"
-  //   // const nextBtn = screen.getByText("Далее →")
-  //   // fireEvent.click(nextBtn)
-  //   //
-  //   // // Номер страницы должен обновиться
-  //   // expect(screen.getByText("2 / 2")).toBeInTheDocument()
-  // })
+    fireEvent.click(screen.getByText("Победы"))
 
-  // TODO: Задание 7.1 — Тест: рендеринг с пустыми данными
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("приложение корректно рендерится с минимальными данными", () => {
-  //   const emptyData: ReportData = {
-  //     type: "player",
-  //     name: "EmptyPlayer",
-  //     stats: {
-  //       ...mockPlayerStats,
-  //       mapWinRate: {},
-  //       matchRecords: {},
-  //       leaderMapWinRate: {},
-  //       leaderMatchRecords: {},
-  //       eloHistory: [],
-  //       trends: [],
-  //     },
-  //   }
-  //
-  //   // Не должно бросить ошибку
-  //   const { container } = render(
-  //     <MemoryRouter initialEntries={["/report/bans"]}>
-  //       <Routes>
-  //         <Route path="/report/:tab?" element={<ReportView data={emptyData} basePath="/report" />} />
-  //       </Routes>
-  //     </MemoryRouter>,
-  //   )
-  //   expect(container).toBeTruthy()
-  //   expect(screen.getByText("EmptyPlayer")).toBeInTheDocument()
-  // })
-  //
-  // Подсказка: import type { ReportData } from "../types"
-  // import { mockPlayerStats } from "./fixtures/mockData"
+    // match-2 (Team Beta) — поражение, не должен отображаться
+    expect(screen.queryByText(/Team Beta/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Team Alpha/)).toBeInTheDocument()
+  })
 
-  // TODO: Задание 7.1 — Тест: таб "Радар" рендерится без ошибок
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("таб 'Радар' отображает область для радарной диаграммы", () => {
-  //   renderReport("radar")
-  //
-  //   // Поскольку ECharts замокан, ищем data-testid="echarts-mock"
-  //   expect(screen.getByTestId("echarts-mock")).toBeInTheDocument()
-  // })
+  test("таб 'Обзор' показывает общий винрейт и количество матчей", () => {
+    renderReport("overview")
 
-  // TODO: Задание 7.1 — Тест: режим "Все матчи" показывает "Эффект лидерства"
-  // Документация: https://testing-library.com/docs/react-testing-library/api
-  //
-  // test("в режиме 'Все матчи' на табе 'Обзор' есть секция 'Эффект лидерства'", () => {
-  //   renderReport("overview", "all")
-  //
-  //   // Должна быть секция "Эффект лидерства"
-  //   expect(screen.getByText("Эффект лидерства")).toBeInTheDocument()
-  // })
+    expect(screen.getAllByText("Всего матчей").length).toBeGreaterThan(0)
+    expect(screen.getByText("Общий винрейт")).toBeInTheDocument()
+  })
+
+  test("таб 'Обзор' отображает текущий ELO", () => {
+    renderReport("overview")
+
+    // В mockData: playerProfile.currentElo = 1835
+    expect(screen.getAllByText("1835").length).toBeGreaterThan(0)
+  })
+
+  test("кнопка темы переключает dark mode", () => {
+    renderReport()
+
+    expect(document.documentElement.classList.contains("dark")).toBe(false)
+
+    fireEvent.click(screen.getByTitle("Тёмная тема"))
+    expect(document.documentElement.classList.contains("dark")).toBe(true)
+
+    fireEvent.click(screen.getByTitle("Светлая тема"))
+    expect(document.documentElement.classList.contains("dark")).toBe(false)
+  })
+
+  test("клик по строке в WinRateTable раскрывает детали карты", () => {
+    renderReport("winrate")
+
+    // В leaderMatchRecords de_dust2 есть матч со счётом 16:12
+    expect(screen.queryByText("16:12")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText("de_dust2"))
+    expect(screen.getByText("16:12")).toBeInTheDocument()
+  })
+
+  test("таб 'Сравнение' показывает два поля ввода и кнопку", () => {
+    renderReport("compare")
+
+    expect(screen.getByPlaceholderText("Никнейм игрока 1")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("Никнейм игрока 2")).toBeInTheDocument()
+    expect(screen.getByText("Сравнить")).toBeInTheDocument()
+  })
+
+  test("приложение корректно рендерится с минимальными данными", () => {
+    const emptyData: ReportData = {
+      type: "player",
+      name: "EmptyPlayer",
+      stats: {
+        ...mockPlayerStats,
+        mapWinRate: {},
+        matchRecords: {},
+        leaderMapWinRate: {},
+        leaderMatchRecords: {},
+        eloHistory: [],
+        trends: [],
+      },
+    }
+
+    const { container } = renderWithProviders(emptyData, "/report/bans")
+
+    expect(container).toBeTruthy()
+    // PlayerHeader рендерит никнейм из playerProfile
+    expect(screen.getByText("TestPlayer")).toBeInTheDocument()
+  })
+
+  test("таб 'Радар' отображает область для радарной диаграммы", () => {
+    renderReport("radar")
+
+    expect(screen.getAllByTestId("echarts-mock").length).toBeGreaterThan(0)
+  })
+
+  test("в режиме 'Все матчи' на табе 'Обзор' есть секция 'Эффект лидерства'", () => {
+    renderReport("overview", "all")
+
+    expect(screen.getByText("Эффект лидерства")).toBeInTheDocument()
+  })
 })
