@@ -109,11 +109,12 @@ Thin wrappers: read args → call `core/usecases` → write output.
 ```
 cli/
   player.ts            # npm run player
-  team.ts              # npm run team
+  team.ts              # npm run team — arg: team name, UUID, or faceit.com team URL
   smurfs.ts            # npm run smurfs
   report-writer.ts     # HTML report generator (reads web/dist/index.html template)
-  data/teams.json      # team rosters (static, CLI-only — will be dynamic in future)
 ```
+
+`team.ts` resolves the roster dynamically: UUID/URL → `getTeamInfo`, otherwise `searchTeams` (exact name match preferred, else first result) → `getTeamInfo` → current members.
 
 ### server/ (@faceit/server)
 
@@ -130,7 +131,6 @@ server/src/
     team.service.ts    # getTeamAnalysis (minPlayers=min(3,N)) + getTeamRoster (team info by UUID)
     search.service.ts  # searchAll (players+teams parallel) + searchPlayer (nickname lookup)
   routes/
-    api.ts             # /reports — 501 stub (not implemented)
     search.routes.ts   # GET /api/search?q= — combined {players, teams} search
     player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
     team.routes.ts     # GET /api/team/:teamId (roster) + POST /api/team/analysis (full analysis)
@@ -144,7 +144,7 @@ Key patterns:
 - **Composition Root** (`bootstrap.ts`): creates `AppContext { client }`, configures retry logger. Single initialization point.
 - **Service Layer**: services orchestrate core/ functions, throw `AppError`, don't know about Express.
 - **Factory Routers**: `createPlayerRouter(ctx)` — routes receive dependencies via argument, not global import.
-- **Error Boundary**: `errorHandler` middleware catches AppError, Axios errors, and unhandled exceptions.
+- **Error Boundary**: `errorHandler` middleware catches AppError and unhandled exceptions; upstream FACEIT errors are mapped by status (401/403 → 502 UPSTREAM_AUTH, 429 → 503 UPSTREAM_RATE_LIMIT, else 502 UPSTREAM_ERROR) via `upstreamStatus()` from `lib/errors.ts`. Services must NOT swallow errors with blanket catch — map specific upstream statuses (e.g. 404 → AppError.notFound) and rethrow the rest.
 
 ### web/ (@faceit/web)
 
@@ -156,7 +156,7 @@ web/src/
   features/            # Feature modules (theme-1-frontend, theme-2-multimedia, theme-4-async, theme-5-dynamic)
   pages/               # SearchPage, PlayerPage, TeamRosterPage, TeamPage, ReportPage
   routing/             # HashRouter, paths, tabs, routes
-  store/               # Zustand slices + TanStack Query hooks + API layer (mock/real)
+  store/               # Zustand slices + TanStack Query hooks + API layer (fetch → server)
   types.ts             # re-exports from @faceit/core
 ```
 
@@ -167,7 +167,7 @@ web/src/
 - `/team/:teamId/analysis/:tab?` → `TeamPage` читает результат из кеша (fallback 1: `window.__REPORT_DATA__` для CLI-отчётов, fallback 2: ссылка на страницу ростера).
 - `store/api/player.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.
 
-**`features/theme-*/`**: feature modules grouped by theme. On `master` — working implementations imported by production UI (Layout, ReportView, etc.). On the `education` branch, the same files contain TODO stubs used as student assignments. Don't rename the directories — it keeps merges between `master` and `education` manageable.
+**`features/theme-*/`**: feature modules grouped by theme — historical naming from the education scaffolding. `master` is the development branch: it contains only working implementations imported by production UI (Layout, ReportView, etc.); unused education stubs have been removed. The `education` branch keeps TODO-stub versions as student assignments. Don't rename the directories — it keeps merges with `education` manageable.
 
 ## Data Flow
 
