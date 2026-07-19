@@ -1,12 +1,9 @@
-// Переключение mock/real API
-// По умолчанию идём на реальный сервер (через vite proxy /api → server).
-// Мок включается явным VITE_USE_MOCK=true в .env.
-export const IS_MOCK = import.meta.env.VITE_USE_MOCK === "true"
 const API_BASE = import.meta.env.VITE_API_URL ?? ""
 
 /**
  * Базовый fetch-wrapper для API-запросов.
- * Автоматически парсит JSON, обрабатывает HTTP-ошибки.
+ * Автоматически парсит JSON. При HTTP-ошибке достаёт сообщение
+ * из тела ответа сервера ({ error, code }), иначе — generic-текст.
  */
 export async function apiFetch<T>(
   path: string,
@@ -18,10 +15,16 @@ export async function apiFetch<T>(
   })
 
   if (!response.ok) {
-    const message =
+    let message =
       response.status === 404
         ? "Не найдено"
         : `Ошибка сервера: ${response.status}`
+    try {
+      const body = (await response.json()) as { error?: string }
+      if (body?.error) message = body.error
+    } catch {
+      // тело не JSON — оставляем generic-сообщение
+    }
     throw new Error(message)
   }
 
