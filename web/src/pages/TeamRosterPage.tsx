@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
-import { useTheme } from "@/hooks/useTheme"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { GlobalSearch } from "@/features/theme-4-async/ui/GlobalSearch"
-import { LoadingSpinner } from "@/components/core/LoadingSpinner"
-import { ErrorMessage } from "@/components/core/ErrorMessage"
-import {
-  useAnalyzeTeamMutation,
-  useTeamRoster,
-} from "@/store"
-import { teamAnalysisPath } from "@/routing"
+import { useTheme } from "@/shared/hooks/useTheme"
+import { ThemeToggle } from "@/shared/ui/ThemeToggle"
+import { GlobalSearch } from "@/features/search/ui/GlobalSearch"
+import { LoadingSpinner } from "@/shared/ui/LoadingSpinner"
+import { ErrorMessage } from "@/shared/ui/ErrorMessage"
+import { useAnalyzeTeamMutation } from "@/features/team/model/useTeamAnalysis"
+import { useTeamRoster } from "@/features/team/model/useTeamRoster"
+import { teamAnalysisPath } from "@/shared/routing/paths"
 
 const MIN_SELECTED = 2
 const MAX_SELECTED = 5

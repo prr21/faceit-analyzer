@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest"
-import { getStatColor, getStatBgColor } from "../utils/colors"
-import type { StatType } from "../utils/colors"
+import { getStatColor, getStatBgColor } from "@/shared/lib/colors"
+import type { StatType } from "@/shared/lib/colors"
 
 describe("getStatColor", () => {
   // Все пороги всех типов статистики, включая граничные значения

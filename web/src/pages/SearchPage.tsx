@@ -1,6 +1,6 @@
-import { useTheme } from "@/hooks/useTheme"
-import { ThemeToggle } from "@/components/ThemeToggle"
-import { GlobalSearch } from "@/features/theme-4-async/ui/GlobalSearch"
+import { useTheme } from "@/shared/hooks/useTheme"
+import { ThemeToggle } from "@/shared/ui/ThemeToggle"
+import { GlobalSearch } from "@/features/search/ui/GlobalSearch"
 
 export function SearchPage() {
   const { isDark, toggleTheme } = useTheme()

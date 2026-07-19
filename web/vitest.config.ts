@@ -18,7 +18,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html"],
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/__tests__/**", "src/echarts-setup.ts", "src/main.tsx"],
+      exclude: [
+        "src/__tests__/**",
+        "src/shared/fixtures/**",
+        "src/shared/lib/echarts-setup.ts",
+        "src/main.tsx",
+      ],
     },
   },
 })

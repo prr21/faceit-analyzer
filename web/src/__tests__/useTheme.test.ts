@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from "vitest"
 import { renderHook, act } from "@testing-library/react"
-import { useTheme } from "../hooks/useTheme"
+import { useTheme } from "@/shared/hooks/useTheme"
 
 // Мок localStorage
 const localStorageMock = (() => {

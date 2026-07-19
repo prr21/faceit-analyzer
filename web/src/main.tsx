@@ -1,9 +1,9 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import "./echarts-setup"
-import "./app.css"
-import { App } from "./App"
-import type { ReportData } from "./types"
+import "@/shared/lib/echarts-setup"
+import "./app/app.css"
+import { App } from "./app/App"
+import type { ReportData } from "@/shared/types"
 
 declare global {
   interface Window {

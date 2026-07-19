@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom"
-import { useCachedTeamAnalysis } from "@/store"
-import { ReportView } from "@/components/ReportView"
-import { teamAnalysisPath, teamPath } from "@/routing"
+import { useCachedTeamAnalysis } from "@/features/team/model/useTeamAnalysis"
+import { ReportView } from "@/features/report/ReportView"
+import { teamAnalysisPath, teamPath } from "@/shared/routing/paths"
 
 export function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>()

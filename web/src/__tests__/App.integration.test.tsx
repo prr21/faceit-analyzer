@@ -2,9 +2,9 @@ import { describe, test, expect, vi, beforeAll, beforeEach } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ReportView } from "../components/ReportView"
-import type { ReportData } from "../types"
-import { mockPlayerReport, mockPlayerStats } from "./fixtures/mockData"
+import { ReportView } from "@/features/report/ReportView"
+import type { ReportData } from "@/shared/types"
+import { mockPlayerReport, mockPlayerStats } from "@/shared/fixtures/mockData"
 
 // Мок для ECharts — в тестовой среде нет canvas, поэтому мокаем компонент
 vi.mock("echarts-for-react", () => ({

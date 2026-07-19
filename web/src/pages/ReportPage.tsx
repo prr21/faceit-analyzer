@@ -1,9 +1,9 @@
 import { Navigate, useParams } from "react-router-dom"
-import type { ReportData } from "@/types"
-import { ReportView } from "@/components/ReportView"
+import type { ReportData } from "@/shared/types"
+import { ReportView } from "@/features/report/ReportView"
 
 // В DEV-режиме используем моковые данные
-import { mockPlayerReport } from "@/__tests__/fixtures/mockData"
+import { mockPlayerReport } from "@/shared/fixtures/mockData"
 
 function getEmbeddedData(): ReportData | null {
   return window.__REPORT_DATA__ ?? (import.meta.env.DEV ? mockPlayerReport : null)
