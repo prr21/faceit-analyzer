@@ -3,7 +3,6 @@ import { WinRateChart } from "../charts/WinRateChart"
 import { CompetitionChart } from "../charts/CompetitionChart"
 import { WinRateTable } from "../ui/WinRateTable"
 import { FavoriteUnderdogCards } from "../ui/FavoriteUnderdogCards"
-import { OpponentTable } from "../ui/OpponentTable"
 
 interface WinrateTabProps {
   stats: TeamDropPickStats | PlayerDropPickStats
@@ -50,13 +49,6 @@ export function WinrateTab({ stats, mode, isDark }: WinrateTabProps) {
         <>
           <h2 className="mt-5 sm:mt-8 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">По типу соревнования</h2>
           <CompetitionChart compStats={stats.competitionStats} isDark={isDark} />
-        </>
-      )}
-
-      {showExtras && Object.keys(matchRecords).length > 0 && (
-        <>
-          <h2 className="mt-5 sm:mt-8 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">Против противников</h2>
-          <OpponentTable matchRecords={matchRecords} />
         </>
       )}
     </div>

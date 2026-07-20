@@ -74,7 +74,7 @@ describe("App — интеграционные тесты", () => {
     expect(screen.getByText("71%")).toBeInTheDocument()
   })
 
-  test("отображает все 7 табов в режиме 'Как лидер'", () => {
+  test("отображает все 5 табов в режиме 'Как лидер'", () => {
     renderReport()
 
     for (const label of [
@@ -83,8 +83,6 @@ describe("App — интеграционные тесты", () => {
       "Тренды",
       "Матчи",
       "Обзор",
-      "Радар",
-      "Сравнение",
     ]) {
       expect(screen.getByText(label)).toBeInTheDocument()
     }
@@ -164,14 +162,6 @@ describe("App — интеграционные тесты", () => {
     expect(screen.getByText("16:12")).toBeInTheDocument()
   })
 
-  test("таб 'Сравнение' показывает два поля ввода и кнопку", () => {
-    renderReport("compare")
-
-    expect(screen.getByPlaceholderText("Никнейм игрока 1")).toBeInTheDocument()
-    expect(screen.getByPlaceholderText("Никнейм игрока 2")).toBeInTheDocument()
-    expect(screen.getByText("Сравнить")).toBeInTheDocument()
-  })
-
   test("приложение корректно рендерится с минимальными данными", () => {
     const emptyData: ReportData = {
       type: "player",
@@ -192,12 +182,6 @@ describe("App — интеграционные тесты", () => {
     expect(container).toBeTruthy()
     // PlayerHeader рендерит никнейм из playerProfile
     expect(screen.getByText("TestPlayer")).toBeInTheDocument()
-  })
-
-  test("таб 'Радар' отображает область для радарной диаграммы", () => {
-    renderReport("radar")
-
-    expect(screen.getAllByTestId("echarts-mock").length).toBeGreaterThan(0)
   })
 
   test("в режиме 'Все матчи' на табе 'Обзор' есть секция 'Эффект лидерства'", () => {

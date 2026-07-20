@@ -76,7 +76,6 @@ export interface TrendPeriod {
   decider: MapCountRecord
   mapWinRate: Record<string, MapWinRate>
   matchCount: number
-  avgElo: number
   leaderMapWinRate: Record<string, MapWinRate>
   leaderMatchCount: number
 }

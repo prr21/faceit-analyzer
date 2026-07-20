@@ -29,7 +29,6 @@ src/
   features/
     search/           # GlobalSearch (игроки + команды, UUID/URL напрямую)
     team/             # хуки ростера и анализа команды
-    compare/          # сравнение игроков (CompareTab)
     report/           # отчёт: ReportView, Layout, tabs/, charts/, ui/, model/
   shared/
     ui/               # Card, LoadingSpinner, ErrorMessage, ThemeToggle
@@ -45,7 +44,7 @@ src/
 **Правила импортов:**
 
 - Слои сверху вниз: `app → pages → features → shared`; `shared` не импортирует ничего выше себя.
-- Фичи не импортируют друг друга; исключение — `features/report` и `pages` собирают другие фичи (CompareTab, GlobalSearch).
+- Фичи не импортируют друг друга; исключение — `pages` собирают фичи (GlobalSearch).
 - Между папками — только алиас `@/` (`@/shared/ui/Card`), относительные пути — внутри одной папки/фичи.
 - Баррелей нет — импорт прямо из файла.
 

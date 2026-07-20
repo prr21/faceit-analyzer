@@ -3,7 +3,6 @@ import type { TeamDropPickStats, PlayerDropPickStats, TrendPeriod } from "@/shar
 import { TrendChart } from "../charts/TrendChart"
 import { WinRateTrendChart } from "../charts/WinRateTrendChart"
 import { MatchCountChart } from "../charts/MatchCountChart"
-import { EloChart } from "../charts/EloChart"
 
 const PHASES = [
   { key: "firstBan" as const, label: "Первый бан" },
@@ -34,7 +33,6 @@ export function TrendsTab({ stats, mode, isDark }: TrendsTabProps) {
   }, [stats.trends, isLeaderMode])
 
   const hasTrends = displayTrends.length >= 2
-  const hasElo = stats.eloHistory.length >= 2
 
   return (
     <div className="py-5">
@@ -75,14 +73,6 @@ export function TrendsTab({ stats, mode, isDark }: TrendsTabProps) {
         </>
       ) : (
         <p className="text-gray-500 dark:text-gray-400">Недостаточно данных для трендов (нужно минимум 2 месяца)</p>
-      )}
-
-      {/* ELO — только в all mode или для team (не для leader) */}
-      {!isLeaderMode && hasElo && (
-        <>
-          <h2 className="mt-5 sm:mt-8 border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4">Динамика ELO</h2>
-          <EloChart eloHistory={stats.eloHistory} isDark={isDark} />
-        </>
       )}
     </div>
   )

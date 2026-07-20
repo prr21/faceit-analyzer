@@ -10,8 +10,6 @@ import { WinrateTab } from "./tabs/WinrateTab"
 import { TrendsTab } from "./tabs/TrendsTab"
 import { MatchHistoryTab } from "./tabs/MatchHistoryTab"
 import { OverviewTab } from "./tabs/OverviewTab"
-import { RadarTab } from "./tabs/RadarTab"
-import { CompareTab } from "@/features/compare/ui/CompareTab"
 
 interface ReportViewProps {
   data: ReportData
@@ -57,8 +55,6 @@ export function ReportView({ data, basePath }: ReportViewProps) {
       {tab === "trends" && <TrendsTab stats={stats} mode={modeForTabs} isDark={isDark} />}
       {tab === "matches" && <MatchHistoryTab stats={stats} mode={modeForTabs} isDark={isDark} />}
       {tab === "overview" && <OverviewTab stats={stats} mode={modeForTabs} isDark={isDark} />}
-      {tab === "radar" && <RadarTab stats={stats} mode={modeForTabs} isDark={isDark} />}
-      {tab === "compare" && <CompareTab isDark={isDark} />}
     </Layout>
   )
 }

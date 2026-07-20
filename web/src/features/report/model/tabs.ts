@@ -9,8 +9,6 @@ const ALL_TABS: TabDef[] = [
   { slug: "trends", label: "Тренды" },
   { slug: "matches", label: "Матчи" },
   { slug: "overview", label: "Обзор" },
-  { slug: "radar", label: "Радар" },
-  { slug: "compare", label: "Сравнение" },
 ]
 
 /** Табы, доступные для данного типа отчёта и режима */

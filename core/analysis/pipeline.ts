@@ -12,7 +12,6 @@ import { processFavoriteUnderdog } from "./steps/favorite-underdog"
 import { processCompetitionType } from "./steps/competition-type"
 import { processVoting } from "./steps/voting-analysis"
 import { processWinRate } from "./steps/win-rate"
-import { processTrendElo } from "./steps/trend-elo"
 
 function createAccumulator(): AnalysisAccumulator {
   return {
@@ -27,7 +26,6 @@ function createAccumulator(): AnalysisAccumulator {
     decider: {},
     targetStats: createEmptyFactionStats(),
     trendsMap: new Map(),
-    trendEloAccum: new Map(),
     analyzedMatches: 0,
     latestGame: 0,
     earliestGame: Infinity,
@@ -36,7 +34,7 @@ function createAccumulator(): AnalysisAccumulator {
 
 /**
  * Общий pipeline анализа матчей.
- * Один цикл по матчам, 6 шагов + кастомный onMatch callback.
+ * Один цикл по матчам, 5 шагов + кастомный onMatch callback.
  * Различия между player/team анализом инжектируются через AnalysisConfig.
  */
 export function runAnalysisPipeline(
@@ -76,7 +74,6 @@ export function runAnalysisPipeline(
     processCompetitionType(ctx, acc)
     processVoting(ctx, acc, trend, config)
     processWinRate(ctx, acc, trend, config)
-    processTrendElo(ctx, acc, trend)
 
     // Кастомная обработка (leader tracking, enemy bans и т.д.)
     config.onMatch?.(ctx, acc, trend)

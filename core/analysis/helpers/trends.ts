@@ -15,7 +15,6 @@ export function getOrCreateTrend(trendsMap: Map<string, TrendPeriod>, key: strin
       decider: {},
       mapWinRate: {},
       matchCount: 0,
-      avgElo: 0,
       leaderMapWinRate: {},
       leaderMatchCount: 0,
     }

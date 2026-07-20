@@ -70,7 +70,6 @@ export interface AnalysisAccumulator {
   decider: MapCountRecord
   targetStats: FactionBanPickStats
   trendsMap: Map<string, TrendPeriod>
-  trendEloAccum: Map<string, { sum: number; count: number }>
   analyzedMatches: number
   latestGame: number
   earliestGame: number

@@ -162,7 +162,6 @@ web/src/
   features/
     search/            # GlobalSearch ui + useGlobalSearch model
     team/              # useTeamRoster, useTeamAnalysis (model only, UI in pages/)
-    compare/           # CompareTab, CompareView
     report/            # ReportView, Layout, model/ (tabs, usePlayerReport), tabs/, charts/, ui/
   shared/
     ui/                # Card, LoadingSpinner, ErrorMessage, ThemeToggle
