@@ -1,7 +1,7 @@
 import fs from "fs"
 import os from "os"
 import path from "path"
-import { gzipSync } from "zlib"
+import { gzipSync, zstdCompressSync } from "zlib"
 import { describe, it, expect } from "vitest"
 import { getDemoResourceUrl, fetchSignedDemoUrl, downloadDemo } from "../voice/demo"
 import type { FaceitMatchDetail } from "../types/index"
@@ -60,6 +60,15 @@ describe("downloadDemo", () => {
     const fetchFn = (async () => new Response(gz)) as typeof fetch
 
     await downloadDemo("https://signed.test/x.dem.gz", dest, fetchFn)
+    expect(fs.readFileSync(dest, "utf-8")).toBe("DEMO-BYTES")
+  })
+
+  it("распаковывает .zst на лету", async () => {
+    const dest = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "demo-")), "m.dem")
+    const zst = zstdCompressSync(Buffer.from("DEMO-BYTES"))
+    const fetchFn = (async () => new Response(zst)) as typeof fetch
+
+    await downloadDemo("https://signed.test/x.dem.zst", dest, fetchFn)
     expect(fs.readFileSync(dest, "utf-8")).toBe("DEMO-BYTES")
   })
 

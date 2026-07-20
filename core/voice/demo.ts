@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import { Readable } from "stream"
 import { pipeline } from "stream/promises"
-import { createGunzip } from "zlib"
+import { createGunzip, createZstdDecompress } from "zlib"
 import type { FaceitMatchDetail } from "../types/index"
 import { FACEIT_DOWNLOAD_API_URL } from "../constants"
 import { withRetry } from "../infra/retry"
@@ -39,7 +39,7 @@ export async function fetchSignedDemoUrl(
   })
 }
 
-/** Скачивает демку в destPath, распаковывая gzip на лету для .gz */
+/** Скачивает демку в destPath, распаковывая gzip/zstd на лету для .gz/.zst */
 export async function downloadDemo(
   signedUrl: string,
   destPath: string,
@@ -53,9 +53,11 @@ export async function downloadDemo(
   }
   fs.mkdirSync(path.dirname(destPath), { recursive: true })
   const source = Readable.fromWeb(response.body as any)
-  const isGzip = new URL(signedUrl).pathname.endsWith(".gz")
-  if (isGzip) {
+  const urlPath = new URL(signedUrl).pathname
+  if (urlPath.endsWith(".gz")) {
     await pipeline(source, createGunzip(), fs.createWriteStream(destPath))
+  } else if (urlPath.endsWith(".zst")) {
+    await pipeline(source, createZstdDecompress(), fs.createWriteStream(destPath))
   } else {
     await pipeline(source, fs.createWriteStream(destPath))
   }
