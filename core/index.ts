@@ -67,7 +67,7 @@ export {
 } from "./constants"
 
 // Env
-export { getFaceitApiKey, getFaceitSessionToken } from "./env"
+export { getFaceitApiKey } from "./env"
 
 // Analysis
 export {

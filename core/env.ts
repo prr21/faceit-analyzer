@@ -5,13 +5,3 @@ export function getFaceitApiKey(): string {
   if (!key) throw new Error("FACEIT_API_KEY is not set in .env")
   return key
 }
-
-export function getFaceitSessionToken(): string {
-  const token = process.env.FACEIT_SESSION_TOKEN
-  if (!token) {
-    throw new Error(
-      "FACEIT_SESSION_TOKEN is not set in .env — возьмите Bearer-токен из DevTools на faceit.com (Network → заголовок Authorization любого запроса к api)",
-    )
-  }
-  return token
-}

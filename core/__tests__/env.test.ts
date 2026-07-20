@@ -1,20 +1,20 @@
 import { describe, it, expect, afterEach } from "vitest"
-import { getFaceitSessionToken } from "../env"
+import { getFaceitApiKey } from "../env"
 
-describe("getFaceitSessionToken", () => {
-  const saved = process.env.FACEIT_SESSION_TOKEN
+describe("getFaceitApiKey", () => {
+  const saved = process.env.FACEIT_API_KEY
   afterEach(() => {
-    if (saved === undefined) delete process.env.FACEIT_SESSION_TOKEN
-    else process.env.FACEIT_SESSION_TOKEN = saved
+    if (saved === undefined) delete process.env.FACEIT_API_KEY
+    else process.env.FACEIT_API_KEY = saved
   })
 
-  it("возвращает токен, когда задан", () => {
-    process.env.FACEIT_SESSION_TOKEN = "test-token"
-    expect(getFaceitSessionToken()).toBe("test-token")
+  it("возвращает ключ, когда задан", () => {
+    process.env.FACEIT_API_KEY = "test-key"
+    expect(getFaceitApiKey()).toBe("test-key")
   })
 
-  it("бросает понятную ошибку без токена", () => {
-    delete process.env.FACEIT_SESSION_TOKEN
-    expect(() => getFaceitSessionToken()).toThrow("FACEIT_SESSION_TOKEN")
+  it("бросает понятную ошибку без ключа", () => {
+    delete process.env.FACEIT_API_KEY
+    expect(() => getFaceitApiKey()).toThrow("FACEIT_API_KEY")
   })
 })
