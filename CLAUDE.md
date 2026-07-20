@@ -28,6 +28,7 @@ npm run team -- "Satanics Aura"      # analyze team map ban/pick strategy
 npm run player -- "dErzz"            # analyze individual player ban/picks
 npm run smurfs -- "ed1v9k"           # detect smurf accounts in match history
 npm run voice -- "<matchId|url>"     # извлечь голоса игроков матча в MP3 (.cache/voices/)
+npm run match -- "<roomUrl|matchId>" # пре-матч анализ комнаты: обе команды + рекомендации пик/бан
 npm run dev:web                      # start web dev server (Vite)
 npm run dev:server                   # start Express server (tsx watch)
 npm run build:web                    # build web app
@@ -81,9 +82,14 @@ core/
     player-strategy.ts # analyzePlayerMapStrategy — thin wrapper over pipeline + post-processing
     team-strategy.ts   # analyzeTeamMapStrategy — thin wrapper over pipeline + post-processing
     smurf-detection.ts # collectEnemyPlayers(), filterSmurfs() — pure functions
+    player-map-stats.ts # parsePlayerMapStats — агрегированная статистика игрока по картам (5v5, пул)
+    recommendation.ts  # скоринг-движок рекомендаций пик/бан: RECO_WEIGHTS, shrunkWinRate,
+                       # banRate/pickRate, buildMapRecommendations — pure functions
   usecases/            # high-level orchestration shared by CLI and server
     player.ts          # fetchAndAnalyzePlayer(client, nickname) — full player pipeline
     team.ts            # fetchAndAnalyzeTeam(client, playerIds, teamName) — full team pipeline
+    match.ts           # fetchAndAnalyzeMatch(client, matchId) — пре-матч анализ комнаты:
+                       # обе команды параллельно + per-player map stats + insights
     voice.ts           # fetchMatchVoices — full voice extraction pipeline
     index.ts           # barrel export
   voice/               # извлечение голосов из демок: binary (csgove), demo (скачивание),
@@ -104,7 +110,8 @@ Key design decisions:
 - **CacheProvider**: interface abstraction — CLI uses FileSystemCache by default, server/ can swap to Redis via `setCacheProvider()`.
 - **RetryLogger**: configurable via `setRetryLogger()` — server/ can use pino/winston instead of console.warn.
 - **isPoolMap(name, pool?)**: parametric — defaults to ACTIVE_MAP_POOL but accepts custom pool for testing/flexibility.
-- **Types split**: `types/api.ts` (API responses), `types/domain.ts` (business types), `types/analysis.ts` (pipeline coordination). `web/src/types.ts` re-exports from `@faceit/core`.
+- **Types split**: `types/api.ts` (API responses), `types/domain.ts` (business types), `types/analysis.ts` (pipeline coordination), `types/recommendation.ts` (инсайты матча — discriminated union `MatchInsight`, расширяется новыми типами подсказок). `web/src/types.ts` re-exports from `@faceit/core`.
+- **web не импортирует core в runtime**: только `import type` — runtime-импорт барреля тянет node-модули (fs, stream) и ломает vite build. Всё, что нужно фронту в готовом виде (например `mapHabits`), предрассчитывается в usecase на сервере.
 
 ### cli/ (@faceit/cli)
 
@@ -115,6 +122,7 @@ cli/
   player.ts            # npm run player
   team.ts              # npm run team — arg: team name, UUID, or faceit.com team URL
   smurfs.ts            # npm run smurfs
+  match.ts             # npm run match — arg: room URL или match id (1-<uuid>)
   report-writer.ts     # HTML report generator (reads web/dist/index.html template)
 ```
 
@@ -133,11 +141,14 @@ server/src/
   services/
     player.service.ts  # getPlayerAnalysis — delegates to core/usecases
     team.service.ts    # getTeamAnalysis (minPlayers=min(3,N)) + getTeamRoster (team info by UUID)
+    match.service.ts   # getMatchAnalysis — parseMatchId + валидация + fetchAndAnalyzeMatch
     search.service.ts  # searchAll (players+teams parallel) + searchPlayer (nickname lookup)
   routes/
     search.routes.ts   # GET /api/search?q= — combined {players, teams} search
     player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
     team.routes.ts     # GET /api/team/:teamId (roster) + POST /api/team/analysis (full analysis)
+    match.routes.ts    # GET /api/match/:matchId/analysis — пре-матч анализ комнаты
+                       # (второй роутер на /api/match рядом с voice; requestTimeout 600s в index.ts)
   middleware/
     cors.ts            # CORS via `cors` package
     rateLimit.ts       # Rate limiting via `express-rate-limit`
@@ -158,10 +169,12 @@ React SPA with Vite, Tailwind CSS v4, ECharts, TanStack Query. Dark/light theme,
 web/src/
   main.tsx             # entry: echarts-setup, css, window.__REPORT_DATA__
   app/                 # App, StoreProvider, query-client, routing/routes.tsx
-  pages/               # SearchPage, PlayerPage, TeamRosterPage, TeamPage, ReportPage
+  pages/               # SearchPage, PlayerPage, TeamRosterPage, TeamPage, ReportPage, MatchPage
   features/
     search/            # GlobalSearch ui + useGlobalSearch model
     team/              # useTeamRoster, useTeamAnalysis (model only, UI in pages/)
+    match/             # useMatchAnalysis (авто-useQuery) + ui: MatchHeader,
+                       # TeamRecommendationsCard, MapComparisonTable, RosterCard
     report/            # ReportView, Layout, model/ (tabs, usePlayerReport), tabs/, charts/, ui/
   shared/
     ui/                # Card, LoadingSpinner, ErrorMessage, ThemeToggle
@@ -175,7 +188,8 @@ web/src/
 
 **Search & team flow (web):**
 
-- `features/search/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; иначе два блока результатов — игроки и команды.
+- `features/search/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; room-URL (`faceit.com/*/*/room/1-<uuid>`) и голый match id (`1-<uuid>`) распознаются первыми и ведут на `/match/:matchId`; иначе два блока результатов — игроки и команды.
+- `/match/:matchId` → `MatchPage` — пре-матч анализ комнаты: автозапуск `useMatchAnalysis` (useQuery, staleTime Infinity), рекомендации пик/бан обеих команд с разбивкой факторов, side-by-side сравнение карт (винрейт + привычки вето из `mapHabits`), ростеры с раскрывающейся per-player статистикой по картам.
 - `/team/:teamId` → `TeamRosterPage` (состав команды, чекбоксы — все отмечены по умолчанию, валидация 2–5 игроков, мутация анализа через `useAnalyzeTeamMutation` кладёт результат в TanStack Query cache).
 - `/team/:teamId/analysis/:tab?` → `TeamPage` читает результат из кеша (fallback 1: `window.__REPORT_DATA__` для CLI-отчётов, fallback 2: ссылка на страницу ростера).
 - `shared/api/endpoints.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.
@@ -206,7 +220,7 @@ Authenticated via Bearer token (`FACEIT_API_KEY`). Rate limit: 10,000 requests/h
 | `GET /players/{id}/history` | `getPlayerMatches()` | No | Match history. Params: `game`, `offset`, `limit`, `from`, `to` (unix timestamps) |
 | `GET /matches/{id}` | `getMatchInfo()` | Yes | Full match detail: teams, leader, results, voting.map.pick, detailed_results |
 | `GET /matches/{id}/stats` | `getMatchStats()` | Yes | Per-round stats (K/D, headshots, ADR) |
-| `GET /players/{id}/stats/{game}` | — | — | Aggregated stats per map — not used, no ban/pick data |
+| `GET /players/{id}/stats/{game}` | `getPlayerMapStats()` | No | Aggregated per-map segments (Matches, Wins, Win Rate %, K/D, ADR). Labels без `de_` ("Nuke") — нормализуются в `parsePlayerMapStats` |
 
 **Match history pagination**: `offset` breaks after 1000. Use `from`/`to` (unix timestamps) for time-based pagination. `getAllPlayerMatches()` auto-paginates using `to` parameter.
 

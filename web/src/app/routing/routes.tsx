@@ -5,6 +5,7 @@ import { ReportPage } from "@/pages/ReportPage"
 import { PlayerPage } from "@/pages/PlayerPage"
 import { TeamPage } from "@/pages/TeamPage"
 import { TeamRosterPage } from "@/pages/TeamRosterPage"
+import { MatchPage } from "@/pages/MatchPage"
 
 export function AppRoutes() {
   return (
@@ -14,6 +15,7 @@ export function AppRoutes() {
       <Route path={PATHS.player} element={<PlayerPage />} />
       <Route path={PATHS.team} element={<TeamRosterPage />} />
       <Route path={PATHS.teamAnalysis} element={<TeamPage />} />
+      <Route path={PATHS.match} element={<MatchPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

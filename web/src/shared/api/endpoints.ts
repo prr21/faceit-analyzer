@@ -4,6 +4,7 @@ import type {
   TeamInfo,
   TeamDropPickStats,
   VoiceStatusDto,
+  MatchAnalysisResult,
 } from "@faceit/core"
 import type { ReportData } from "@/shared/types"
 import { apiFetch } from "./client"
@@ -44,6 +45,13 @@ export async function analyzeTeam(
     body: JSON.stringify({ teamName, playerIds }),
   })
   return { type: "team", name: teamName, stats: result.stats }
+}
+
+/** Пре-матч анализ комнаты: обе команды + рекомендации */
+export async function fetchMatchAnalysis(matchId: string): Promise<MatchAnalysisResult> {
+  return apiFetch<MatchAnalysisResult>(
+    `/api/match/${encodeURIComponent(matchId)}/analysis`,
+  )
 }
 
 /** Запуск извлечения голосов матча */

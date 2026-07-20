@@ -23,6 +23,16 @@ export type {
   VoiceStatusDto,
   VoicePlayerDto,
   VoiceProgressStep,
+  PlayerMapStats,
+  FactorContribution,
+  MapRecommendation,
+  TeamRecommendations,
+  MatchInsight,
+  MapRecommendationsInsight,
+  MatchAnalysisResult,
+  MatchTeamAnalysis,
+  MatchRosterPlayer,
+  MapHabits,
 } from "@faceit/core"
 
 // Web-specific types

@@ -92,6 +92,23 @@ export interface FaceitMatchDetail {
   voting?: { map: { pick: string[] } }
 }
 
+// Aggregated player stats (GET /players/{id}/stats/{game})
+
+export interface FaceitStatsSegment {
+  type: string // "Map"
+  mode: string // "5v5", "Wingman"
+  label: string // "Nuke", "Mirage" — без префикса de_
+  img?: string
+  stats: Record<string, string>
+}
+
+export interface FaceitPlayerGameStats {
+  player_id: string
+  game_id: string
+  lifetime?: Record<string, string | string[]>
+  segments?: FaceitStatsSegment[]
+}
+
 // FACEIT Internal Democracy API types
 
 export interface VotingEntity {

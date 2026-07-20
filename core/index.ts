@@ -11,6 +11,7 @@ export {
   getMatchInfo,
   getMatchStats,
   getPlayerInfo,
+  getPlayerMapStats,
 } from "./api/faceit-open"
 export type {
   SearchPlayerResult,
@@ -84,12 +85,28 @@ export {
   filterSmurfs,
 } from "./analysis/smurf-detection"
 export type { SmurfDetectionResult } from "./analysis/smurf-detection"
+export { parsePlayerMapStats, normalizeMapLabel } from "./analysis/player-map-stats"
+export {
+  buildMapRecommendations,
+  buildTeamRecommendations,
+  shrunkWinRate,
+  banRate,
+  pickRate,
+  RECO_WEIGHTS,
+} from "./analysis/recommendation"
 
 // Use cases — high-level orchestration (CLI & server share these)
 export { fetchAndAnalyzePlayer } from "./usecases/player"
 export type { PlayerAnalysisResult } from "./usecases/player"
 export { fetchAndAnalyzeTeam } from "./usecases/team"
 export type { TeamAnalysisResult } from "./usecases/team"
+export { fetchAndAnalyzeMatch } from "./usecases/match"
+export type {
+  MatchAnalysisResult,
+  MatchTeamAnalysis,
+  MatchRosterPlayer,
+  MapHabits,
+} from "./usecases/match"
 export {
   fetchMatchVoices,
   loadVoiceManifest,

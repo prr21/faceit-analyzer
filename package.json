@@ -7,6 +7,7 @@
     "team": "tsx cli/team.ts",
     "player": "tsx cli/player.ts",
     "smurfs": "tsx cli/smurfs.ts",
+    "match": "tsx cli/match.ts",
     "voice": "tsx cli/voice.ts",
     "dev:web": "npm run dev -w @faceit/web",
     "dev:server": "npm run dev -w @faceit/server",

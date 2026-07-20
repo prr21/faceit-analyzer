@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useGlobalSearch } from "../model/useGlobalSearch"
-import { playerPath, teamPath } from "@/shared/routing/paths"
+import { matchPath, playerPath, teamPath } from "@/shared/routing/paths"
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const TEAM_URL_RE = /faceit\.com\/[^/]+\/teams\/([0-9a-f-]{36})/i
+const MATCH_ID_RE = /^1-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const MATCH_URL_RE = /faceit\.com\/[^/]+\/[^/]+\/room\/(1-[0-9a-f-]{36})/i
 
 function resolveTeamId(input: string): string | null {
   const trimmed = input.trim()
@@ -14,12 +16,27 @@ function resolveTeamId(input: string): string | null {
   return null
 }
 
+function resolveMatchId(input: string): string | null {
+  const trimmed = input.trim()
+  if (MATCH_ID_RE.test(trimmed)) return trimmed.toLowerCase()
+  const match = trimmed.match(MATCH_URL_RE)
+  if (match) return match[1].toLowerCase()
+  return null
+}
+
 export function GlobalSearch() {
   const [query, setQuery] = useState("")
   const navigate = useNavigate()
 
-  // Парсинг UUID/URL команды — срабатывает мгновенно, без ожидания дебаунса.
+  // Парсинг UUID/URL команды или комнаты матча — срабатывает мгновенно, без дебаунса.
+  // Комната проверяется первой: team-URL содержит /teams/, голый UUID — без префикса 1-.
   useEffect(() => {
+    const matchId = resolveMatchId(query)
+    if (matchId) {
+      setQuery("")
+      navigate(matchPath(matchId))
+      return
+    }
     const teamId = resolveTeamId(query)
     if (teamId) {
       setQuery("")

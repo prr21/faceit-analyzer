@@ -2,7 +2,13 @@ import type { FaceitClient } from "./client"
 import { DEFAULT_GAME, DEFAULT_MATCH_LIMIT } from "../constants"
 import { withCache } from "../infra/cache"
 import { withRetry } from "../infra/retry"
-import type { FaceitMatch, FaceitMatchDetail, FaceitMatchStats, FaceitPlayer } from "../types/index"
+import type {
+  FaceitMatch,
+  FaceitMatchDetail,
+  FaceitMatchStats,
+  FaceitPlayer,
+  FaceitPlayerGameStats,
+} from "../types/index"
 
 export interface SearchPlayerResult {
   player_id: string
@@ -173,6 +179,20 @@ export async function getMatchStats(
       return null
     }
   })
+}
+
+export async function getPlayerMapStats(
+  client: FaceitClient,
+  playerId: string,
+): Promise<FaceitPlayerGameStats | null> {
+  try {
+    return await withRetry(async () => {
+      const response = await client.get(`/players/${playerId}/stats/${DEFAULT_GAME}`)
+      return response.data
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function getPlayerInfo(

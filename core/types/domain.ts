@@ -57,6 +57,16 @@ export interface MatchRecord {
   eloChange?: number
 }
 
+export interface PlayerMapStats {
+  map: string // нормализовано в формат пула: de_mirage
+  matches: number
+  wins: number
+  winRate: number // 0..100
+  avgKd: number
+  avgKr?: number
+  adr?: number
+}
+
 export interface PlayerProfile {
   nickname: string
   avatar?: string
