@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MatchPage } from "@/pages/MatchPage"
@@ -11,9 +11,11 @@ import type {
 } from "@/shared/types"
 
 const fetchMatchAnalysis = vi.hoisted(() => vi.fn())
+const streamMatchChat = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/api/endpoints", async importOriginal => ({
   ...(await importOriginal<typeof import("@/shared/api/endpoints")>()),
   fetchMatchAnalysis,
+  streamMatchChat,
 }))
 
 function makeStats(overrides: Partial<TeamDropPickStats> = {}): TeamDropPickStats {
@@ -116,6 +118,7 @@ function renderMatchPage() {
 describe("MatchPage", () => {
   beforeEach(() => {
     fetchMatchAnalysis.mockReset()
+    streamMatchChat.mockReset()
   })
 
   test("показывает спиннер во время анализа", () => {
@@ -150,5 +153,45 @@ describe("MatchPage", () => {
     fetchMatchAnalysis.mockRejectedValue(new Error("Матч не найден"))
     renderMatchPage()
     expect(await screen.findByText("Матч не найден")).toBeInTheDocument()
+  })
+
+  test("переключение в AI-режим открывает чат и стримит выжимку", async () => {
+    fetchMatchAnalysis.mockResolvedValue(mockResult)
+    streamMatchChat.mockImplementation(
+      async (_id, _res, _msgs, onToken: (t: string) => void) => onToken("Выжимка"),
+    )
+    renderMatchPage()
+
+    await screen.findAllByText("Alpha")
+    fireEvent.click(screen.getByText("AI-режим"))
+
+    expect(await screen.findByText("Выжимка")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/Спросите про этот матч/)).toBeInTheDocument()
+    // анализ скрыт
+    expect(screen.queryAllByText("Что пикать")).toHaveLength(0)
+    // первый запрос — с пустым messages (сервер сам подставит выжимку)
+    expect(streamMatchChat.mock.calls[0][2]).toEqual([])
+  })
+
+  test("вопрос пользователя уходит в чат с историей", async () => {
+    fetchMatchAnalysis.mockResolvedValue(mockResult)
+    streamMatchChat.mockImplementation(
+      async (_id, _res, _msgs, onToken: (t: string) => void) => onToken("ответ"),
+    )
+    renderMatchPage()
+
+    await screen.findAllByText("Alpha")
+    fireEvent.click(screen.getByText("AI-режим"))
+    await screen.findByText("ответ") // выжимка отстримилась, стриминг завершён
+
+    fireEvent.change(screen.getByPlaceholderText(/Спросите про этот матч/), {
+      target: { value: "Кто фаворит?" },
+    })
+    fireEvent.click(screen.getByText("Отправить"))
+
+    await waitFor(() => expect(streamMatchChat).toHaveBeenCalledTimes(2))
+    const sent = streamMatchChat.mock.calls[1][2]
+    expect(sent.at(-1)).toEqual({ role: "user", content: "Кто фаворит?" })
+    expect(await screen.findByText("Кто фаворит?")).toBeInTheDocument()
   })
 })

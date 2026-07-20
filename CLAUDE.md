@@ -86,6 +86,9 @@ core/
     recommendation.ts  # скоринг-движок рекомендаций пик/бан: RECO_WEIGHTS, shrunkWinRate,
                        # banRate/pickRate, mapTenureMonths/isEstablishedMap/avoidanceSignal,
                        # buildMapRecommendations — pure functions (tenure-aware)
+  ai/                  # AI-режим (провайдер-агностик, OpenAI-совместимый REST)
+    context.ts         # buildMatchAIContext(result) — компактный бриф матча для system prompt
+    provider.ts        # streamChatCompletion (SSE-стриминг) + extractSseDelta (pure)
   usecases/            # high-level orchestration shared by CLI and server
     player.ts          # fetchAndAnalyzePlayer(client, nickname) — full player pipeline
     team.ts            # fetchAndAnalyzeTeam(client, playerIds, teamName) — full team pipeline
@@ -143,12 +146,14 @@ server/src/
     player.service.ts  # getPlayerAnalysis — delegates to core/usecases
     team.service.ts    # getTeamAnalysis (minPlayers=min(3,N)) + getTeamRoster (team info by UUID)
     match.service.ts   # getMatchAnalysis — parseMatchId + валидация + fetchAndAnalyzeMatch
+    ai.service.ts      # системный промпт (scope=только матч) + валидация тела + assertAiConfigured
     search.service.ts  # searchAll (players+teams parallel) + searchPlayer (nickname lookup)
   routes/
     search.routes.ts   # GET /api/search?q= — combined {players, teams} search
     player.routes.ts   # GET /api/player/:nickname/analysis — full analysis
     team.routes.ts     # GET /api/team/:teamId (roster) + POST /api/team/analysis (full analysis)
     match.routes.ts    # GET /api/match/:matchId/analysis — пре-матч анализ комнаты
+                       # + POST /api/match/:matchId/chat — AI-чат по матчу (SSE-стриминг)
                        # (второй роутер на /api/match рядом с voice; requestTimeout 600s в index.ts)
   middleware/
     cors.ts            # CORS via `cors` package
@@ -175,7 +180,8 @@ web/src/
     search/            # GlobalSearch ui + useGlobalSearch model
     team/              # useTeamRoster, useTeamAnalysis (model only, UI in pages/)
     match/             # useMatchAnalysis (авто-useQuery) + ui: MatchHeader,
-                       # TeamRecommendationsCard, MapComparisonTable, RosterCard
+                       # TeamRecommendationsCard, MapComparisonTable, RosterCard;
+                       # ai/ — useMatchChat (SSE-стриминг, StrictMode-safe) + AiChatPanel
     report/            # ReportView, Layout, model/ (tabs, usePlayerReport), tabs/, charts/, ui/
   shared/
     ui/                # Card, LoadingSpinner, ErrorMessage, ThemeToggle
@@ -190,7 +196,8 @@ web/src/
 **Search & team flow (web):**
 
 - `features/search/ui/GlobalSearch.tsx` — единый поиск: regex на клиенте распознаёт UUID и `faceit.com/*/teams/{uuid}` и мгновенно навигирует на `/team/:teamId`, минуя `/api/search`; room-URL (`faceit.com/*/*/room/1-<uuid>`) и голый match id (`1-<uuid>`) распознаются первыми и ведут на `/match/:matchId`; иначе два блока результатов — игроки и команды.
-- `/match/:matchId` → `MatchPage` — пре-матч анализ комнаты: автозапуск `useMatchAnalysis` (useQuery, staleTime Infinity), рекомендации пик/бан обеих команд с разбивкой факторов, side-by-side сравнение карт (винрейт + привычки вето из `mapHabits`), ростеры с раскрывающейся per-player статистикой по картам.
+- `/match/:matchId` → `MatchPage` — пре-матч анализ комнаты: автозапуск `useMatchAnalysis` (useQuery, staleTime Infinity), рекомендации пик/бан обеих команд с разбивкой факторов, side-by-side сравнение карт (винрейт + привычки вето из `mapHabits`), ростеры с раскрывающейся per-player статистикой по картам. Тумблер **Анализ | AI-режим** — AI-режим открывает `AiChatPanel` (SSE-стриминг ответов по данным этого матча).
+- **AI-режим**: требует `AI_API_KEY` в корневом `.env` (бесплатный Groq — console.groq.com; провайдер OpenAI-совместимый, сменить через `AI_BASE_URL`/`AI_MODEL`). Логика в `core/ai/` (переиспользуема telegram-ботом); сервер `POST /api/match/:matchId/chat` стримит SSE; область ответов — только текущий матч.
 - `/team/:teamId` → `TeamRosterPage` (состав команды, чекбоксы — все отмечены по умолчанию, валидация 2–5 игроков, мутация анализа через `useAnalyzeTeamMutation` кладёт результат в TanStack Query cache).
 - `/team/:teamId/analysis/:tab?` → `TeamPage` читает результат из кеша (fallback 1: `window.__REPORT_DATA__` для CLI-отчётов, fallback 2: ссылка на страницу ростера).
 - `shared/api/endpoints.ts:analyzeTeam` оборачивает ответ сервера `{ stats }` в `ReportData { type: "team", name, stats }` — без этой обёртки `ReportView` не отличает team от player.

@@ -70,7 +70,13 @@ export {
 export type { MapPoolEntry } from "./constants"
 
 // Env
-export { getFaceitApiKey } from "./env"
+export { getFaceitApiKey, getAiConfig } from "./env"
+export type { AiConfig } from "./env"
+
+// AI
+export { buildMatchAIContext } from "./ai/context"
+export { streamChatCompletion, extractSseDelta } from "./ai/provider"
+export type { ChatMessage, StreamChatOptions } from "./ai/provider"
 
 // Analysis
 export {

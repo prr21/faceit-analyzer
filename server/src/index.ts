@@ -19,7 +19,8 @@ import { errorHandler } from "./middleware/errorHandler"
 
 const app = express()
 
-app.use(express.json())
+// Лимит поднят: AI-чат шлёт полный MatchAnalysisResult (истории матчей обеих команд)
+app.use(express.json({ limit: "5mb" }))
 app.use(corsMiddleware)
 app.use(rateLimit({ windowMs: 60_000, maxRequests: 100 }))
 
