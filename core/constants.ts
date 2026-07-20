@@ -19,5 +19,5 @@ export const CSGOVE_VERSION = "v3.1.6"
 export const CSGOVE_DOWNLOAD_BASE =
   "https://github.com/akiver/csgo-voice-extractor/releases/download"
 export const FACEIT_DOWNLOAD_API_URL =
-  "https://www.faceit.com/api/download/v2/demos/download-url"
+  "https://open.faceit.com/download/v2/demos/download"
 export const VOICE_MP3_BITRATE = "64k"

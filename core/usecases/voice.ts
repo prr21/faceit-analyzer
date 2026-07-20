@@ -3,7 +3,7 @@ import path from "path"
 import type { FaceitClient } from "../api/client"
 import type { VoiceManifest, VoiceProgressStep } from "../types/voice"
 import { getMatchInfo, getPlayerInfo } from "../api/faceit-open"
-import { getFaceitSessionToken } from "../env"
+import { getFaceitApiKey } from "../env"
 import { withCache } from "../infra/cache"
 import { batchWithLimit } from "../infra/concurrency"
 import { DEFAULT_CONCURRENCY } from "../constants"
@@ -93,7 +93,7 @@ export async function fetchMatchVoices(
 
   const match = await getMatchInfo(client, matchId)
 
-  // Демка: локальный файл или скачивание по сессионному токену
+  // Демка: локальный файл или скачивание через официальный Downloads API
   let demoPath = options.demoPath
   let demoDownloaded = false
   if (!demoPath) {
@@ -106,8 +106,8 @@ export async function fetchMatchVoices(
       throw err
     }
     options.onProgress?.("download")
-    const token = getFaceitSessionToken()
-    const signedUrl = await deps.fetchSignedDemoUrl(resourceUrl, token)
+    const apiKey = getFaceitApiKey()
+    const signedUrl = await deps.fetchSignedDemoUrl(resourceUrl, apiKey)
     demoPath = path.join(_demosRoot, `${matchId}.dem`)
     await deps.downloadDemo(signedUrl, demoPath)
     demoDownloaded = true

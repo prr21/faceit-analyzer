@@ -84,7 +84,7 @@ describe("fetchMatchVoices", () => {
     demosDir = path.join(base, "demos")
     setVoiceStorageRoot(voicesDir, demosDir)
     setCacheProvider(new MemoryCache())
-    process.env.FACEIT_SESSION_TOKEN = "tok"
+    process.env.FACEIT_API_KEY = "tok"
   })
 
   it("полный прогон: манифест, mp3 на месте, WAV и демка удалены, tmp нет", async () => {

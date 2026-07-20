@@ -12,10 +12,10 @@ export function getDemoResourceUrl(match: FaceitMatchDetail): string | null {
   return match.demo_url?.[0] ?? null
 }
 
-/** Обмен resource_url на подписанный download_url (внутренний эндпоинт faceit.com) */
+/** Обмен resource_url на подписанный download_url (официальный Downloads API) */
 export async function fetchSignedDemoUrl(
   resourceUrl: string,
-  sessionToken: string,
+  apiKey: string,
   fetchFn: typeof fetch = fetch,
 ): Promise<string> {
   return withRetry(async () => {
@@ -23,7 +23,7 @@ export async function fetchSignedDemoUrl(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionToken}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({ resource_url: resourceUrl }),
     })

@@ -36,6 +36,7 @@ describe("fetchSignedDemoUrl", () => {
 
     const url = await fetchSignedDemoUrl("https://demos.faceit.com/x.dem.gz", "tok", fetchFn)
     expect(url).toBe("https://signed/x")
+    expect(captured.url).toBe("https://open.faceit.com/download/v2/demos/download")
     expect(captured.init.method).toBe("POST")
     expect(captured.init.headers.Authorization).toBe("Bearer tok")
     expect(JSON.parse(captured.init.body)).toEqual({ resource_url: "https://demos.faceit.com/x.dem.gz" })
