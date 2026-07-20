@@ -223,15 +223,13 @@ No authentication required. Uses `fetch` (not axios).
 
 **Important**: `fetch` does not throw on HTTP errors — must check `response.ok` manually and create error with `.status` for `withRetry` compatibility.
 
-### Internal Download API (`www.faceit.com/api/download/v2`)
+### Downloads API (`open.faceit.com/download/v2`)
 
-Authenticated via session Bearer token (`FACEIT_SESSION_TOKEN`), not the Open Data API key. Uses `fetch`.
+Authenticated via `FACEIT_API_KEY` (Bearer) — the key must belong to an app with approved Downloads API access (application form, ~30 days). Uses `fetch`.
 
 | Endpoint | Used in | Cached | Notes |
 |---|---|---|---|
-| `POST /demos/download-url` | `fetchSignedDemoUrl()` | No | Exchanges match `demo_url` for a signed, time-limited download URL |
-
-`FACEIT_SESSION_TOKEN` — сессионный Bearer-токен faceit.com для скачивания демок (внутренний download-url эндпоинт; официальный Downloads API требует отдельной заявки). Взять из DevTools → Network → заголовок `Authorization` любого запроса к api на faceit.com.
+| `POST /demos/download` | `fetchSignedDemoUrl()` | No | Exchanges match `demo_url` for a signed, time-limited download URL |
 
 ### What gets cached and why
 

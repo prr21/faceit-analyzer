@@ -45,7 +45,4 @@ app.listen(PORT, HOST, () => {
   if (!process.env.FACEIT_API_KEY) {
     console.warn("⚠ FACEIT_API_KEY не задан в .env — API-запросы не будут работать")
   }
-  if (!process.env.FACEIT_SESSION_TOKEN) {
-    console.warn("⚠ FACEIT_SESSION_TOKEN не задан в .env — извлечение голосов из демок не будет работать")
-  }
 })

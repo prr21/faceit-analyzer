@@ -85,7 +85,7 @@ export function startVoiceExtraction(client: FaceitClient, matchId: string): Voi
         err?.code === "DEMO_NOT_AVAILABLE"
           ? "Демка недоступна — FACEIT хранит демки ограниченное время"
           : err?.status === 401 || err?.status === 403
-            ? "FACEIT отклонил сессионный токен — обновите FACEIT_SESSION_TOKEN в .env"
+            ? "Downloads API отклонил FACEIT_API_KEY — проверьте, что ключ от приложения с одобренным доступом к Downloads API"
             : err?.message ?? "Неизвестная ошибка"
       console.error(`[voice] Ошибка извлечения ${matchId}:`, err?.message ?? err)
     })
