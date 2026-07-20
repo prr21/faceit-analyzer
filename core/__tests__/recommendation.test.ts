@@ -4,10 +4,18 @@ import {
   shrunkWinRate,
   banRate,
   pickRate,
+  mapTenureMonths,
+  isEstablishedMap,
+  avoidanceSignal,
   buildTeamRecommendations,
   buildMapRecommendations,
 } from "../analysis/recommendation"
+import { ACTIVE_MAP_POOL } from "../constants"
 import type { MapWinRate, TeamDropPickStats } from "../types/domain"
+
+// Фиксированный «сейчас»: Ancient/Nuke/... (2023) — established; Cache (2026-06-01) — новая
+const NOW = Date.parse("2026-07-20")
+const ALL_ESTABLISHED = Date.parse("2027-06-01") // тут и Cache уже established
 
 function wr(wins: number, losses: number): MapWinRate {
   const total = wins + losses
@@ -98,18 +106,24 @@ describe("buildTeamRecommendations", () => {
   })
 
   it("частый бан соперника снижает pick-score карты", () => {
-    const own = makeStats({ mapWinRate: { de_mirage: wr(15, 5), de_train: wr(15, 5) } })
+    const own = makeStats({ mapWinRate: { de_mirage: wr(15, 5), de_inferno: wr(15, 5) } })
     const oppBansMirage = makeStats({
       target: { firstBan: { de_mirage: 10 }, secondBan: {}, thirdBan: {}, firstPick: {} },
     })
     const recs = buildTeamRecommendations(own, oppBansMirage, "A")
     const mirage = recs.picks.find(r => r.map === "de_mirage")!
-    const train = recs.picks.find(r => r.map === "de_train")!
-    expect(train.score).toBeGreaterThan(mirage.score)
+    const inferno = recs.picks.find(r => r.map === "de_inferno")!
+    expect(inferno.score).toBeGreaterThan(mirage.score)
   })
 
   it("ноль данных — все score около нуля и lowData", () => {
-    const recs = buildTeamRecommendations(makeStats({ count: 0 }), makeStats({ count: 0 }), "A")
+    const recs = buildTeamRecommendations(
+      makeStats({ count: 0 }),
+      makeStats({ count: 0 }),
+      "A",
+      ACTIVE_MAP_POOL,
+      ALL_ESTABLISHED,
+    )
     for (const rec of [...recs.picks, ...recs.bans]) {
       expect(Math.abs(rec.score)).toBeLessThan(0.05)
       expect(rec.reason).toContain("недостаточно данных")
@@ -122,6 +136,73 @@ describe("buildTeamRecommendations", () => {
     const opp = makeStats({ mapWinRate: { de_mirage: wr(5, 20) } })
     const recs = buildTeamRecommendations(own, opp, "A")
     expect(recs.picks[0].reason).toContain("винрейт выше, чем у соперника")
+  })
+})
+
+describe("tenure / avoidance", () => {
+  it("mapTenureMonths: старая карта established, Cache — свежая", () => {
+    expect(mapTenureMonths("de_nuke", NOW)).toBeGreaterThan(RECO_WEIGHTS.avoidance.establishedMonths)
+    expect(mapTenureMonths("de_cache", NOW)).toBeLessThan(RECO_WEIGHTS.avoidance.establishedMonths)
+    expect(isEstablishedMap("de_nuke", NOW)).toBe(true)
+    expect(isEstablishedMap("de_cache", NOW)).toBe(false)
+  })
+
+  it("avoidanceSignal: established + недоигрывание → сигнал, нормальная доля → 0", () => {
+    const stats = makeStats({
+      mapWinRate: {
+        de_mirage: wr(20, 20),
+        de_nuke: wr(20, 20),
+        de_dust2: wr(20, 20),
+        de_ancient: wr(20, 20),
+        de_anubis: wr(20, 20),
+        // de_inferno — ни разу (established → избегание)
+      },
+      count: 40,
+    })
+    expect(avoidanceSignal(stats, "de_inferno", NOW)).toBeGreaterThan(0)
+    expect(avoidanceSignal(stats, "de_mirage", NOW)).toBe(0)
+  })
+
+  it("avoidanceSignal: новая карта (Cache) с малым семплом → 0, не избегание", () => {
+    const stats = makeStats({
+      mapWinRate: { de_mirage: wr(20, 20), de_nuke: wr(20, 20) },
+      count: 40,
+    })
+    expect(avoidanceSignal(stats, "de_cache", NOW)).toBe(0)
+  })
+
+  it("avoidanceSignal: пустая история (count 0) → 0", () => {
+    expect(avoidanceSignal(makeStats({ count: 0 }), "de_inferno", NOW)).toBe(0)
+  })
+
+  it("избегаемая established-карта попадает в баны с причиной «избегает», Cache — «недавно в пуле»", () => {
+    const avoidInferno = makeStats({
+      mapWinRate: {
+        de_mirage: wr(20, 20),
+        de_nuke: wr(20, 20),
+        de_dust2: wr(20, 20),
+        de_ancient: wr(20, 20),
+        de_anubis: wr(20, 20),
+      },
+      count: 40,
+    })
+    const balancedOpp = makeStats({
+      mapWinRate: {
+        de_mirage: wr(10, 10),
+        de_nuke: wr(10, 10),
+        de_dust2: wr(10, 10),
+        de_ancient: wr(10, 10),
+        de_anubis: wr(10, 10),
+        de_inferno: wr(10, 10),
+        de_cache: wr(2, 2),
+      },
+      count: 40,
+    })
+    const recs = buildTeamRecommendations(avoidInferno, balancedOpp, "A", ACTIVE_MAP_POOL, NOW)
+    const inferno = recs.bans.find(r => r.map === "de_inferno")!
+    expect(inferno.reason).toContain("избегает")
+    const cache = recs.picks.find(r => r.map === "de_cache")!
+    expect(cache.reason).toContain("недавно в пуле")
   })
 })
 

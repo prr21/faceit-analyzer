@@ -84,7 +84,8 @@ core/
     smurf-detection.ts # collectEnemyPlayers(), filterSmurfs() — pure functions
     player-map-stats.ts # parsePlayerMapStats — агрегированная статистика игрока по картам (5v5, пул)
     recommendation.ts  # скоринг-движок рекомендаций пик/бан: RECO_WEIGHTS, shrunkWinRate,
-                       # banRate/pickRate, buildMapRecommendations — pure functions
+                       # banRate/pickRate, mapTenureMonths/isEstablishedMap/avoidanceSignal,
+                       # buildMapRecommendations — pure functions (tenure-aware)
   usecases/            # high-level orchestration shared by CLI and server
     player.ts          # fetchAndAnalyzePlayer(client, nickname) — full player pipeline
     team.ts            # fetchAndAnalyzeTeam(client, playerIds, teamName) — full team pipeline
@@ -256,7 +257,8 @@ Cache storage: `.cache/` directory, MD5-hashed filenames, JSON format, no TTL.
 
 ## Domain Logic
 
-- **Map pool**: `ACTIVE_MAP_POOL` in `core/constants.ts` — allowlist of current CS2 maps. Only maps in the pool are analyzed; everything else is skipped via `isPoolMap()`.
+- **Map pool**: `ACTIVE_MAP_POOL_META` in `core/constants.ts` — текущий Active Duty (7 карт) с `addedAt` для каждой; `ACTIVE_MAP_POOL` — производный массив id (все потребители `isPoolMap` работают без изменений). Пул официальный от Valve, меняется ~раз в сезон. Only maps in the pool are analyzed; everything else is skipped via `isPoolMap()`.
+- **Tenure / avoidance** (`recommendation.ts`): мало данных по карте трактуется по-разному через `avoidanceSignal` — established-карта (в пуле дольше `establishedMonths=4`) с малым числом игр = команда её избегает (сигнал в бан); недавно добавленная (напр. Cache) = просто не наиграли, сигнала нет.
 - **Map voting rounds**: rounds 1-2 = first bans, 3-4 = picks (BO3) or second bans (BO1), 5-6 = last bans, last = decider.
 - **BO1**: all rounds are bans (drop), decider is last map standing. **BO3**: rounds 3-4 are picks, rounds 5-6 are bans.
 - **Win rate**: tracked per map using `match.results.winner` + `match.voting.map.pick`. BO3 uses `detailed_results` for per-map results.

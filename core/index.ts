@@ -60,12 +60,14 @@ export {
   DEFAULT_MATCH_LIMIT,
   DEFAULT_GAME,
   ACTIVE_MAP_POOL,
+  ACTIVE_MAP_POOL_META,
   DEFAULT_CONCURRENCY,
   CSGOVE_VERSION,
   CSGOVE_DOWNLOAD_BASE,
   FACEIT_DOWNLOAD_API_URL,
   VOICE_MP3_BITRATE,
 } from "./constants"
+export type { MapPoolEntry } from "./constants"
 
 // Env
 export { getFaceitApiKey } from "./env"
@@ -92,6 +94,9 @@ export {
   shrunkWinRate,
   banRate,
   pickRate,
+  mapTenureMonths,
+  isEstablishedMap,
+  avoidanceSignal,
   RECO_WEIGHTS,
 } from "./analysis/recommendation"
 
