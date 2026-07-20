@@ -30,4 +30,5 @@ coverage
 output/
 faceit.com/
 .cache/
+tools/
 web/node_modules/

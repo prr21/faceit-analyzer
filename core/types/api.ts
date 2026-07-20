@@ -6,6 +6,7 @@ export interface FaceitPlayer {
   faceit_url: string
   avatar?: string
   country?: string
+  steam_id_64?: string
   games: Record<string, { faceit_elo: number; skill_level?: number }>
 }
 
@@ -78,6 +79,7 @@ export interface FaceitMatchDetail {
   competition_type?: string
   competition_name?: string
   faceit_url?: string
+  demo_url?: string[]
   teams: {
     faction1: FaceitTeamFaction
     faction2: FaceitTeamFaction

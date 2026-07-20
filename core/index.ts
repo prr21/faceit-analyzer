@@ -60,6 +60,10 @@ export {
   DEFAULT_GAME,
   ACTIVE_MAP_POOL,
   DEFAULT_CONCURRENCY,
+  CSGOVE_VERSION,
+  CSGOVE_DOWNLOAD_BASE,
+  FACEIT_DOWNLOAD_API_URL,
+  VOICE_MP3_BITRATE,
 } from "./constants"
 
 // Env
@@ -86,6 +90,15 @@ export { fetchAndAnalyzePlayer } from "./usecases/player"
 export type { PlayerAnalysisResult } from "./usecases/player"
 export { fetchAndAnalyzeTeam } from "./usecases/team"
 export type { TeamAnalysisResult } from "./usecases/team"
+export {
+  fetchMatchVoices,
+  loadVoiceManifest,
+  voiceMatchDir,
+  voiceAudioPath,
+  setVoiceStorageRoot,
+} from "./usecases/voice"
+export type { VoiceDeps, FetchMatchVoicesOptions } from "./usecases/voice"
+export { parseMatchId } from "./voice/manifest"
 
 // Types — re-export all
 export type * from "./types/index"
